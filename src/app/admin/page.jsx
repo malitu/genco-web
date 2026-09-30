@@ -1,319 +1,576 @@
 "use client";
-import { useState, useEffect } from "react";
-import { db, auth } from "../../lib/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 
-export default function GencoModernStudio() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [emailInput, setEmailInput] = useState("");
-  const [passwordInput, setPasswordInput] = useState("");
-  const [loginError, setLoginError] = useState("");
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+// Mevcut sorunsuz çalışan Firebase bağlantımızı kullanıyoruz
+import { db, auth } from "../../lib/firebase";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from 'firebase/auth';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+} from 'firebase/firestore';
+
+/* ------------------------------------------------------------------ */
+/*  Yapılandırma                                                      */
+/* ------------------------------------------------------------------ */
+
+// Firebase yolunu canlı ana sayfamızla birebir eşitledik
+const CONTENT_DOC_PATH = ['settings', 'general'];
+const MEDIA_COLLECTION = 'siteMedia';
+const NEWS_COLLECTION = 'news';
+const MAX_IMAGE_SIDE = 1400;
+const MAX_IMAGE_CHARS = 900000; // Firestore belge sınırı 1 MB
+
+// Ana sayfadaki değişken isimleriyle (key) birebir aynı olacak şekilde ayarlandı
+const CONTENT_SECTIONS = [
+  {
+    id: 'hero',
+    title: 'Manşet (Hero) Alanı',
+    description: 'Ana sayfanın en üstündeki başlık ve açıklama.',
+    fields: [
+      { key: 'heroTitle', label: 'Hero Başlığı', type: 'text' },
+      { key: 'heroSub', label: 'Hero Alt Açıklaması', type: 'textarea' },
+    ],
+  },
+  {
+    id: 'operations',
+    title: 'Aktif Ticaret Yönetimi',
+    description: 'Ana sayfadaki operasyonel kutunun metinleri.',
+    fields: [
+      { key: 'mgmtTitle', label: 'Kutu Başlığı', type: 'text' },
+      { key: 'mgmtDesc', label: 'Kutu Açıklaması', type: 'textarea' },
+    ],
+  },
+  {
+    id: 'industries',
+    title: 'Sektörler Bölümü',
+    description: 'Ana sayfadaki sektörler alanının başlık ve açıklaması.',
+    fields: [
+      { key: 'indTitle', label: 'Sektörler Başlığı', type: 'text' },
+      { key: 'indDesc', label: 'Sektörler Açıklaması', type: 'textarea' },
+    ],
+  }
+];
+
+const ALL_FIELD_KEYS = CONTENT_SECTIONS.flatMap((section) =>
+  section.fields.map((field) => field.key)
+);
+
+const TABS = [
+  { id: 'content', label: 'Sayfa metinleri' },
+  { id: 'media', label: 'Medya kütüphanesi' },
+  { id: 'news', label: 'Haberler ve duyurular' },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Yardımcı fonksiyonlar                                            */
+/* ------------------------------------------------------------------ */
+
+function authErrorMessage(error) {
+  const code = error && error.code ? error.code : '';
+  switch (code) {
+    case 'auth/invalid-email': return 'E-posta adresi geçersiz.';
+    case 'auth/user-disabled': return 'Bu hesap devre dışı bırakılmış.';
+    case 'auth/user-not-found':
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential': return 'E-posta veya şifre hatalı.';
+    case 'auth/too-many-requests': return 'Çok fazla deneme yapıldı. Lütfen biraz bekleyip tekrar deneyin.';
+    case 'auth/network-request-failed': return 'Ağ bağlantısı kurulamadı. İnternetinizi kontrol edin.';
+    default: return 'Giriş yapılamadı. Bilgilerinizi kontrol edip tekrar deneyin.';
+  }
+}
+
+function formatDate(value) {
+  try {
+    if (value && typeof value.toDate === 'function') {
+      return value.toDate().toLocaleDateString('tr-TR', {
+        day: '2-digit', month: 'long', year: 'numeric',
+      });
+    }
+  } catch (error) {}
+  return 'Az önce';
+}
+
+function formatSize(chars) {
+  const kb = Math.round((chars * 0.75) / 1024);
+  return kb >= 1024 ? `${(kb / 1024).toFixed(1)} MB` : `${kb} KB`;
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error('Dosya okunamadı.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Görsel açılamadı.'));
+    img.src = src;
+  });
+}
+
+async function compressImage(file) {
+  const source = await readFileAsDataUrl(file);
+  const img = await loadImage(source);
+  const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(img.width, img.height));
+  const width = Math.max(1, Math.round(img.width * scale));
+  const height = Math.max(1, Math.round(img.height * scale));
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Tarayıcı görsel işlemeyi desteklemiyor.');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, width, height);
+  ctx.drawImage(img, 0, 0, width, height);
+
+  let quality = 0.85;
+  let output = canvas.toDataURL('image/jpeg', quality);
+  while (output.length > MAX_IMAGE_CHARS && quality > 0.3) {
+    quality -= 0.1;
+    output = canvas.toDataURL('image/jpeg', quality);
+  }
+  if (output.length > MAX_IMAGE_CHARS) {
+    throw new Error('Görsel çok büyük. Lütfen daha küçük bir dosya seçin.');
+  }
+  return output;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Küçük arayüz bileşenleri                                         */
+/* ------------------------------------------------------------------ */
+
+const inputClass = 'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#f97316]/30';
+const primaryButtonClass = 'inline-flex items-center justify-center rounded-lg bg-[#f97316] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ea580c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f97316] disabled:opacity-60';
+const dangerButtonClass = 'inline-flex items-center justify-center rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400';
+
+function Toast({ toast }) {
+  if (!toast) return null;
+  const isError = toast.type === 'error';
+  return (
+    <div role="status" aria-live="polite" className={`fixed bottom-6 right-6 z-50 max-w-sm rounded-lg px-4 py-3 text-sm font-medium shadow-lg ${isError ? 'bg-red-600 text-white' : 'bg-[#0f172a] text-white'}`}>
+      {toast.message}
+    </div>
+  );
+}
+
+function FullScreenMessage({ title, text }) {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
+      <div className="max-w-md rounded-xl bg-white p-8 text-center shadow-sm">
+        <h1 className="text-lg font-semibold text-[#0f172a]">{title}</h1>
+        {text ? <p className="mt-2 text-sm text-slate-600">{text}</p> : null}
+      </div>
+    </div>
+  );
+}
+
+function LoginScreen({ onLogin, loading, error }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    onLogin(email.trim(), password);
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#0f172a] px-4">
+      <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl">
+        <div className="mb-6">
+          <div className="h-1 w-10 rounded bg-[#f97316]" />
+          <h1 className="mt-4 text-2xl font-bold text-[#0f172a]">GENCO Studio</h1>
+          <p className="mt-1 text-sm text-slate-600">Site içeriğini yönetmek için giriş yapın.</p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">E-posta</label>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} placeholder="ad@firma.com" />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Şifre</label>
+            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} placeholder="Şifreniz" />
+          </div>
+          {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
+          <button type="submit" disabled={loading} className={`${primaryButtonClass} w-full`}>
+            {loading ? 'Giriş yapılıyor…' : 'Giriş yap'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sekme: Sayfa metinleri                                           */
+/* ------------------------------------------------------------------ */
+
+function ContentTab({ notify }) {
+  const [values, setValues] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const [activeTab, setActiveTab] = useState("content"); // "content", "media", "news"
-
-  // 1. Metin ve İçerik Yönetimi
-  const [siteContent, setSiteContent] = useState({
-    heroTitle: "Türkiye'deki Uluslararası Ticaret Ekibiniz",
-    heroSub: "Sadece dış ticaret danışmanlığı sunmuyoruz. Fırsatları araştırıyor, doğru uluslararası partnerleri buluyor ve tüm ticari operasyonu sizin adınıza bizzat yönetiyoruz.",
-    mgmtTitle: "Masada ve Sahada Doğrudan Operasyon",
-    mgmtDesc: "Jenerik pazar araştırmalarıyla vakit kaybetmiyoruz. Tescilli ticaret istihbarat altyapılarımızı kullanarak doğrudan karar vericilere ulaşıyoruz."
-  });
-
-  // 2. Medya Kütüphanesi (Fotoğraflar, Logolar)
-  const [mediaLibrary, setMediaLibrary] = useState([
-    { id: 1, name: "Ana Logo", url: "/logo.png" },
-    { id: 2, name: "Outsourced Export", url: "/outsourced-export.jpg" }
-  ]);
-  const [newImgName, setNewImgName] = useState("");
-  const [newImgUrl, setNewImgUrl] = useState("");
-
-  // 3. Haberler ve Duyurular Modülü
-  const [newsList, setNewsList] = useState([
-    { id: 1, title: "12. European Suzuki Children's Convention Katılımımız", date: "2026-04-03", summary: "İstanbul AKM'de gerçekleştirilen uluslararası etkinlikte yerimizi aldık." }
-  ]);
-  const [newNewsTitle, setNewNewsTitle] = useState("");
-  const [newNewsSummary, setNewNewsSummary] = useState("");
 
   useEffect(() => {
-    const fetchStudioData = async () => {
+    let active = true;
+    async function load() {
       try {
-        const docRef = doc(db, "settings", "modern_studio");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (data.siteContent) setSiteContent(prev => ({ ...prev, ...data.siteContent }));
-          if (data.mediaLibrary) setMediaLibrary(data.mediaLibrary);
-          if (data.newsList) setNewsList(data.newsList);
-        }
-      } catch (e) {
-        console.log("Firebase verisi bekleniyor.");
+        const snap = await getDoc(doc(db, CONTENT_DOC_PATH[0], CONTENT_DOC_PATH[1]));
+        if (!active) return;
+        const data = snap.exists() ? snap.data() : {};
+        const next = {};
+        ALL_FIELD_KEYS.forEach((key) => {
+          next[key] = typeof data[key] === 'string' ? data[key] : '';
+        });
+        setValues(next);
+      } catch (error) {
+        if (active) notify('error', 'Metinler yüklenemedi. Yetki ayarlarınızı kontrol edin.');
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
-    };
-    fetchStudioData();
+    }
+    load();
+    return () => { active = false; };
+  }, [notify]);
+
+  const handleChange = (key, value) => {
+    setValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await setDoc(doc(db, CONTENT_DOC_PATH[0], CONTENT_DOC_PATH[1]), { ...values, updatedAt: serverTimestamp() }, { merge: true });
+      notify('success', 'Sayfa metinleri başarıyla kaydedildi.');
+    } catch (error) {
+      notify('error', 'Kaydedilemedi. Lütfen tekrar deneyin.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <p className="py-10 text-center text-sm text-slate-500">Metinler yükleniyor…</p>;
+
+  return (
+    <div className="space-y-6">
+      {CONTENT_SECTIONS.map((section) => (
+        <section key={section.id} className="rounded-xl border border-slate-200 bg-white p-6">
+          <h2 className="text-base font-semibold text-[#0f172a]">{section.title}</h2>
+          <p className="mt-1 text-sm text-slate-500">{section.description}</p>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            {section.fields.map((field) => {
+              const wide = field.type === 'textarea';
+              return (
+                <div key={field.key} className={wide ? 'md:col-span-2' : ''}>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">{field.label}</label>
+                  {field.type === 'textarea' ? (
+                    <textarea rows={3} value={values[field.key] || ''} onChange={(e) => handleChange(field.key, e.target.value)} className={inputClass} />
+                  ) : (
+                    <input type="text" value={values[field.key] || ''} onChange={(e) => handleChange(field.key, e.target.value)} className={inputClass} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+      <div className="flex justify-end">
+        <button type="button" onClick={handleSave} disabled={saving} className={primaryButtonClass}>
+          {saving ? 'Kaydediliyor…' : 'Değişiklikleri kaydet'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sekme: Medya kütüphanesi                                         */
+/* ------------------------------------------------------------------ */
+
+function MediaTab({ mediaItems, notify }) {
+  const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const uploadFiles = async (fileList) => {
+    const files = Array.from(fileList || []).filter((file) => file.type.startsWith('image/'));
+    if (files.length === 0) {
+      notify('error', 'Lütfen görsel dosyası seçin (JPG, PNG, WebP).');
+      return;
+    }
+    setUploading(true);
+    let success = 0;
+    for (const file of files) {
+      try {
+        const dataUrl = await compressImage(file);
+        await addDoc(collection(db, MEDIA_COLLECTION), {
+          name: file.name, dataUrl, size: dataUrl.length, createdAt: serverTimestamp(),
+        });
+        success += 1;
+      } catch (error) {
+        notify('error', `${file.name}: yüklenemedi.`);
+      }
+    }
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (success > 0) notify('success', `${success} görsel yüklendi.`);
+  };
+
+  const handleDelete = async (item) => {
+    if (!window.confirm(`"${item.name}" görselini silmek istediğinize emin misiniz?`)) return;
+    try {
+      await deleteDoc(doc(db, MEDIA_COLLECTION, item.id));
+      notify('success', 'Görsel silindi.');
+    } catch (error) {
+      notify('error', 'Görsel silinemedi.');
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => { e.preventDefault(); setDragging(false); uploadFiles(e.dataTransfer.files); }}
+        className={`rounded-xl border-2 border-dashed p-8 text-center transition ${dragging ? 'border-[#f97316] bg-orange-50' : 'border-slate-300 bg-white'}`}
+      >
+        <p className="text-sm font-medium text-[#0f172a]">Görselleri buraya sürükleyin</p>
+        <p className="mt-1 text-xs text-slate-500">Görseller otomatik küçültülür ve sıkıştırılır.</p>
+        <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => uploadFiles(e.target.files)} />
+        <button type="button" onClick={() => fileInputRef.current && fileInputRef.current.click()} disabled={uploading} className={`${primaryButtonClass} mt-4`}>
+          {uploading ? 'Yükleniyor…' : 'Bilgisayardan görsel seç'}
+        </button>
+      </div>
+
+      {mediaItems.length === 0 ? (
+        <p className="rounded-xl border border-slate-200 bg-white py-10 text-center text-sm text-slate-500">Henüz görsel yok. Yukarıdan ilk görselinizi yükleyin.</p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {mediaItems.map((item) => (
+            <div key={item.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+              <div className="aspect-video bg-slate-100">
+                <img src={item.dataUrl} alt={item.name} className="h-full w-full object-cover" />
+              </div>
+              <div className="p-3 flex justify-between items-center">
+                <div className="truncate w-3/4">
+                  <p className="truncate text-sm font-medium text-[#0f172a]">{item.name}</p>
+                  <p className="text-xs text-slate-500">{formatSize(item.size || 0)}</p>
+                </div>
+                <button type="button" onClick={() => handleDelete(item)} className={dangerButtonClass}>Sil</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sekme: Haberler                                                  */
+/* ------------------------------------------------------------------ */
+
+function NewsTab({ newsItems, notify }) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const handleAdd = async (event) => {
+    event.preventDefault();
+    const cleanTitle = title.trim();
+    const cleanDescription = description.trim();
+    if (!cleanTitle || !cleanDescription) {
+      notify('error', 'Başlık ve açıklama alanlarını doldurun.');
+      return;
+    }
+    setSaving(true);
+    try {
+      await addDoc(collection(db, NEWS_COLLECTION), { title: cleanTitle, description: cleanDescription, createdAt: serverTimestamp() });
+      setTitle(''); setDescription('');
+      notify('success', 'Haber yayınlandı.');
+    } catch (error) {
+      notify('error', 'Haber eklenemedi.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (item) => {
+    if (!window.confirm(`"${item.title}" haberini silmek istediğinize emin misiniz?`)) return;
+    try {
+      await deleteDoc(doc(db, NEWS_COLLECTION, item.id));
+      notify('success', 'Haber silindi.');
+    } catch (error) {
+      notify('error', 'Haber silinemedi.');
+    }
+  };
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-5">
+      <form onSubmit={handleAdd} className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 lg:col-span-2 lg:self-start">
+        <h2 className="text-base font-semibold text-[#0f172a]">Yeni haber ekle</h2>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">Başlık</label>
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} placeholder="Haber başlığı" />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">Açıklama</label>
+          <textarea rows={5} value={description} onChange={(e) => setDescription(e.target.value)} className={inputClass} placeholder="Haberin içeriği" />
+        </div>
+        <button type="submit" disabled={saving} className={`${primaryButtonClass} w-full`}>
+          {saving ? 'Yayınlanıyor…' : 'Haberi yayınla'}
+        </button>
+      </form>
+
+      <div className="space-y-3 lg:col-span-3">
+        <h2 className="text-base font-semibold text-[#0f172a]">Yayındaki haberler ({newsItems.length})</h2>
+        {newsItems.length === 0 ? (
+          <p className="rounded-xl border border-slate-200 bg-white py-10 text-center text-sm text-slate-500">Henüz haber yok. Soldaki formdan ekleyin.</p>
+        ) : (
+          newsItems.map((item) => (
+            <article key={item.id} className="rounded-xl border border-slate-200 bg-white p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-sm font-semibold text-[#0f172a]">{item.title}</h3>
+                  <p className="mt-0.5 text-xs text-slate-500">{formatDate(item.createdAt)}</p>
+                </div>
+                <button type="button" onClick={() => handleDelete(item)} className={dangerButtonClass}>Sil</button>
+              </div>
+              <p className="mt-3 whitespace-pre-line text-sm text-slate-600">{item.description}</p>
+            </article>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Ana bileşen                                                      */
+/* ------------------------------------------------------------------ */
+
+export default function AdminPage() {
+  const [user, setUser] = useState(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [activeTab, setActiveTab] = useState('content');
+  const [mediaItems, setMediaItems] = useState([]);
+  const [newsItems, setNewsItems] = useState([]);
+  const [toast, setToast] = useState(null);
+
+  const notify = useCallback((type, message) => {
+    setToast({ type, message, id: Date.now() });
   }, []);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoginError("");
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(null), 3500);
+    return () => clearTimeout(timer);
+  }, [toast]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      setAuthReady(true);
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const unsubMedia = onSnapshot(query(collection(db, MEDIA_COLLECTION), orderBy('createdAt', 'desc')), (snapshot) => {
+      setMediaItems(snapshot.docs.map((item) => ({ id: item.id, ...item.data() })));
+    });
+    const unsubNews = onSnapshot(query(collection(db, NEWS_COLLECTION), orderBy('createdAt', 'desc')), (snapshot) => {
+      setNewsItems(snapshot.docs.map((item) => ({ id: item.id, ...item.data() })));
+    });
+    return () => { unsubMedia(); unsubNews(); };
+  }, [user]);
+
+  const handleLogin = async (email, password) => {
+    setLoginLoading(true);
+    setLoginError('');
     try {
-      await signInWithEmailAndPassword(auth, emailInput.trim(), passwordInput);
-      setIsAuthenticated(true);
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      setLoginError("E-posta veya şifre hatalı!");
+      setLoginError(authErrorMessage(error));
+    } finally {
+      setLoginLoading(false);
     }
   };
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      setIsAuthenticated(false);
+      setMediaItems([]);
+      setNewsItems([]);
     } catch (error) {
-      console.error("Çıkış hatası:", error);
+      notify('error', 'Çıkış yapılamadı.');
     }
   };
 
-  const handleSaveAll = async () => {
-    setSaving(true);
-    setSuccess(false);
-    try {
-      await setDoc(doc(db, "settings", "modern_studio"), { 
-        siteContent, 
-        mediaLibrary, 
-        newsList 
-      }, { merge: true });
-      
-      // Ayrıca ana sayfanın okuduğu eski 'general' dokümanını da güncelleyelim ki site anında görsün
-      await setDoc(doc(db, "settings", "general"), siteContent, { merge: true });
+  const currentTab = useMemo(() => TABS.find((tab) => tab.id === activeTab) || TABS[0], [activeTab]);
 
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 4000);
-    } catch (error) {
-      console.error("Kayıt hatası:", error);
-      alert("Kaydedilirken hata oluştu.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  // Medya Yükleme (Base64)
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const newMedia = { id: Date.now(), name: file.name, url: reader.result };
-      setMediaLibrary(prev => [...prev, newMedia]);
-      alert(`"${file.name}" başarıyla yüklendi!`);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleAddNews = (e) => {
-    e.preventDefault();
-    if (!newNewsTitle || !newNewsSummary) return;
-    const newItem = { id: Date.now(), title: newNewsTitle, date: new Date().toISOString().split('T')[0], summary: newNewsSummary };
-    setNewsList(prev => [newItem, ...prev]);
-    setNewNewsTitle("");
-    setNewNewsSummary("");
-  };
-
-  const handleDeleteNews = (id) => {
-    setNewsList(prev => prev.filter(n => n.id !== id));
-  };
-
-  if (loading) {
-    return <div className="min-h-screen bg-[#0f172a] text-white flex items-center justify-center font-mono">GENCO Modern Studio Yükleniyor...</div>;
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-[#0f172a] flex items-center justify-center font-sans p-6">
-        <div className="bg-white max-w-md w-full rounded-2xl p-8 shadow-2xl border border-gray-100">
-          <div className="text-center mb-8">
-            <span className="bg-[#f97316] text-white font-bold text-xs px-3 py-1 rounded-full">MODERN STUDIO</span>
-            <h1 className="text-2xl font-bold text-[#0f172a] mt-3">GENCO Giriş</h1>
-            <p className="text-xs text-gray-500 mt-1">Yönetim Paneli Yetkilendirmesi</p>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">E-posta</label>
-              <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="E-posta adresiniz" className="w-full border border-gray-300 p-3.5 rounded-xl text-sm focus:outline-none focus:border-[#f97316]" required />
-            </div>
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Şifre</label>
-              <input type="password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} placeholder="Şifreniz" className="w-full border border-gray-300 p-3.5 rounded-xl text-sm focus:outline-none focus:border-[#f97316]" required />
-            </div>
-            {loginError && <div className="bg-red-50 text-red-700 p-3 rounded-xl text-xs font-semibold text-center">❌ {loginError}</div>}
-            <button type="submit" className="w-full bg-[#f97316] hover:bg-orange-600 text-white p-3.5 font-bold rounded-xl transition text-sm">Giriş Yap</button>
-          </form>
-        </div>
-      </div>
-    );
-  }
+  if (!authReady) return <FullScreenMessage title="GENCO Studio yükleniyor…" />;
+  if (!user) return <LoginScreen onLogin={handleLogin} loading={loginLoading} error={loginError} />;
 
   return (
-    <div className="bg-[#f1f5f9] text-[#1e293b] min-h-screen flex flex-col font-sans">
-      
-      {/* ÜST WIZARD MENÜSÜ */}
-      <header className="bg-[#0f172a] text-white border-b border-gray-800 py-4 px-8 flex justify-between items-center sticky top-0 z-50 shadow-md">
-        <div className="flex items-center space-x-6">
-          <div className="flex items-center space-x-2">
-            <span className="bg-[#f97316] text-white font-bold text-xs px-3 py-1 rounded">GENCO STUDIO</span>
-            <span className="text-xs text-gray-300 font-mono">Modern CMS v3.0</span>
+    <div className="min-h-screen bg-slate-100">
+      <header className="bg-[#0f172a] text-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <span className="h-8 w-1.5 rounded bg-[#f97316]" aria-hidden="true" />
+            <div>
+              <h1 className="text-lg font-bold leading-tight">GENCO Studio</h1>
+              <p className="text-xs text-slate-300">İçerik yönetim paneli</p>
+            </div>
           </div>
-
-          <div className="flex bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs font-semibold">
-            <button onClick={() => setActiveTab("content")} className={`px-4 py-1.5 rounded-md transition ${activeTab === "content" ? "bg-[#f97316] text-white font-bold" : "text-gray-300 hover:text-white"}`}>
-              📝 Sayfa Metinleri
-            </button>
-            <button onClick={() => setActiveTab("media")} className={`px-4 py-1.5 rounded-md transition ${activeTab === "media" ? "bg-[#f97316] text-white font-bold" : "text-gray-300 hover:text-white"}`}>
-              🖼️ Medya & Fotoğraflar ({mediaLibrary.length})
-            </button>
-            <button onClick={() => setActiveTab("news")} className={`px-4 py-1.5 rounded-md transition ${activeTab === "news" ? "bg-[#f97316] text-white font-bold" : "text-gray-300 hover:text-white"}`}>
-              📰 Haberler & Duyurular ({newsList.length})
-            </button>
+          <div className="flex items-center gap-4">
+            <span className="hidden text-sm text-slate-300 sm:inline">{user.email}</span>
+            <button type="button" onClick={handleLogout} className="rounded-lg border border-slate-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-slate-800">Çıkış yap</button>
           </div>
         </div>
 
-        <div className="flex items-center space-x-4 text-xs font-semibold">
-          <button onClick={handleLogout} className="bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-2 rounded-lg hover:bg-red-500 hover:text-white transition">
-            🔒 Çıkış
-          </button>
-          <a href="/" target="_blank" className="bg-slate-800 text-gray-200 border border-slate-700 px-4 py-2 rounded-lg hover:bg-slate-700 transition">
-            Canlı Siteyi Gör ↗
-          </a>
-          <button 
-            onClick={handleSaveAll} 
-            disabled={saving}
-            className="bg-[#f97316] hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-bold transition shadow-md disabled:opacity-50"
-          >
-            {saving ? "Yayınlanıyor..." : "🚀 Kaydet & Yayınla"}
-          </button>
-        </div>
+        <nav className="mx-auto max-w-6xl px-4 sm:px-6">
+          <ul className="-mb-px flex gap-1 overflow-x-auto">
+            {TABS.map((tab) => {
+              const selected = tab.id === currentTab.id;
+              return (
+                <li key={tab.id}>
+                  <button onClick={() => setActiveTab(tab.id)} className={`whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition ${selected ? 'border-[#f97316] text-white' : 'border-transparent text-slate-400 hover:text-white'}`}>
+                    {tab.label}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </header>
 
-      {success && (
-        <div className="max-w-5xl mx-auto w-full px-8 mt-6">
-          <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl text-xs font-semibold shadow-sm text-center">
-            ✓ Tüm değişiklikler, fotoğraflar ve haberler başarıyla Firebase'e kaydedildi ve canlı siteye yansıtıldı!
-          </div>
-        </div>
-      )}
-
-      {/* İÇERİK ALANI */}
-      <main className="flex-1 max-w-5xl w-full mx-auto p-8 space-y-8">
-        
-        {activeTab === "content" && (
-          <div className="space-y-6">
-            <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm space-y-6">
-              <h2 className="text-lg font-bold text-[#0f172a] border-b pb-4">Ana Sayfa Metin Yönetimi</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Ana Başlık (Hero Title)</label>
-                  <textarea rows="2" value={siteContent.heroTitle} onChange={(e) => setSiteContent({...siteContent, heroTitle: e.target.value})} className="w-full border border-gray-300 p-3.5 rounded-xl text-sm font-bold focus:outline-none focus:border-[#f97316]" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Alt Açıklama (Hero Subtitle)</label>
-                  <textarea rows="3" value={siteContent.heroSub} onChange={(e) => setSiteContent({...siteContent, heroSub: e.target.value})} className="w-full border border-gray-300 p-3.5 rounded-xl text-sm focus:outline-none focus:border-[#f97316]" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm space-y-6">
-              <h2 className="text-lg font-bold text-[#0f172a] border-b pb-4">Operasyonel Kutu Yönetimi</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Kutu Başlığı</label>
-                  <input type="text" value={siteContent.mgmtTitle} onChange={(e) => setSiteContent({...siteContent, mgmtTitle: e.target.value})} className="w-full border border-gray-300 p-3.5 rounded-xl text-sm font-bold focus:outline-none focus:border-[#f97316]" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Kutu Açıklaması</label>
-                  <textarea rows="3" value={siteContent.mgmtDesc} onChange={(e) => setSiteContent({...siteContent, mgmtDesc: e.target.value})} className="w-full border border-gray-300 p-3.5 rounded-xl text-sm focus:outline-none focus:border-[#f97316]" />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "media" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm space-y-6">
-              <h2 className="text-lg font-bold text-[#0f172a] border-b pb-4">Bilgisayardan Fotoğraf Yükle</h2>
-              <p className="text-xs text-gray-500">Cihazınızdan seçtiğiniz görseller güvenle Firebase medya havuzuna kaydedilir.</p>
-              <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full text-xs border border-gray-300 p-4 rounded-xl bg-gray-50 cursor-pointer" />
-            </div>
-
-            <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm space-y-6">
-              <h2 className="text-lg font-bold text-[#0f172a] border-b pb-4">Medya Havuzu ({mediaLibrary.length})</h2>
-              <div className="grid grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-2">
-                {mediaLibrary.map(m => (
-                  <div key={m.id} className="border border-gray-200 p-3 rounded-xl bg-gray-50 text-center flex flex-col justify-between">
-                    <img src={m.url} alt={m.name} className="h-24 w-full object-cover rounded-lg mb-2 border" />
-                    <span className="text-[10px] font-bold text-gray-700 truncate">{m.name}</span>
-                    <button onClick={() => setMediaLibrary(mediaLibrary.filter(item => item.id !== m.id))} className="mt-2 bg-red-50 text-red-600 text-[10px] font-bold py-1 rounded hover:bg-red-100 transition">Kaldır</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "news" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
-              <h2 className="text-base font-bold text-[#0f172a] border-b pb-3">Yeni Haber / Duyuru Ekle</h2>
-              <form onSubmit={handleAddNews} className="space-y-4">
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Haber Başlığı</label>
-                  <input type="text" value={newNewsTitle} onChange={(e) => setNewNewsTitle(e.target.value)} placeholder="Örn: Yeni Pazar Açılımı" className="w-full border border-gray-300 p-3 rounded-xl text-xs focus:outline-none focus:border-[#f97316]" required />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Özet / İçerik</label>
-                  <textarea rows="3" value={newNewsSummary} onChange={(e) => setNewNewsSummary(e.target.value)} placeholder="Haberin detayları..." className="w-full border border-gray-300 p-3 rounded-xl text-xs focus:outline-none focus:border-[#f97316]" required />
-                </div>
-                <button type="submit" className="w-full bg-[#f97316] text-white p-3 rounded-xl font-bold text-xs hover:bg-orange-600 transition">Haber Ekle</button>
-              </form>
-            </div>
-
-            <div className="md:col-span-2 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
-              <h2 className="text-base font-bold text-[#0f172a] border-b pb-3">Yayınlanan Haberler ({newsList.length})</h2>
-              <div className="space-y-3 max-h-[450px] overflow-y-auto pr-2">
-                {newsList.map(news => (
-                  <div key={news.id} className="border border-gray-200 p-4 rounded-xl bg-gray-50 flex justify-between items-start">
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-mono text-gray-400">{news.date}</span>
-                      <h4 className="font-bold text-xs text-[#0f172a]">{news.title}</h4>
-                      <p className="text-xs text-gray-600">{news.summary}</p>
-                    </div>
-                    <button onClick={() => handleDeleteNews(news.id)} className="text-red-500 hover:text-red-700 text-xs font-bold bg-white border px-2.5 py-1 rounded shadow-sm">Sil</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="flex justify-end pt-4 pb-12">
-          <button 
-            onClick={handleSaveAll} 
-            disabled={saving}
-            className="bg-[#f97316] hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-bold transition shadow-lg text-sm disabled:opacity-50"
-          >
-            {saving ? "Yayınlanıyor..." : "🚀 Tüm Değişiklikleri Kaydet & Yayınla"}
-          </button>
-        </div>
-
+      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        {currentTab.id === 'content' && <ContentTab notify={notify} />}
+        {currentTab.id === 'media' && <MediaTab mediaItems={mediaItems} notify={notify} />}
+        {currentTab.id === 'news' && <NewsTab newsItems={newsItems} notify={notify} />}
       </main>
 
+      <Toast toast={toast} />
     </div>
   );
 }
