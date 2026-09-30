@@ -7,7 +7,10 @@ export default function GencoStudioAdmin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [loginError, setLoginError] = useState(false);
-  const [adminPassword, setAdminPassword] = useState("genco2026");
+  const [loadingLogin, setLoadingLogin] = useState(true);
+
+  // Varsayılan boş dizi: Firebase'de tanımlı şifre yoksa kimse giremez!
+  const [allowedPasswords, setAllowedPasswords] = useState([]);
 
   const [activeTab, setActiveTab] = useState("pages");
   const [activePage, setActivePage] = useState("home");
@@ -62,12 +65,16 @@ export default function GencoStudioAdmin() {
           const data = docSnap.data();
           if (data.pagesContent) setPagesContent(data.pagesContent);
           if (data.mediaLibrary) setMediaLibrary(data.mediaLibrary);
-          if (data.adminPassword) setAdminPassword(data.adminPassword);
+          // Sadece Firebase'de kayıtlı şifreler varsa onları yükle
+          if (data.allowedPasswords && Array.isArray(data.allowedPasswords)) {
+            setAllowedPasswords(data.allowedPasswords);
+          }
         }
       } catch (e) {
         console.log("Firebase verisi bekleniyor.");
       } finally {
         setLoading(false);
+        setLoadingLogin(false);
       }
     };
     fetchStudioData();
@@ -93,7 +100,8 @@ export default function GencoStudioAdmin() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (passwordInput === adminPassword) {
+    // Kesin kural: Sadece Firebase'deki listede varsa giriş yapabilir. Liste boşsa kimse giremez.
+    if (allowedPasswords.length > 0 && allowedPasswords.includes(passwordInput.trim())) {
       setIsAuthenticated(true);
       setLoginError(false);
     } else {
@@ -105,7 +113,11 @@ export default function GencoStudioAdmin() {
     setSaving(true);
     setSuccess(false);
     try {
-      await setDoc(doc(db, "settings", "genco_studio"), { pagesContent, mediaLibrary, adminPassword }, { merge: true });
+      await setDoc(doc(db, "settings", "genco_studio"), { 
+        pagesContent, 
+        mediaLibrary, 
+        allowedPasswords 
+      }, { merge: true });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 4000);
     } catch (error) {
@@ -177,7 +189,7 @@ export default function GencoStudioAdmin() {
     setNewImgUrl("");
   };
 
-  if (loading) {
+  if (loading || loadingLogin) {
     return <div className="min-h-screen bg-[#0f172a] text-white flex items-center justify-center font-mono">GENCO Studio Yükleniyor...</div>;
   }
 
@@ -188,7 +200,7 @@ export default function GencoStudioAdmin() {
           <div className="text-center mb-8">
             <span className="bg-[#f97316] text-white font-bold text-xs px-3 py-1 rounded-full">GÜVENLİ ERİŞİM</span>
             <h1 className="text-2xl font-bold text-[#0f172a] mt-3">GENCO Studio Giriş</h1>
-            <p className="text-xs text-gray-500 mt-1">Yönetim paneline erişmek için lütfen şifrenizi girin.</p>
+            <p className="text-xs text-gray-500 mt-1">Firebase Yetkili Yönetici Doğrulaması</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -198,7 +210,7 @@ export default function GencoStudioAdmin() {
                 type="password" 
                 value={passwordInput} 
                 onChange={(e) => setPasswordInput(e.target.value)} 
-                placeholder="Şifrenizi girin (Firebase'den doğrulanır)" 
+                placeholder="Firebase'de tanımlı şifrenizi girin..." 
                 className="w-full border border-gray-300 p-3.5 rounded-xl text-sm focus:outline-none focus:border-[#f97316]"
                 required 
               />
@@ -206,17 +218,17 @@ export default function GencoStudioAdmin() {
 
             {loginError && (
               <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs font-semibold text-center">
-                ❌ Hatalı şifre! Lütfen tekrar deneyin.
+                ❌ Erişim reddedildi: Firebase kayıtlarında bu şifre bulunamadı.
               </div>
             )}
 
             <button type="submit" className="w-full bg-[#f97316] hover:bg-orange-600 text-white p-3.5 font-bold rounded-xl transition shadow-md text-sm">
-              Panele Giriş Yap
+              Güvenli Giriş Yap
             </button>
           </form>
 
           <div className="text-center mt-6 text-[10px] text-gray-400">
-            GENCO Imports & Exports LTD. • Firebase Güvenli Modül © 2026
+            GENCO Imports & Exports LTD. • Strict Firebase Security © 2026
           </div>
         </div>
       </div>
@@ -383,7 +395,7 @@ export default function GencoStudioAdmin() {
       {success && (
         <div className="max-w-7xl mx-auto w-full px-8 mt-4">
           <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl text-xs font-semibold shadow-sm">
-            ✓ Değişiklikler ve medya havuzu başarıyla Firebase'e kaydedildi!
+            ✓ Değişiklikler ve admin şifre listesi başarıyla Firebase'e kaydedildi!
           </div>
         </div>
       )}
@@ -632,7 +644,7 @@ export default function GencoStudioAdmin() {
                           <input type="text" value={block.heading || ""} onChange={(e) => handleBlockChange(index, "heading", e.target.value)} className="w-full border border-gray-300 p-2.5 rounded-xl text-xs font-bold focus:outline-none focus:border-[#f97316]" />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold uppercase data-wider text-gray-400 mb-1">İçerik Metni</label>
+                          <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">İçerik Metni</label>
                           <textarea rows="3" value={block.content || ""} onChange={(e) => handleBlockChange(index, "content", e.target.value)} className="w-full border border-gray-300 p-2.5 rounded-xl text-xs focus:outline-none focus:border-[#f97316]" />
                         </div>
                       </div>
