@@ -24,17 +24,28 @@ export default function GencoStudioVisualEditor() {
     { id: 5, name: "Market Entry", url: "/market-entry.jpg" }
   ]);
 
-  // Sayfa Blokları
+  // Canlı Sitedeki Yapının Aynısı Olan Zengin Varsayılan Bloklar
   const [pagesContent, setPagesContent] = useState({
     home: [
-      { id: 101, type: "hero", badge: "Uluslararası İş Geliştirme Ortağınız", title: "Türkiye'deki Uluslararası Ticaret Ekibiniz", subtitle: "Sadece dış ticaret danışmanlığı sunmuyoruz. Fırsatları araştırıyor, doğru uluslararası partnerleri buluyor ve tüm ticari operasyonu sizin adınıza bizzat yönetiyoruz.", animation: "fade-in", images: [], interval: 3 },
-      { id: 102, type: "slider", heading: "Küresel Operasyonel Görsellerimiz", animation: "slide-up", images: ["/outsourced-export.jpg", "/strategic-sourcing.jpg"], interval: 3 }
+      { 
+        id: 101, 
+        type: "hero", 
+        badge: "Uluslararası İş Geliştirme Ortağınız", 
+        title: "Türkiye'deki Uluslararası Ticaret Ekibiniz", 
+        subtitle: "Sadece dış ticaret danışmanlığı sunmuyoruz. Fırsatları araştırıyor, doğru uluslararası partnerleri buluyor ve tüm ticari operasyonu sizin adınıza bizzat yönetiyoruz." 
+      },
+      { 
+        id: 102, 
+        type: "textBlock", 
+        heading: "Ağırlıklı Çalıştığımız Sektörler", 
+        content: "Derinlemesine ağ ve teknik bilgiye sahip olduğumuz ana alanların yanı sıra, esnek metodolojimizle her sektörde uluslararası ticaret operasyonu yönetebiliyoruz." 
+      }
     ],
     services: [
-      { id: 201, type: "hero", badge: "Uçtan Uca Ticaret Yönetimi", title: "Aktif İş Geliştirme ve Operasyonel Çözümlerimiz", subtitle: "GENCO olarak şirketlere sadece dışarıdan tavsiye vermiyoruz; doğrudan pazar açıyor ve operasyonu bizzat yönetiyoruz.", animation: "zoom-in", images: [], interval: 3 }
+      { id: 201, type: "hero", badge: "Uçtan Uca Ticaret Yönetimi", title: "Aktif İş Geliştirme ve Operasyonel Çözümlerimiz", subtitle: "GENCO olarak şirketlere sadece dışarıdan tavsiye vermiyoruz; doğrudan pazar açıyor ve operasyonu bizzat yönetiyoruz." }
     ],
     industries: [
-      { id: 301, type: "hero", badge: "Sektörel Yetkinlik ve Uzmanlık", title: "Derinlemesine Hakim Olduğumuz Alanlar ve Esnek Çözüm Ağımız", subtitle: "Demir Çelik, Denizcilik, Tohumculuk, Medikal, Otomotiv ve Femtech alanlarında tescilli uzmanlık.", animation: "float", images: [], interval: 3 }
+      { id: 301, type: "hero", badge: "Sektörel Yetkinlik ve Uzmanlık", title: "Derinlemesine Hakim Olduğumuz Alanlar ve Esnek Çözüm Ağımız", subtitle: "Demir Çelik, Denizcilik, Tohumculuk, Medikal, Otomotiv ve Femtech alanlarında tescilli uzmanlık." }
     ]
   });
 
@@ -58,24 +69,6 @@ export default function GencoStudioVisualEditor() {
     };
     fetchStudioData();
   }, []);
-
-  useEffect(() => {
-    const intervalTimer = setInterval(() => {
-      setSliderIndexes(prev => {
-        const newIndexes = { ...prev };
-        Object.keys(pagesContent).forEach(pageKey => {
-          (pagesContent[pageKey] || []).forEach(block => {
-            if (block.type === "slider" && block.images && block.images.length > 1) {
-              const currentIdx = newIndexes[block.id] || 0;
-              newIndexes[block.id] = (currentIdx + 1) % block.images.length;
-            }
-          });
-        });
-        return newIndexes;
-      });
-    }, 4000);
-    return () => clearInterval(intervalTimer);
-  }, [pagesContent]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -115,7 +108,6 @@ export default function GencoStudioVisualEditor() {
     }
   };
 
-  // Doğrudan canlı ekrandan metin güncelleme
   const handleInlineChange = (blockId, field, value) => {
     const currentBlocks = [...(pagesContent[activePage] || [])];
     const blockIndex = currentBlocks.findIndex(b => b.id === blockId);
@@ -131,11 +123,11 @@ export default function GencoStudioVisualEditor() {
   const handleAddBlock = (type) => {
     let newBlock;
     if (type === "hero") {
-      newBlock = { id: Date.now(), type: "hero", badge: "YENİ ETİKET", title: "Buraya Yeni Başlık Yazın", subtitle: "Buraya açıklama metninizi yazabilirsiniz...", animation: "fade-in", images: [], interval: 3 };
+      newBlock = { id: Date.now(), type: "hero", badge: "YENİ ETİKET", title: "Yeni Başlık Yazın", subtitle: "Açıklama metnini buraya yazın..." };
     } else if (type === "textBlock") {
-      newBlock = { id: Date.now(), type: "textBlock", heading: "Yeni Bölüm Başlığı", content: "Buraya detaylı içerik metninizi yazabilirsiniz...", animation: "slide-up", images: [], interval: 3 };
+      newBlock = { id: Date.now(), type: "textBlock", heading: "Yeni Bölüm Başlığı", content: "Detaylı içerik metninizi buraya yazabilirsiniz..." };
     } else if (type === "slider") {
-      newBlock = { id: Date.now(), type: "slider", heading: "Yeni Galeri / Slider Başlığı", animation: "fade-in", images: [mediaLibrary[0]?.url || "/logo.png"], interval: 3 };
+      newBlock = { id: Date.now(), type: "slider", heading: "Galeri / Slider Başlığı", images: [mediaLibrary[0]?.url || "/logo.png"] };
     }
 
     const updated = [...(pagesContent[activePage] || []), newBlock];
@@ -143,7 +135,7 @@ export default function GencoStudioVisualEditor() {
   };
 
   const handleDeleteBlock = (id) => {
-    if (!confirm("Bu bloğu sayfadan silmek istediğinize emin misiniz?")) return;
+    if (!confirm("Bu bloğu silmek istediğinize emin misiniz?")) return;
     const updated = (pagesContent[activePage] || []).filter(b => b.id !== id);
     setPagesContent({ ...pagesContent, [activePage]: updated });
   };
@@ -205,7 +197,7 @@ export default function GencoStudioVisualEditor() {
   return (
     <div className="bg-[#f1f5f9] text-[#1e293b] min-h-screen flex flex-col font-sans select-none">
       
-      {/* WIX TARZI ÜST WIZARD MENÜSÜ */}
+      {/* ÜST WIZARD MENÜSÜ */}
       <header className="bg-[#0f172a] text-white border-b border-gray-800 py-3 px-6 flex justify-between items-center sticky top-0 z-50 shadow-md">
         <div className="flex items-center space-x-6">
           <div className="flex items-center space-x-2">
@@ -253,10 +245,9 @@ export default function GencoStudioVisualEditor() {
         </div>
       )}
 
-      {/* WIX TARZI SOL ARAÇ ÇUBUĞU & ORTA CANLI TUVAL (CANVAS) */}
+      {/* SOL MENÜ & ORTA TUVAL */}
       <div className="flex flex-1 overflow-hidden">
         
-        {/* SOL WIX MENÜSÜ: BİLEŞEN EKLEME */}
         <aside className="w-72 bg-white border-r border-gray-200 p-6 flex flex-col justify-between shadow-sm z-10 overflow-y-auto">
           <div className="space-y-6">
             <div>
@@ -282,7 +273,7 @@ export default function GencoStudioVisualEditor() {
             <div className="border-t border-gray-100 pt-6">
               <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">💡 Kullanım İpuçları</h3>
               <ul className="text-[11px] text-gray-500 space-y-2 leading-relaxed">
-                <li>• Sağdaki canlı sitede doğrudan metinlerin üzerine tıklayarak yazılarını değiştirebilirsiniz.</li>
+                <li>• Ortadaki tuvalde doğrudan metinlerin üzerine tıklayarak yazılarını değiştirebilirsiniz.</li>
                 <li>• Eklediğiniz blokları sağ üst köşelerindeki <strong>"Blok Sil"</strong> butonuyla kaldırabilirsiniz.</li>
                 <li>• İşiniz bitince üst menüden <strong>Yayınla & Kaydet</strong> butonuna basmanız yeterlidir.</li>
               </ul>
@@ -294,11 +285,9 @@ export default function GencoStudioVisualEditor() {
           </div>
         </aside>
 
-        {/* ORTA WIX TUVALİ: DOĞRUDAN CANLI SİTE ÜZERİNDE DÜZENLEME */}
         <main className="flex-1 overflow-y-auto bg-gray-100 p-8 flex justify-center">
           <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col">
             
-            {/* Canlı Site Üst Navbar Önizlemesi */}
             <nav className="bg-white border-b border-gray-200 py-4 px-8 flex justify-between items-center">
               <img src={logoUrl} alt="GENCO" className="h-8 w-auto object-contain" />
               <div className="hidden md:flex space-x-6 text-xs font-semibold text-gray-500">
@@ -310,16 +299,11 @@ export default function GencoStudioVisualEditor() {
               <span className="bg-[#f97316] text-white text-[10px] px-2 py-1 rounded font-bold">TR / Vizyon Mode</span>
             </nav>
 
-            {/* Sayfa Blokları Tuvali */}
             <div className="flex-1 divide-y divide-gray-100">
               {currentBlocks.map((block, index) => {
-                const images = block.images || [];
-                const currentImgIdx = sliderIndexes[block.id] || 0;
-
                 return (
                   <div key={block.id} className="relative group p-8 md:p-12 hover:bg-orange-50/20 transition">
                     
-                    {/* Blok Yönetim Araç Çubuğu (Wix Hover Kontrolü) */}
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition bg-white border border-gray-200 shadow-md rounded-lg px-3 py-1 flex items-center space-x-2 z-20">
                       <span className="text-[10px] font-mono font-bold text-gray-400">Blok #{index + 1} ({block.type})</span>
                       <button 
@@ -330,24 +314,7 @@ export default function GencoStudioVisualEditor() {
                       </button>
                     </div>
 
-                    {block.type === "slider" ? (
-                      <div className="text-center">
-                        <input 
-                          type="text" 
-                          value={block.heading || ""} 
-                          onChange={(e) => handleInlineChange(block.id, "heading", e.target.value)}
-                          placeholder="Galeri Başlığı..."
-                          className="text-xl md:text-2xl font-bold text-[#0f172a] mb-6 text-center w-full bg-transparent border-b border-dashed border-gray-300 focus:outline-none focus:border-[#f97316]" 
-                        />
-                        <div className="relative rounded-2xl overflow-hidden shadow-lg border bg-gray-100 h-[300px]">
-                          {images.length > 0 ? (
-                            <img src={images[currentImgIdx]} alt="Slider" className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="flex items-center justify-center h-full text-gray-400 text-xs">Görsel seçilmedi</div>
-                          )}
-                        </div>
-                      </div>
-                    ) : block.type === "hero" ? (
+                    {block.type === "hero" ? (
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                         <div className="space-y-4">
                           <input 
@@ -370,9 +337,21 @@ export default function GencoStudioVisualEditor() {
                           />
                         </div>
                         <div className="bg-[#0f172a] p-6 rounded-xl text-white shadow-lg">
-                          <span className="text-[#f97316] text-xs font-bold uppercase tracking-widest block mb-2">Operasyonel Güç</span>
-                          <h4 className="text-xl font-bold mb-2">Masada ve Sahada Bizzat Yönetim</h4>
-                          <p className="text-gray-300 text-xs">Jenerik pazar araştırmalarıyla vakit kaybetmiyoruz, doğrudan sonuç üretiyoruz.</p>
+                          <span className="text-[#f97316] text-xs font-bold uppercase tracking-widest block mb-2">Aktif Ticaret Yönetimi</span>
+                          <h4 className="text-xl font-bold mb-2">Masada ve Sahada Doğrudan Operasyon</h4>
+                          <p className="text-gray-300 text-xs leading-relaxed">Jenerik pazar araştırmalarıyla vakit kaybetmiyoruz. Tescilli ticaret istihbarat altyapılarımızı kullanarak doğrudan karar vericilere ulaşıyoruz.</p>
+                        </div>
+                      </div>
+                    ) : block.type === "slider" ? (
+                      <div className="text-center">
+                        <input 
+                          type="text" 
+                          value={block.heading || ""} 
+                          onChange={(e) => handleInlineChange(block.id, "heading", e.target.value)}
+                          className="text-xl font-bold text-[#0f172a] mb-4 text-center w-full bg-transparent border-b border-dashed border-gray-300 focus:outline-none" 
+                        />
+                        <div className="h-48 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 text-xs border">
+                          Slider Görsel Alanı
                         </div>
                       </div>
                     ) : (
@@ -381,13 +360,13 @@ export default function GencoStudioVisualEditor() {
                           type="text" 
                           value={block.heading || ""} 
                           onChange={(e) => handleInlineChange(block.id, "heading", e.target.value)}
-                          className="text-xl font-bold text-[#0f172a] bg-transparent border-b border-dashed border-gray-300 w-full focus:outline-none focus:border-[#f97316]" 
+                          className="text-xl md:text-2xl font-bold text-[#0f172a] bg-transparent border-b border-dashed border-gray-300 w-full focus:outline-none focus:border-[#f97316]" 
                         />
                         <textarea 
                           rows="3" 
                           value={block.content || ""} 
                           onChange={(e) => handleInlineChange(block.id, "content", e.target.value)}
-                          className="text-xs text-gray-600 bg-transparent border border-dashed border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-[#f97316]" 
+                          className="text-xs md:text-sm text-gray-600 bg-transparent border border-dashed border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-[#f97316]" 
                         />
                       </div>
                     )}
@@ -396,7 +375,6 @@ export default function GencoStudioVisualEditor() {
               })}
             </div>
 
-            {/* Canlı Site Alt Bilgi (Footer) */}
             <footer className="bg-white py-8 border-t border-gray-200 text-center text-xs text-gray-400">
               © 2026 GENCO Imports & Exports LTD. Tüm hakları saklıdır.
             </footer>
