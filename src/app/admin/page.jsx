@@ -93,7 +93,6 @@ export default function GencoStudioAdmin() {
     return () => clearInterval(intervalTimer);
   }, [pagesContent]);
 
-  // Firebase Authentication ile Giriş Yapma
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginError("");
@@ -101,7 +100,6 @@ export default function GencoStudioAdmin() {
       await signInWithEmailAndPassword(auth, emailInput.trim(), passwordInput);
       setIsAuthenticated(true);
     } catch (error) {
-      console.error("Giriş hatası:", error.code);
       setLoginError("E-posta veya şifre hatalı!");
     }
   };
@@ -200,7 +198,6 @@ export default function GencoStudioAdmin() {
     return <div className="min-h-screen bg-[#0f172a] text-white flex items-center justify-center font-mono">GENCO Studio Yükleniyor...</div>;
   }
 
-  // E-POSTA VE ŞİFRE İSTEYEN NET GİRİŞ EKRANI
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-[#0f172a] flex items-center justify-center font-sans p-6">
