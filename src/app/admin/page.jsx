@@ -1,16 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
-import { db } from "../../lib/firebase";
+import { db, auth } from "../../lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 export default function GencoStudioAdmin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [emailInput, setEmailInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
-  const [loginError, setLoginError] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const [loadingLogin, setLoadingLogin] = useState(true);
-
-  // Varsayılan boş dizi: Firebase'de tanımlı şifre yoksa kimse giremez!
-  const [allowedPasswords, setAllowedPasswords] = useState([]);
 
   const [activeTab, setActiveTab] = useState("pages");
   const [activePage, setActivePage] = useState("home");
@@ -65,10 +64,6 @@ export default function GencoStudioAdmin() {
           const data = docSnap.data();
           if (data.pagesContent) setPagesContent(data.pagesContent);
           if (data.mediaLibrary) setMediaLibrary(data.mediaLibrary);
-          // Sadece Firebase'de kayıtlı şifreler varsa onları yükle
-          if (data.allowedPasswords && Array.isArray(data.allowedPasswords)) {
-            setAllowedPasswords(data.allowedPasswords);
-          }
         }
       } catch (e) {
         console.log("Firebase verisi bekleniyor.");
@@ -98,14 +93,27 @@ export default function GencoStudioAdmin() {
     return () => clearInterval(intervalTimer);
   }, [pagesContent]);
 
-  const handleLogin = (e) => {
+  // Firebase Authentication ile Giriş Yapma
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Kesin kural: Sadece Firebase'deki listede varsa giriş yapabilir. Liste boşsa kimse giremez.
-    if (allowedPasswords.length > 0 && allowedPasswords.includes(passwordInput.trim())) {
+    setLoginError("");
+    try {
+      await signInWithEmailAndPassword(auth, emailInput.trim(), passwordInput);
       setIsAuthenticated(true);
-      setLoginError(false);
-    } else {
-      setLoginError(true);
+    } catch (error) {
+      console.error("Giriş hatası:", error.code);
+      setLoginError("E-posta veya şifre hatalı! Firebase yetkilendirmesi başarısız.");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setIsAuthenticated(false);
+      setEmailInput("");
+      setPasswordInput("");
+    } catch (error) {
+      console.error("Çıkış hatası:", error);
     }
   };
 
@@ -115,8 +123,7 @@ export default function GencoStudioAdmin() {
     try {
       await setDoc(doc(db, "settings", "genco_studio"), { 
         pagesContent, 
-        mediaLibrary, 
-        allowedPasswords 
+        mediaLibrary 
       }, { merge: true });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 4000);
@@ -193,6 +200,7 @@ export default function GencoStudioAdmin() {
     return <div className="min-h-screen bg-[#0f172a] text-white flex items-center justify-center font-mono">GENCO Studio Yükleniyor...</div>;
   }
 
+  // E-POSTA VE ŞİFRELİ GİRİŞ EKRANI
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-[#0f172a] flex items-center justify-center font-sans p-6">
@@ -200,17 +208,29 @@ export default function GencoStudioAdmin() {
           <div className="text-center mb-8">
             <span className="bg-[#f97316] text-white font-bold text-xs px-3 py-1 rounded-full">GÜVENLİ ERİŞİM</span>
             <h1 className="text-2xl font-bold text-[#0f172a] mt-3">GENCO Studio Giriş</h1>
-            <p className="text-xs text-gray-500 mt-1">Firebase Yetkili Yönetici Doğrulaması</p>
+            <p className="text-xs text-gray-500 mt-1">Firebase Authentication Doğrulaması</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Yönetici E-Posta</label>
+              <input 
+                type="email" 
+                value={emailInput} 
+                onChange={(e) => setEmailInput(e.target.value)} 
+                placeholder="ornek@gencotr.com" 
+                className="w-full border border-gray-300 p-3.5 rounded-xl text-sm focus:outline-none focus:border-[#f97316]"
+                required 
+              />
+            </div>
+
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Yönetici Şifresi</label>
               <input 
                 type="password" 
                 value={passwordInput} 
                 onChange={(e) => setPasswordInput(e.target.value)} 
-                placeholder="Firebase'de tanımlı şifrenizi girin..." 
+                placeholder="••••••••" 
                 className="w-full border border-gray-300 p-3.5 rounded-xl text-sm focus:outline-none focus:border-[#f97316]"
                 required 
               />
@@ -218,17 +238,17 @@ export default function GencoStudioAdmin() {
 
             {loginError && (
               <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs font-semibold text-center">
-                ❌ Erişim reddedildi: Firebase kayıtlarında bu şifre bulunamadı.
+                ❌ {loginError}
               </div>
             )}
 
             <button type="submit" className="w-full bg-[#f97316] hover:bg-orange-600 text-white p-3.5 font-bold rounded-xl transition shadow-md text-sm">
-              Güvenli Giriş Yap
+              Firebase ile Giriş Yap
             </button>
           </form>
 
           <div className="text-center mt-6 text-[10px] text-gray-400">
-            GENCO Imports & Exports LTD. • Strict Firebase Security © 2026
+            GENCO Imports & Exports LTD. • Firebase Auth Security © 2026
           </div>
         </div>
       </div>
@@ -353,8 +373,8 @@ export default function GencoStudioAdmin() {
           <span className="font-bold tracking-wider text-sm">Modüler Arayüz & Görsel Yöneticisi</span>
         </div>
         <div className="flex items-center space-x-4 text-xs font-semibold">
-          <button onClick={() => setIsAuthenticated(false)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded transition">
-            🔒 Çıkış Yap
+          <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded transition">
+            🔒 Güvenli Çıkış
           </button>
           <button 
             onClick={() => setIsPreviewMode(!isPreviewMode)}
@@ -395,7 +415,7 @@ export default function GencoStudioAdmin() {
       {success && (
         <div className="max-w-7xl mx-auto w-full px-8 mt-4">
           <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl text-xs font-semibold shadow-sm">
-            ✓ Değişiklikler ve admin şifre listesi başarıyla Firebase'e kaydedildi!
+            ✓ Değişiklikler ve medya havuzu başarıyla Firebase'e kaydedildi!
           </div>
         </div>
       )}
@@ -573,7 +593,7 @@ export default function GencoStudioAdmin() {
                                     <img src={m.url} alt={m.name} className="w-full h-full object-cover" onError={(e)=>{e.target.src="/logo.png"}} />
                                   </div>
                                   <span className="text-[10px] font-bold text-gray-700 truncate w-full">{m.name}</span>
-                                </div>
+                                }}
                               );
                             })}
                           </div>
@@ -645,7 +665,7 @@ export default function GencoStudioAdmin() {
                         </div>
                         <div>
                           <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">İçerik Metni</label>
-                          <textarea rows="3" value={block.content || ""} onChange={(e) => handleBlockChange(index, "content", e.target.value)} className="w-full border border-gray-300 p-2.5 rounded-xl text-xs focus:outline-none focus:border-[#f97316]" />
+                          <textarea rows="3" value={block.content || ""} onChange={(e) => handleBlockCodeChange ? null : handleBlockChange(index, "content", e.target.value)} className="w-full border border-gray-300 p-2.5 rounded-xl text-xs focus:outline-none focus:border-[#f97316]" />
                         </div>
                       </div>
                     )}
