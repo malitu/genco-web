@@ -1,3 +1,38 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* -------------------------------------------------------------------------- */
+/*  GENCO kurumsal tema                                                       */
+/*  Tailwind v4 @theme ile renkler CSS değişkeni + utility sınıfı üretir:      */
+/*  bg-genco-ink / text-genco-flame / border-genco-flame ...                   */
+/* -------------------------------------------------------------------------- */
+@theme {
+  --color-genco-ink: #0f172a;
+  --color-genco-flame: #f97316;
+  --color-genco-paper: #fafafa;
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", sans-serif;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Studio inline düzenleme (contentEditable) stilleri                         */
+/* -------------------------------------------------------------------------- */
+.genco-editable {
+  outline: 1px dashed transparent;
+  outline-offset: 3px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease, outline-color 0.15s ease;
+  cursor: text;
+}
+.genco-editable:hover {
+  outline-color: rgba(249, 115, 22, 0.45);
+  background-color: rgba(249, 115, 22, 0.05);
+}
+.genco-editable.is-active {
+  outline: 2px solid #f97316;
+  background-color: rgba(249, 115, 22, 0.08);
+}
+.genco-editable:empty::before {
+  content: attr(data-ph);
+  color: #9ca3af;
+  pointer-events: none;
+}
