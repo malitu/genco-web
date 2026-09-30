@@ -24,7 +24,7 @@ export default function GencoStudioVisualEditor() {
     { id: 5, name: "Market Entry", url: "/market-entry.jpg" }
   ]);
 
-  // Canlı Sitedeki Yapının Aynısı Olan Zengin Varsayılan Bloklar
+  // Canlı Sitenin Orijinal Tasarımına Tam Uyarlanmış Zengin Veri Yapısı
   const [pagesContent, setPagesContent] = useState({
     home: [
       { 
@@ -32,13 +32,16 @@ export default function GencoStudioVisualEditor() {
         type: "hero", 
         badge: "Uluslararası İş Geliştirme Ortağınız", 
         title: "Türkiye'deki Uluslararası Ticaret Ekibiniz", 
-        subtitle: "Sadece dış ticaret danışmanlığı sunmuyoruz. Fırsatları araştırıyor, doğru uluslararası partnerleri buluyor ve tüm ticari operasyonu sizin adınıza bizzat yönetiyoruz." 
+        subtitle: "Sadece dış ticaret danışmanlığı sunmuyoruz. Fırsatları araştırıyor, doğru uluslararası partnerleri buluyor ve tüm ticari operasyonu sizin adınıza bizzat yönetiyoruz.",
+        boxTitle: "Masada ve Sahada Doğrudan Operasyon",
+        boxDesc: "Jenerik pazar araştırmalarıyla vakit kaybetmiyoruz. Tescilli ticaret istihbarat altyapılarımızı kullanarak doğrudan karar vericilere ulaşıyor; demir çelikten medikal, denizcilik ve femtech projelerine kadar teknik standartları bizzat yönetiyoruz."
       },
       { 
         id: 102, 
-        type: "textBlock", 
+        type: "sectors", 
         heading: "Ağırlıklı Çalıştığımız Sektörler", 
-        content: "Derinlemesine ağ ve teknik bilgiye sahip olduğumuz ana alanların yanı sıra, esnek metodolojimizle her sektörde uluslararası ticaret operasyonu yönetebiliyoruz." 
+        content: "Derinlemesine ağ ve teknik bilgiye sahip olduğumuz ana alanların yanı sıra, esnek metodolojimizle her sektörde uluslararası ticaret operasyonu yönetebiliyoruz.",
+        footerNote: "* Uzmanlık alanlarımız haricinde, talebe göre her sektörde özel pazar araştırması ve operasyon yönetimi sağlanmaktadır."
       }
     ],
     services: [
@@ -48,8 +51,6 @@ export default function GencoStudioVisualEditor() {
       { id: 301, type: "hero", badge: "Sektörel Yetkinlik ve Uzmanlık", title: "Derinlemesine Hakim Olduğumuz Alanlar ve Esnek Çözüm Ağımız", subtitle: "Demir Çelik, Denizcilik, Tohumculuk, Medikal, Otomotiv ve Femtech alanlarında tescilli uzmanlık." }
     ]
   });
-
-  const [sliderIndexes, setSliderIndexes] = useState({});
 
   useEffect(() => {
     const fetchStudioData = async () => {
@@ -123,11 +124,9 @@ export default function GencoStudioVisualEditor() {
   const handleAddBlock = (type) => {
     let newBlock;
     if (type === "hero") {
-      newBlock = { id: Date.now(), type: "hero", badge: "YENİ ETİKET", title: "Yeni Başlık Yazın", subtitle: "Açıklama metnini buraya yazın..." };
+      newBlock = { id: Date.now(), type: "hero", badge: "YENİ ETİKET", title: "Yeni Başlık Yazın", subtitle: "Açıklama metni...", boxTitle: "Operasyon Başlığı", boxDesc: "Operasyon açıklaması..." };
     } else if (type === "textBlock") {
-      newBlock = { id: Date.now(), type: "textBlock", heading: "Yeni Bölüm Başlığı", content: "Detaylı içerik metninizi buraya yazabilirsiniz..." };
-    } else if (type === "slider") {
-      newBlock = { id: Date.now(), type: "slider", heading: "Galeri / Slider Başlığı", images: [mediaLibrary[0]?.url || "/logo.png"] };
+      newBlock = { id: Date.now(), type: "textBlock", heading: "Yeni Bölüm Başlığı", content: "İçerik metni..." };
     }
 
     const updated = [...(pagesContent[activePage] || []), newBlock];
@@ -263,10 +262,6 @@ export default function GencoStudioVisualEditor() {
                   <span>+ Metin / İçerik Bloğu</span>
                   <span>📄</span>
                 </button>
-                <button onClick={() => handleAddBlock("slider")} className="w-full text-left bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-600 p-3 rounded-xl font-bold text-xs transition flex items-center justify-between">
-                  <span>+ Görsel Slider / Galeri</span>
-                  <span>🖼️</span>
-                </button>
               </div>
             </div>
 
@@ -274,7 +269,6 @@ export default function GencoStudioVisualEditor() {
               <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">💡 Kullanım İpuçları</h3>
               <ul className="text-[11px] text-gray-500 space-y-2 leading-relaxed">
                 <li>• Ortadaki tuvalde doğrudan metinlerin üzerine tıklayarak yazılarını değiştirebilirsiniz.</li>
-                <li>• Eklediğiniz blokları sağ üst köşelerindeki <strong>"Blok Sil"</strong> butonuyla kaldırabilirsiniz.</li>
                 <li>• İşiniz bitince üst menüden <strong>Yayınla & Kaydet</strong> butonuna basmanız yeterlidir.</li>
               </ul>
             </div>
@@ -286,23 +280,30 @@ export default function GencoStudioVisualEditor() {
         </aside>
 
         <main className="flex-1 overflow-y-auto bg-gray-100 p-8 flex justify-center">
-          <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col">
+          <div className="bg-white w-full max-w-6xl rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col">
             
+            {/* Orijinal Navbar */}
             <nav className="bg-white border-b border-gray-200 py-4 px-8 flex justify-between items-center">
               <img src={logoUrl} alt="GENCO" className="h-8 w-auto object-contain" />
-              <div className="hidden md:flex space-x-6 text-xs font-semibold text-gray-500">
+              <div className="hidden md:flex space-x-6 text-xs font-semibold text-gray-600">
                 <span>Hizmetler</span>
                 <span>Sektörler</span>
                 <span>Vaka Analizleri</span>
+                <span>Trade Intelligence</span>
                 <span>Hakkımızda</span>
+                <span>İletişim</span>
               </div>
-              <span className="bg-[#f97316] text-white text-[10px] px-2 py-1 rounded font-bold">TR / Vizyon Mode</span>
+              <div className="flex items-center space-x-2 text-xs font-bold">
+                <span className="bg-[#f97316] text-white px-2 py-1 rounded">TR</span>
+                <span className="text-gray-300">|</span>
+                <span className="text-gray-400">EN</span>
+              </div>
             </nav>
 
             <div className="flex-1 divide-y divide-gray-100">
               {currentBlocks.map((block, index) => {
                 return (
-                  <div key={block.id} className="relative group p-8 md:p-12 hover:bg-orange-50/20 transition">
+                  <div key={block.id} className="relative group p-8 md:p-12 hover:bg-orange-50/10 transition">
                     
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition bg-white border border-gray-200 shadow-md rounded-lg px-3 py-1 flex items-center space-x-2 z-20">
                       <span className="text-[10px] font-mono font-bold text-gray-400">Blok #{index + 1} ({block.type})</span>
@@ -315,44 +316,86 @@ export default function GencoStudioVisualEditor() {
                     </div>
 
                     {block.type === "hero" ? (
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                        <div className="space-y-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div className="space-y-6">
                           <input 
                             type="text" 
                             value={block.badge || ""} 
                             onChange={(e) => handleInlineChange(block.id, "badge", e.target.value)}
-                            className="text-[#f97316] font-bold text-xs uppercase tracking-wider bg-transparent border-b border-dashed border-orange-200 w-full focus:outline-none" 
+                            className="text-[#f97316] font-bold text-sm uppercase tracking-wider bg-transparent border-b border-dashed border-orange-200 w-full focus:outline-none" 
                           />
                           <textarea 
                             rows="2" 
                             value={block.title || ""} 
                             onChange={(e) => handleInlineChange(block.id, "title", e.target.value)}
-                            className="text-2xl md:text-4xl font-bold text-[#0f172a] leading-tight bg-transparent border border-dashed border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-[#f97316]" 
+                            className="text-3xl md:text-5xl font-bold text-[#0f172a] leading-tight bg-transparent border border-dashed border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-[#f97316]" 
                           />
                           <textarea 
-                            rows="3" 
+                            rows="4" 
                             value={block.subtitle || ""} 
                             onChange={(e) => handleInlineChange(block.id, "subtitle", e.target.value)}
-                            className="text-sm text-gray-600 bg-transparent border border-dashed border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-[#f97316]" 
+                            className="text-base text-gray-600 bg-transparent border border-dashed border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-[#f97316]" 
                           />
+                          <div className="flex gap-4">
+                            <span className="bg-[#f97316] text-white px-6 py-3 font-bold rounded shadow text-xs">Proje Başlatın</span>
+                            <span className="border-2 border-[#0f172a] text-[#0f172a] px-6 py-3 font-bold rounded text-xs">Hizmetlerimizi İnceleyin</span>
+                          </div>
                         </div>
-                        <div className="bg-[#0f172a] p-6 rounded-xl text-white shadow-lg">
-                          <span className="text-[#f97316] text-xs font-bold uppercase tracking-widest block mb-2">Aktif Ticaret Yönetimi</span>
-                          <h4 className="text-xl font-bold mb-2">Masada ve Sahada Doğrudan Operasyon</h4>
-                          <p className="text-gray-300 text-xs leading-relaxed">Jenerik pazar araştırmalarıyla vakit kaybetmiyoruz. Tescilli ticaret istihbarat altyapılarımızı kullanarak doğrudan karar vericilere ulaşıyoruz.</p>
+
+                        <div className="bg-[#0f172a] p-8 rounded-2xl text-white shadow-xl space-y-4">
+                          <input 
+                            type="text" 
+                            value={block.boxTitle || ""} 
+                            onChange={(e) => handleInlineChange(block.id, "boxTitle", e.target.value)}
+                            className="text-xl font-bold text-white bg-transparent border-b border-dashed border-gray-700 w-full focus:outline-none" 
+                          />
+                          <textarea 
+                            rows="4" 
+                            value={block.boxDesc || ""} 
+                            onChange={(e) => handleInlineChange(block.id, "boxDesc", e.target.value)}
+                            className="text-xs text-gray-300 bg-transparent border border-dashed border-gray-700 rounded-lg p-2 w-full focus:outline-none" 
+                          />
+                          <div className="grid grid-cols-2 gap-2 text-xs text-gray-300 pt-2 border-t border-gray-800">
+                            <div>✓ Doğrudan C-Level Erişim</div>
+                            <div>✓ Teknik Şartname Uyumu</div>
+                            <div>✓ Geniş Sektörel Esneklik</div>
+                            <div>✓ Numune & Sevkiyat Takibi</div>
+                          </div>
                         </div>
                       </div>
-                    ) : block.type === "slider" ? (
-                      <div className="text-center">
+                    ) : block.type === "sectors" ? (
+                      <div className="space-y-12 py-10">
+                        <div className="text-center max-w-3xl mx-auto space-y-4">
+                          <span className="text-[#f97316] font-bold text-xs uppercase tracking-widest block">Sektörel Yetkinlik</span>
+                          <input 
+                            type="text" 
+                            value={block.heading || ""} 
+                            onChange={(e) => handleInlineChange(block.id, "heading", e.target.value)}
+                            className="text-3xl font-bold text-[#0f172a] text-center w-full bg-transparent border-b border-dashed border-gray-300 focus:outline-none" 
+                          />
+                          <textarea 
+                            rows="2" 
+                            value={block.content || ""} 
+                            onChange={(e) => handleInlineChange(block.id, "content", e.target.value)}
+                            className="text-sm text-gray-600 text-center w-full bg-transparent border border-dashed border-gray-300 rounded-lg p-2 focus:outline-none" 
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                          {["01\nDemir Çelik", "02\nDenizcilik", "03\nTohumculuk", "04\nMedikal", "05\nOtomotiv", "06\nFemtech"].map((sec, sIdx) => (
+                            <div key={sIdx} className="bg-white border border-gray-200 p-6 rounded-2xl text-center shadow-sm">
+                              <span className="text-orange-500 font-bold text-lg block mb-1">{sec.split("\n")[0]}</span>
+                              <span className="font-bold text-slate-800 text-sm">{sec.split("\n")[1]}</span>
+                            </div>
+                          ))}
+                        </div>
+
                         <input 
                           type="text" 
-                          value={block.heading || ""} 
-                          onChange={(e) => handleInlineChange(block.id, "heading", e.target.value)}
-                          className="text-xl font-bold text-[#0f172a] mb-4 text-center w-full bg-transparent border-b border-dashed border-gray-300 focus:outline-none" 
+                          value={block.footerNote || ""} 
+                          onChange={(e) => handleInlineChange(block.id, "footerNote", e.target.value)}
+                          className="text-xs text-gray-400 text-center w-full bg-transparent border-b border-dashed border-gray-200 focus:outline-none" 
                         />
-                        <div className="h-48 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 text-xs border">
-                          Slider Görsel Alanı
-                        </div>
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -360,13 +403,13 @@ export default function GencoStudioVisualEditor() {
                           type="text" 
                           value={block.heading || ""} 
                           onChange={(e) => handleInlineChange(block.id, "heading", e.target.value)}
-                          className="text-xl md:text-2xl font-bold text-[#0f172a] bg-transparent border-b border-dashed border-gray-300 w-full focus:outline-none focus:border-[#f97316]" 
+                          className="text-2xl font-bold text-[#0f172a] bg-transparent border-b border-dashed border-gray-300 w-full focus:outline-none" 
                         />
                         <textarea 
                           rows="3" 
                           value={block.content || ""} 
                           onChange={(e) => handleInlineChange(block.id, "content", e.target.value)}
-                          className="text-xs md:text-sm text-gray-600 bg-transparent border border-dashed border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-[#f97316]" 
+                          className="text-sm text-gray-600 bg-transparent border border-dashed border-gray-300 rounded-lg p-2 w-full focus:outline-none" 
                         />
                       </div>
                     )}
