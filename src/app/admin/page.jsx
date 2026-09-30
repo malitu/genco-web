@@ -7,7 +7,7 @@ export default function GencoStudioAdmin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [loginError, setLoginError] = useState(false);
-  const [adminPassword, setAdminPassword] = useState("genco2026"); // Varsayılan şifre
+  const [adminPassword, setAdminPassword] = useState("genco2026");
 
   const [activeTab, setActiveTab] = useState("pages");
   const [activePage, setActivePage] = useState("home");
@@ -198,7 +198,7 @@ export default function GencoStudioAdmin() {
                 type="password" 
                 value={passwordInput} 
                 onChange={(e) => setPasswordInput(e.target.value)} 
-                placeholder="Şifrenizi girin (Varsayılan: genco2026)" 
+                placeholder="Şifrenizi girin (Firebase'den doğrulanır)" 
                 className="w-full border border-gray-300 p-3.5 rounded-xl text-sm focus:outline-none focus:border-[#f97316]"
                 required 
               />
@@ -216,7 +216,7 @@ export default function GencoStudioAdmin() {
           </form>
 
           <div className="text-center mt-6 text-[10px] text-gray-400">
-            GENCO Imports & Exports LTD. • Güvenli Yönetim Modülü © 2026
+            GENCO Imports & Exports LTD. • Firebase Güvenli Modül © 2026
           </div>
         </div>
       </div>
@@ -593,7 +593,7 @@ export default function GencoStudioAdmin() {
                   <div key={block.id} className={`bg-white border rounded-2xl p-6 shadow-sm relative transition ${selectedBlockIndex === index ? "border-[#f97316] ring-2 ring-orange-100" : "border-gray-200"}`}>
                     <div className="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
                       <span className="text-[10px] font-mono bg-[#0f172a] text-white px-2 py-1 rounded uppercase cursor-pointer" onClick={() => setSelectedBlockIndex(index)}>
-                        #{index + 1} — {block.type.toUpperCase()} (Düzenle)
+                        #{index + 1} — {block.type.toUpperCase()} (Düzenlemek için seç)
                       </span>
                       <button onClick={() => handleDeleteBlock(block.id)} className="text-red-500 hover:text-red-700 text-xs font-bold bg-red-50 px-3 py-1 rounded border border-red-100 transition">
                         Sil ✕
@@ -632,7 +632,7 @@ export default function GencoStudioAdmin() {
                           <input type="text" value={block.heading || ""} onChange={(e) => handleBlockChange(index, "heading", e.target.value)} className="w-full border border-gray-300 p-2.5 rounded-xl text-xs font-bold focus:outline-none focus:border-[#f97316]" />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">İçerik Metni</label>
+                          <label className="block text-[10px] font-bold uppercase data-wider text-gray-400 mb-1">İçerik Metni</label>
                           <textarea rows="3" value={block.content || ""} onChange={(e) => handleBlockChange(index, "content", e.target.value)} className="w-full border border-gray-300 p-2.5 rounded-xl text-xs focus:outline-none focus:border-[#f97316]" />
                         </div>
                       </div>
