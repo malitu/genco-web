@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-// Mevcut sorunsuz çalışan Firebase bağlantımızı kullanıyoruz
 import { db, auth } from "../../lib/firebase";
 import {
   onAuthStateChanged,
@@ -22,31 +21,31 @@ import {
 } from 'firebase/firestore';
 
 /* ------------------------------------------------------------------ */
-/*  Yapılandırma                                                      */
+/*  Yapılandırma & Canlı Site Eşleşmesi                               */
 /* ------------------------------------------------------------------ */
 
-// Firebase yolunu canlı ana sayfamızla birebir eşitledik
+// Ana sayfamızın (`src/app/page.jsx`) okuduğu veritabanı yolu ile birebir eşleştirildi
 const CONTENT_DOC_PATH = ['settings', 'general'];
 const MEDIA_COLLECTION = 'siteMedia';
 const NEWS_COLLECTION = 'news';
 const MAX_IMAGE_SIDE = 1400;
-const MAX_IMAGE_CHARS = 900000; // Firestore belge sınırı 1 MB
+const MAX_IMAGE_CHARS = 900000;
 
-// Ana sayfadaki değişken isimleriyle (key) birebir aynı olacak şekilde ayarlandı
+// Canlı sitemizin kullandığı tam değişken isimleriyle (key) uyumlu hale getirildi
 const CONTENT_SECTIONS = [
   {
     id: 'hero',
     title: 'Manşet (Hero) Alanı',
-    description: 'Ana sayfanın en üstündeki başlık ve açıklama.',
+    description: 'Ana sayfanın en üstündeki başlık ve alt açıklama metinleri.',
     fields: [
-      { key: 'heroTitle', label: 'Hero Başlığı', type: 'text' },
-      { key: 'heroSub', label: 'Hero Alt Açıklaması', type: 'textarea' },
+      { key: 'heroTitle', label: 'Ana Başlık (Hero Title)', type: 'text' },
+      { key: 'heroSub', label: 'Alt Açıklama (Hero Subtitle)', type: 'textarea' },
     ],
   },
   {
     id: 'operations',
     title: 'Aktif Ticaret Yönetimi',
-    description: 'Ana sayfadaki operasyonel kutunun metinleri.',
+    description: 'Manşet yanında yer alan operasyonel kutunun metinleri.',
     fields: [
       { key: 'mgmtTitle', label: 'Kutu Başlığı', type: 'text' },
       { key: 'mgmtDesc', label: 'Kutu Açıklaması', type: 'textarea' },
@@ -68,13 +67,13 @@ const ALL_FIELD_KEYS = CONTENT_SECTIONS.flatMap((section) =>
 );
 
 const TABS = [
-  { id: 'content', label: 'Sayfa metinleri' },
-  { id: 'media', label: 'Medya kütüphanesi' },
-  { id: 'news', label: 'Haberler ve duyurular' },
+  { id: 'content', label: 'Sayfa Metinleri' },
+  { id: 'media', label: 'Medya Kütüphanesi' },
+  { id: 'news', label: 'Haberler & Duyurular' },
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Yardımcı fonksiyonlar                                            */
+/*  Yardımcı Fonksiyonlar                                            */
 /* ------------------------------------------------------------------ */
 
 function authErrorMessage(error) {
@@ -86,7 +85,7 @@ function authErrorMessage(error) {
     case 'auth/wrong-password':
     case 'auth/invalid-credential': return 'E-posta veya şifre hatalı.';
     case 'auth/too-many-requests': return 'Çok fazla deneme yapıldı. Lütfen biraz bekleyip tekrar deneyin.';
-    case 'auth/network-request-failed': return 'Ağ bağlantısı kurulamadı. İnternetinizi kontrol edin.';
+    case 'auth/network-request-failed': return 'Ağ bağlantısı kurulamadı.';
     default: return 'Giriş yapılamadı. Bilgilerinizi kontrol edip tekrar deneyin.';
   }
 }
@@ -147,36 +146,33 @@ async function compressImage(file) {
     quality -= 0.1;
     output = canvas.toDataURL('image/jpeg', quality);
   }
-  if (output.length > MAX_IMAGE_CHARS) {
-    throw new Error('Görsel çok büyük. Lütfen daha küçük bir dosya seçin.');
-  }
   return output;
 }
 
 /* ------------------------------------------------------------------ */
-/*  Küçük arayüz bileşenleri                                         */
+/*  Arayüz Bileşenleri                                               */
 /* ------------------------------------------------------------------ */
 
-const inputClass = 'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#f97316]/30';
-const primaryButtonClass = 'inline-flex items-center justify-center rounded-lg bg-[#f97316] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ea580c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f97316] disabled:opacity-60';
-const dangerButtonClass = 'inline-flex items-center justify-center rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400';
+const inputClass = 'w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#f97316]/30';
+const primaryButtonClass = 'inline-flex items-center justify-center rounded-xl bg-[#f97316] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#ea580c] focus:outline-none shadow-md disabled:opacity-60';
+const dangerButtonClass = 'inline-flex items-center justify-center rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50';
 
 function Toast({ toast }) {
   if (!toast) return null;
   const isError = toast.type === 'error';
   return (
-    <div role="status" aria-live="polite" className={`fixed bottom-6 right-6 z-50 max-w-sm rounded-lg px-4 py-3 text-sm font-medium shadow-lg ${isError ? 'bg-red-600 text-white' : 'bg-[#0f172a] text-white'}`}>
+    <div role="status" aria-live="polite" className={`fixed bottom-6 right-6 z-50 max-w-sm rounded-xl px-5 py-4 text-sm font-bold shadow-2xl ${isError ? 'bg-red-600 text-white' : 'bg-[#0f172a] text-white'}`}>
       {toast.message}
     </div>
   );
 }
 
-function FullScreenMessage({ title, text }) {
+function FullScreenMessage({ title }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
-      <div className="max-w-md rounded-xl bg-white p-8 text-center shadow-sm">
-        <h1 className="text-lg font-semibold text-[#0f172a]">{title}</h1>
-        {text ? <p className="mt-2 text-sm text-slate-600">{text}</p> : null}
+    <div className="flex min-h-screen items-center justify-center bg-[#0f172a] text-white">
+      <div className="text-center space-y-2">
+        <div className="w-8 h-8 border-4 border-[#f97316] border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <h1 className="text-sm font-mono text-slate-300">{title}</h1>
       </div>
     </div>
   );
@@ -192,25 +188,25 @@ function LoginScreen({ onLogin, loading, error }) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0f172a] px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl">
-        <div className="mb-6">
-          <div className="h-1 w-10 rounded bg-[#f97316]" />
-          <h1 className="mt-4 text-2xl font-bold text-[#0f172a]">GENCO Studio</h1>
-          <p className="mt-1 text-sm text-slate-600">Site içeriğini yönetmek için giriş yapın.</p>
+    <div className="flex min-h-screen items-center justify-center bg-[#0f172a] px-4 font-sans">
+      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl border border-slate-100">
+        <div className="mb-8 text-center">
+          <span className="bg-[#f97316] text-white font-bold text-xs px-3 py-1 rounded-full">STUDIO GİRİŞİ</span>
+          <h1 className="mt-3 text-2xl font-bold text-[#0f172a]">GENCO Studio</h1>
+          <p className="mt-1 text-xs text-slate-500">Yönetim paneline erişmek için giriş yapın.</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">E-posta</label>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} placeholder="ad@firma.com" />
+            <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-500">E-posta</label>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} placeholder="ad@gencotr.com" />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Şifre</label>
-            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} placeholder="Şifreniz" />
+            <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-500">Şifre</label>
+            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} placeholder="••••••••" />
           </div>
-          {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
-          <button type="submit" disabled={loading} className={`${primaryButtonClass} w-full`}>
-            {loading ? 'Giriş yapılıyor…' : 'Giriş yap'}
+          {error ? <p className="rounded-xl bg-red-50 p-3 text-xs font-bold text-red-700 text-center">{error}</p> : null}
+          <button type="submit" disabled={loading} className={`${primaryButtonClass} w-full mt-2`}>
+            {loading ? 'Giriş yapılıyor…' : 'Sisteme Giriş Yap'}
           </button>
         </form>
       </div>
@@ -219,7 +215,7 @@ function LoginScreen({ onLogin, loading, error }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Sekme: Sayfa metinleri                                           */
+/*  Sekme: Sayfa Metinleri                                           */
 /* ------------------------------------------------------------------ */
 
 function ContentTab({ notify }) {
@@ -240,7 +236,7 @@ function ContentTab({ notify }) {
         });
         setValues(next);
       } catch (error) {
-        if (active) notify('error', 'Metinler yüklenemedi. Yetki ayarlarınızı kontrol edin.');
+        if (active) notify('error', 'Metinler yüklenemedi.');
       } finally {
         if (active) setLoading(false);
       }
@@ -257,7 +253,7 @@ function ContentTab({ notify }) {
     setSaving(true);
     try {
       await setDoc(doc(db, CONTENT_DOC_PATH[0], CONTENT_DOC_PATH[1]), { ...values, updatedAt: serverTimestamp() }, { merge: true });
-      notify('success', 'Sayfa metinleri başarıyla kaydedildi.');
+      notify('success', 'Değişiklikler kaydedildi ve canlı siteye yansıtıldı!');
     } catch (error) {
       notify('error', 'Kaydedilemedi. Lütfen tekrar deneyin.');
     } finally {
@@ -265,34 +261,31 @@ function ContentTab({ notify }) {
     }
   };
 
-  if (loading) return <p className="py-10 text-center text-sm text-slate-500">Metinler yükleniyor…</p>;
+  if (loading) return <p className="py-20 text-center text-sm font-mono text-slate-500">İçerikler yükleniyor…</p>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-4xl mx-auto">
       {CONTENT_SECTIONS.map((section) => (
-        <section key={section.id} className="rounded-xl border border-slate-200 bg-white p-6">
-          <h2 className="text-base font-semibold text-[#0f172a]">{section.title}</h2>
-          <p className="mt-1 text-sm text-slate-500">{section.description}</p>
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            {section.fields.map((field) => {
-              const wide = field.type === 'textarea';
-              return (
-                <div key={field.key} className={wide ? 'md:col-span-2' : ''}>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">{field.label}</label>
-                  {field.type === 'textarea' ? (
-                    <textarea rows={3} value={values[field.key] || ''} onChange={(e) => handleChange(field.key, e.target.value)} className={inputClass} />
-                  ) : (
-                    <input type="text" value={values[field.key] || ''} onChange={(e) => handleChange(field.key, e.target.value)} className={inputClass} />
-                  )}
-                </div>
-              );
-            })}
+        <section key={section.id} className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+          <h2 className="text-lg font-bold text-[#0f172a]">{section.title}</h2>
+          <p className="mt-1 text-xs text-slate-500">{section.description}</p>
+          <div className="mt-6 space-y-4">
+            {section.fields.map((field) => (
+              <div key={field.key}>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">{field.label}</label>
+                {field.type === 'textarea' ? (
+                  <textarea rows={3} value={values[field.key] || ''} onChange={(e) => handleChange(field.key, e.target.value)} className={inputClass} />
+                ) : (
+                  <input type="text" value={values[field.key] || ''} onChange={(e) => handleChange(field.key, e.target.value)} className={inputClass} />
+                )}
+              </div>
+            ))}
           </div>
         </section>
       ))}
-      <div className="flex justify-end">
+      <div className="flex justify-end pb-12">
         <button type="button" onClick={handleSave} disabled={saving} className={primaryButtonClass}>
-          {saving ? 'Kaydediliyor…' : 'Değişiklikleri kaydet'}
+          {saving ? 'Yayınlanıyor…' : '🚀 Kaydet & Yayınla'}
         </button>
       </div>
     </div>
@@ -300,7 +293,7 @@ function ContentTab({ notify }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Sekme: Medya kütüphanesi                                         */
+/*  Sekme: Medya Kütüphanesi                                         */
 /* ------------------------------------------------------------------ */
 
 function MediaTab({ mediaItems, notify }) {
@@ -324,12 +317,12 @@ function MediaTab({ mediaItems, notify }) {
         });
         success += 1;
       } catch (error) {
-        notify('error', `${file.name}: yüklenemedi.`);
+        notify('error', `${file.name} yüklenemedi.`);
       }
     }
     setUploading(false);
     if (fileInputRef.current) fileInputRef.current.value = '';
-    if (success > 0) notify('success', `${success} görsel yüklendi.`);
+    if (success > 0) notify('success', `${success} görsel başarıyla yüklendi.`);
   };
 
   const handleDelete = async (item) => {
@@ -343,34 +336,34 @@ function MediaTab({ mediaItems, notify }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-5xl mx-auto">
       <div
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={(e) => { e.preventDefault(); setDragging(false); uploadFiles(e.dataTransfer.files); }}
-        className={`rounded-xl border-2 border-dashed p-8 text-center transition ${dragging ? 'border-[#f97316] bg-orange-50' : 'border-slate-300 bg-white'}`}
+        className={`rounded-2xl border-2 border-dashed p-10 text-center transition ${dragging ? 'border-[#f97316] bg-orange-50' : 'border-slate-300 bg-white'}`}
       >
-        <p className="text-sm font-medium text-[#0f172a]">Görselleri buraya sürükleyin</p>
-        <p className="mt-1 text-xs text-slate-500">Görseller otomatik küçültülür ve sıkıştırılır.</p>
+        <p className="text-sm font-bold text-[#0f172a]">Görselleri buraya sürükleyip bırakın</p>
+        <p className="mt-1 text-xs text-slate-500">Seçtiğiniz fotoğraflar otomatik olarak optimize edilir.</p>
         <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => uploadFiles(e.target.files)} />
         <button type="button" onClick={() => fileInputRef.current && fileInputRef.current.click()} disabled={uploading} className={`${primaryButtonClass} mt-4`}>
-          {uploading ? 'Yükleniyor…' : 'Bilgisayardan görsel seç'}
+          {uploading ? 'Yükleniyor…' : 'Bilgisayardan Görsel Seç'}
         </button>
       </div>
 
       {mediaItems.length === 0 ? (
-        <p className="rounded-xl border border-slate-200 bg-white py-10 text-center text-sm text-slate-500">Henüz görsel yok. Yukarıdan ilk görselinizi yükleyin.</p>
+        <p className="rounded-2xl border border-slate-200 bg-white py-12 text-center text-sm text-slate-500">Henüz medya görseli bulunmuyor.</p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {mediaItems.map((item) => (
-            <div key={item.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div key={item.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col justify-between">
               <div className="aspect-video bg-slate-100">
                 <img src={item.dataUrl} alt={item.name} className="h-full w-full object-cover" />
               </div>
-              <div className="p-3 flex justify-between items-center">
-                <div className="truncate w-3/4">
-                  <p className="truncate text-sm font-medium text-[#0f172a]">{item.name}</p>
-                  <p className="text-xs text-slate-500">{formatSize(item.size || 0)}</p>
+              <div className="p-4 flex justify-between items-center bg-slate-50 border-t">
+                <div className="truncate pr-2">
+                  <p className="truncate text-xs font-bold text-[#0f172a]">{item.name}</p>
+                  <p className="text-[10px] text-slate-500 font-mono">{formatSize(item.size || 0)}</p>
                 </div>
                 <button type="button" onClick={() => handleDelete(item)} className={dangerButtonClass}>Sil</button>
               </div>
@@ -383,7 +376,7 @@ function MediaTab({ mediaItems, notify }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Sekme: Haberler                                                  */
+/*  Sekme: Haberler & Duyurular                                      */
 /* ------------------------------------------------------------------ */
 
 function NewsTab({ newsItems, notify }) {
@@ -393,19 +386,17 @@ function NewsTab({ newsItems, notify }) {
 
   const handleAdd = async (event) => {
     event.preventDefault();
-    const cleanTitle = title.trim();
-    const cleanDescription = description.trim();
-    if (!cleanTitle || !cleanDescription) {
-      notify('error', 'Başlık ve açıklama alanlarını doldurun.');
+    if (!title.trim() || !description.trim()) {
+      notify('error', 'Lütfen başlık ve açıklama alanlarını doldurun.');
       return;
     }
     setSaving(true);
     try {
-      await addDoc(collection(db, NEWS_COLLECTION), { title: cleanTitle, description: cleanDescription, createdAt: serverTimestamp() });
+      await addDoc(collection(db, NEWS_COLLECTION), { title: title.trim(), description: description.trim(), createdAt: serverTimestamp() });
       setTitle(''); setDescription('');
-      notify('success', 'Haber yayınlandı.');
+      notify('success', 'Haber başarıyla yayınlandı.');
     } catch (error) {
-      notify('error', 'Haber eklenemedi.');
+      notify('error', 'Haber yayınlanamadı.');
     } finally {
       setSaving(false);
     }
@@ -422,37 +413,37 @@ function NewsTab({ newsItems, notify }) {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-5">
-      <form onSubmit={handleAdd} className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 lg:col-span-2 lg:self-start">
-        <h2 className="text-base font-semibold text-[#0f172a]">Yeni haber ekle</h2>
+    <div className="grid gap-8 lg:grid-cols-5 max-w-6xl mx-auto">
+      <form onSubmit={handleAdd} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-8 lg:col-span-2 lg:self-start shadow-sm">
+        <h2 className="text-base font-bold text-[#0f172a] border-b pb-3">Yeni Haber / Duyuru Ekle</h2>
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Başlık</label>
-          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} placeholder="Haber başlığı" />
+          <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">Başlık</label>
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} placeholder="Haber başlığı yazın..." />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Açıklama</label>
-          <textarea rows={5} value={description} onChange={(e) => setDescription(e.target.value)} className={inputClass} placeholder="Haberin içeriği" />
+          <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">Açıklama / İçerik</label>
+          <textarea rows={5} value={description} onChange={(e) => setDescription(e.target.value)} className={inputClass} placeholder="Haber detaylarını girin..." />
         </div>
         <button type="submit" disabled={saving} className={`${primaryButtonClass} w-full`}>
-          {saving ? 'Yayınlanıyor…' : 'Haberi yayınla'}
+          {saving ? 'Yayınlanıyor…' : 'Haberi Yayınla'}
         </button>
       </form>
 
-      <div className="space-y-3 lg:col-span-3">
-        <h2 className="text-base font-semibold text-[#0f172a]">Yayındaki haberler ({newsItems.length})</h2>
+      <div className="space-y-4 lg:col-span-3">
+        <h2 className="text-base font-bold text-[#0f172a]">Yayındaki Haberler ({newsItems.length})</h2>
         {newsItems.length === 0 ? (
-          <p className="rounded-xl border border-slate-200 bg-white py-10 text-center text-sm text-slate-500">Henüz haber yok. Soldaki formdan ekleyin.</p>
+          <p className="rounded-2xl border border-slate-200 bg-white py-12 text-center text-sm text-slate-500">Henüz yayınlanmış bir haber bulunmuyor.</p>
         ) : (
           newsItems.map((item) => (
-            <article key={item.id} className="rounded-xl border border-slate-200 bg-white p-5">
+            <article key={item.id} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-[#0f172a]">{item.title}</h3>
-                  <p className="mt-0.5 text-xs text-slate-500">{formatDate(item.createdAt)}</p>
+                  <h3 className="text-sm font-bold text-[#0f172a]">{item.title}</h3>
+                  <p className="mt-1 text-[11px] font-mono text-slate-400">{formatDate(item.createdAt)}</p>
                 </div>
                 <button type="button" onClick={() => handleDelete(item)} className={dangerButtonClass}>Sil</button>
               </div>
-              <p className="mt-3 whitespace-pre-line text-sm text-slate-600">{item.description}</p>
+              <p className="mt-4 whitespace-pre-line text-xs text-slate-600 leading-relaxed">{item.description}</p>
             </article>
           ))
         )}
@@ -462,14 +453,12 @@ function NewsTab({ newsItems, notify }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Ana bileşen                                                      */
+/*  Ana Bileşen                                                      */
 /* ------------------------------------------------------------------ */
 
 export default function AdminPage() {
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [loginError, setLoginError] = useState('');
   const [activeTab, setActiveTab] = useState('content');
   const [mediaItems, setMediaItems] = useState([]);
   const [newsItems, setNewsItems] = useState([]);
@@ -486,7 +475,7 @@ export default function AdminPage() {
   }, [toast]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setAuthReady(true);
     });
@@ -505,14 +494,10 @@ export default function AdminPage() {
   }, [user]);
 
   const handleLogin = async (email, password) => {
-    setLoginLoading(true);
-    setLoginError('');
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      setLoginError(authErrorMessage(error));
-    } finally {
-      setLoginLoading(false);
+      throw error;
     }
   };
 
@@ -528,33 +513,33 @@ export default function AdminPage() {
 
   const currentTab = useMemo(() => TABS.find((tab) => tab.id === activeTab) || TABS[0], [activeTab]);
 
-  if (!authReady) return <FullScreenMessage title="GENCO Studio yükleniyor…" />;
-  if (!user) return <LoginScreen onLogin={handleLogin} loading={loginLoading} error={loginError} />;
+  if (!authReady) return <FullScreenMessage title="GENCO Studio Yükleniyor…" />;
+  if (!user) return <LoginScreen onLogin={handleLogin} error={null} />;
 
   return (
-    <div className="min-h-screen bg-slate-100">
-      <header className="bg-[#0f172a] text-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+    <div className="min-h-screen bg-[#f8fafc] font-sans text-slate-900">
+      <header className="bg-[#0f172a] text-white sticky top-0 z-40 shadow-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <div className="flex items-center gap-3">
-            <span className="h-8 w-1.5 rounded bg-[#f97316]" aria-hidden="true" />
+            <span className="h-7 w-1.5 rounded-full bg-[#f97316]" aria-hidden="true" />
             <div>
-              <h1 className="text-lg font-bold leading-tight">GENCO Studio</h1>
-              <p className="text-xs text-slate-300">İçerik yönetim paneli</p>
+              <h1 className="text-base font-bold leading-tight">GENCO Studio</h1>
+              <p className="text-[11px] text-slate-400 font-mono">Modern İçerik Yönetimi</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="hidden text-sm text-slate-300 sm:inline">{user.email}</span>
-            <button type="button" onClick={handleLogout} className="rounded-lg border border-slate-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-slate-800">Çıkış yap</button>
+            <a href="/" target="_blank" className="text-xs font-semibold text-slate-300 hover:text-white transition">Canlı Siteye Git ↗</a>
+            <button type="button" onClick={handleLogout} className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-white transition hover:bg-slate-700">Çıkış Yap</button>
           </div>
         </div>
 
-        <nav className="mx-auto max-w-6xl px-4 sm:px-6">
-          <ul className="-mb-px flex gap-1 overflow-x-auto">
+        <nav className="mx-auto max-w-6xl px-6 border-t border-slate-800">
+          <ul className="flex gap-2 -mb-px">
             {TABS.map((tab) => {
               const selected = tab.id === currentTab.id;
               return (
                 <li key={tab.id}>
-                  <button onClick={() => setActiveTab(tab.id)} className={`whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition ${selected ? 'border-[#f97316] text-white' : 'border-transparent text-slate-400 hover:text-white'}`}>
+                  <button onClick={() => setActiveTab(tab.id)} className={`whitespace-nowrap border-b-2 px-5 py-3.5 text-xs font-bold transition ${selected ? 'border-[#f97316] text-[#f97316]' : 'border-transparent text-slate-400 hover:text-white'}`}>
                     {tab.label}
                   </button>
                 </li>
@@ -564,7 +549,7 @@ export default function AdminPage() {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-6xl px-6 py-10">
         {currentTab.id === 'content' && <ContentTab notify={notify} />}
         {currentTab.id === 'media' && <MediaTab mediaItems={mediaItems} notify={notify} />}
         {currentTab.id === 'news' && <NewsTab newsItems={newsItems} notify={notify} />}
