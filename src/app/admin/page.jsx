@@ -27,6 +27,7 @@ import GencoBlocks, {
   getBlockDef,
   normaliseBlock,
 } from "../../components/GencoBlocks";
+import HomePage from "../../components/HomePage";
 
 const STUDIO_DOC = ["settings", "genco_studio"];
 
@@ -220,13 +221,43 @@ export default function GencoStudioAdmin() {
 
   useEffect(() => () => clearTimeout(toastTimer.current), []);
 
-  /* --- Firebase Auth: oturum durumu ------------------------------------- */
+  /* --- Firebase Auth: her girişte şifre sorulsun ------------------------- */
   useEffect(() => {
+    let cancelled = false;
+
+    // Firebase varsayılan olarak oturumu tarayıcıda saklar; bu durumda
+    // kullanıcı sonraki açılışlarda şifre girmeden panele girerdi.
+    // "Her seferinde şifre sor" açık olduğu için önce mevcut oturumu
+    // kapatıyor, ardından giriş ekranını gösteriyoruz.
+    const requirePasswordEachTime = true;
+
+    (async () => {
+      try {
+        if (requirePasswordEachTime && auth.currentUser) {
+          await signOut(auth);
+        }
+      } catch (e) {
+        console.error("Oturum kapatılamadı:", e);
+      } finally {
+        if (!cancelled) setUser(null);
+      }
+    })();
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      if (cancelled) return;
+      if (requirePasswordEachTime) {
+        // Oturum bizim açılışta kapattığımızdan eski oturumları da yok say.
+        if (!currentUser) setUser(null);
+      } else {
+        setUser(currentUser);
+      }
       setReady(true);
     });
-    return () => unsubscribe();
+
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
   }, []);
 
   /* --- initial load ----------------------------------------------------- */
@@ -1075,49 +1106,65 @@ export default function GencoStudioAdmin() {
               className="mx-auto bg-white shadow-2xl rounded-xl overflow-hidden transition-all duration-300"
               style={{ width: vp.width, maxWidth: "100%" }}
             >
-              {/* site chrome preview */}
-              <nav className="bg-white border-b border-slate-200 py-3 px-5 flex justify-between items-center">
-                <img
-                  src={media[0]?.url || "/logo.png"}
-                  alt="GENCO"
-                  className="h-7 w-auto object-contain"
+              {/* Tuval, canlı sitedekiyle BİREBİR aynı bileşeni render eder.
+                  Bu yüzden burada gördüğünüz şey, Yayınla'dan sonra
+                  gencotr.com'da açılacak şeyin ta kendisidir. */}
+              {activePage === "home" ? (
+                <HomePage
+                  blocks={blocks}
+                  mode={preview ? "live" : "edit"}
+                  selectedId={selectedId}
+                  onSelect={setSelectedId}
+                  onChange={handleChangeField}
+                  onDelete={deleteBlock}
+                  onMove={moveBlock}
                 />
-                <div className="hidden sm:flex gap-5 text-[11px] font-semibold text-slate-500">
-                  <span>Hizmetler</span>
-                  <span>Sektörler</span>
-                  <span>Vaka Analizleri</span>
-                  <span>Trade Intelligence</span>
-                  <span>Hakkımızda</span>
-                  <span>İletişim</span>
+              ) : (
+                <div className="bg-[#fafafa] min-h-[600px]">
+                  <div className="bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center">
+                    <img
+                      src="/logo.png"
+                      alt="GENCO"
+                      className="h-8 w-auto object-contain"
+                    />
+                    <div className="hidden sm:flex gap-5 text-[11px] font-semibold text-gray-500">
+                      <span>Hizmetler</span>
+                      <span>Sektörler</span>
+                      <span>Vaka Analizleri</span>
+                      <span>Trade Intelligence</span>
+                      <span>Hakkımızda</span>
+                      <span>İletişim</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-[10px] font-bold">
+                      <span className="bg-[#f97316] text-white px-1.5 py-0.5 rounded">
+                        TR
+                      </span>
+                      <span className="text-gray-300">|</span>
+                      <span className="text-gray-400">EN</span>
+                    </div>
+                  </div>
+                  <GencoBlocks
+                    blocks={blocks}
+                    mode={preview ? "live" : "edit"}
+                    selectedId={selectedId}
+                    onSelect={setSelectedId}
+                    onChange={handleChangeField}
+                    onDelete={deleteBlock}
+                    onMove={moveBlock}
+                  />
+                  <div className="bg-white py-8 border-t border-gray-200 px-6 flex flex-col md:flex-row justify-between items-center gap-2 text-[10px] text-gray-400 text-center">
+                    <div>© 2026 GENCO Imports & Exports LTD.</div>
+                    <div>Meriç Mah. 5746/5 SK. Bornova/İzmir — info@gencotr.com</div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 text-[10px] font-bold">
-                  <span className="bg-genco-flame text-white px-1.5 py-0.5 rounded">
-                    TR
-                  </span>
-                  <span className="text-slate-300">|</span>
-                  <span className="text-slate-400">EN</span>
-                </div>
-              </nav>
-
-              <GencoBlocks
-                blocks={blocks}
-                mode={preview ? "live" : "edit"}
-                selectedId={selectedId}
-                onSelect={setSelectedId}
-                onChange={handleChangeField}
-                onDelete={deleteBlock}
-                onMove={moveBlock}
-              />
-
-              <footer className="bg-white py-8 border-t border-slate-200 px-5 flex flex-col md:flex-row justify-between items-center gap-2 text-[10px] text-slate-400 text-center">
-                <div>© 2026 GENCO Imports & Exports LTD.</div>
-                <div>Meriç Mah. 5746/5 SK. Bornova/İzmir — info@gencotr.com</div>
-              </footer>
+              )}
             </div>
 
             {!preview && (
               <p className="text-center text-[11px] text-slate-500 mt-4">
-                İpucu: Başlık ve metinlerin üzerine tıklayarak doğrudan yerinde
+                Tuval, canlı siteyle aynı bileşeni kullanır — burada gördüğünüz
+                her şey Yayınla'dan sonra birebir aynı görünür. Başlık ve
+                metinlerin üzerine tıklayarak doğrudan yerinde
                 düzenleyebilirsiniz. <kbd>Esc</kbd> ile düzenlemeden çıkılır.
               </p>
             )}
