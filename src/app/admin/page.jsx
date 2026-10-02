@@ -25,20 +25,25 @@ import {
 import GencoBlocks, {
   BLOCK_LIBRARY,
   DEFAULT_SITE_BLOCKS,
+  NAV_DEFAULTS,
   getBlockDef,
   normaliseBlock,
   L,
 } from "../../components/GencoBlocks";
 import HomePage from "../../components/HomePage";
 import SitePage from "../../components/SitePage";
-import { PAGE_TEMPLATES } from "../../components/PageTemplates";
+import {
+  PAGE_TEMPLATES,
+  slugify,
+  createPageBlocks,
+} from "../../components/PageTemplates";
 
 
 const STUDIO_DOC = ["settings", "genco_studio"];
 
 /* Canonical page keys. Kept identical to the previous studio so any content
    already saved in Firestore keeps loading. */
-const PAGES = [
+const STATIC_PAGES = [
   { id: "home", label: "Ana Sayfa", live: true },
   { id: "services", label: "Hizmetler" },
   { id: "industries", label: "Sektörler" },
@@ -48,7 +53,10 @@ const PAGES = [
   { id: "contact", label: "İletişim" },
 ];
 
-// Her sayfanın başlangıç şablonu. Ana sayfa GencoBlocks içinde, alt sayfalar
+// Anahtar → canlı adres parçası. Yeni sayfalarda anahtar zaten adrestir.
+const PAGE_PATHS = { home: "", caseStudies: "case-studies" };
+
+// Every sayfanın başlangıç şablonu. Ana sayfa GencoBlocks içinde, alt sayfalar
 // src/components/PageTemplates.js içinde tanımlıdır. Böylece canlı site ile
 // stüdyo aynı varsayılan içeriği kullanır ve stüdyoda hiçbir sayfa boş
 // görünmez.
@@ -61,6 +69,31 @@ const DEFAULT_PAGES = {
   about: PAGE_TEMPLATES.about,
   contact: PAGE_TEMPLATES.contact,
 };
+
+/**
+ * Bir sayfanın menü bloğuna yeni link ekler (yoksa menü bloğu oluşturur).
+ * Yeni sayfa oluşturulurken tüm sayfaların menüsüne aynı link eklenir; böylece
+ * menü site genelinde tutarlı kalır.
+ */
+function withNavLink(blocks, link) {
+  const list = Array.isArray(blocks) ? blocks : [];
+  const already = list.some(
+    (b) => b?.type === "nav" && (b.links || []).some((l) => l.href === link.href)
+  );
+  if (already) return list;
+
+  const navIndex = list.findIndex((b) => b?.type === "nav");
+  if (navIndex < 0) {
+    return [
+      { ...NAV_DEFAULTS, id: `${link.id}_nav_${Date.now().toString(36)}`, links: [...NAV_DEFAULTS.links, link] },
+      ...list,
+    ];
+  }
+
+  return list.map((b, i) =>
+    i === navIndex ? { ...b, links: [...(b.links || []), link] } : b
+  );
+}
 
 const DEFAULT_MEDIA = [{ id: "seed_logo", name: "GENCO Logo", url: "/logo.png" }];
 
@@ -258,6 +291,23 @@ export default function GencoStudioAdmin() {
 
   /* --- ui --------------------------------------------------------------- */
   const [activePage, setActivePage] = useState("home");
+
+  /* Yeni sayfalar (Firestore customPages) -------------------------------- */
+  const [customPages, setCustomPages] = useState([]);
+  const [showNewPage, setShowNewPage] = useState(false);
+  const [npSlug, setNpSlug] = useState("");
+  const [npTr, setNpTr] = useState("");
+  const [npEn, setNpEn] = useState("");
+  const [npError, setNpError] = useState("");
+
+  // Statik sayfalar + kullanıcının açtığı sayfalar
+  const PAGES = useMemo(
+    () => [
+      ...STATIC_PAGES,
+      ...customPages.map((p) => ({ id: p.slug, label: p.label?.tr || p.slug, custom: true })),
+    ],
+    [customPages]
+  );
   const [selectedId, setSelectedId] = useState(null);
   const [leftTab, setLeftTab] = useState("blocks");
   const [viewport, setViewport] = useState("desktop");
@@ -327,6 +377,12 @@ export default function GencoStudioAdmin() {
             // düzenlenebilir olur.
             const hasFullPage =
               (normalised.home || []).filter((b) => b.type !== "hero").length > 0;
+
+            // Stüdyoda açılmış yeni sayfaları geri yükle.
+            const savedCustom = Array.isArray(data.customPages)
+              ? data.customPages.filter((p) => p?.slug)
+              : [];
+            if (savedCustom.length) setCustomPages(savedCustom);
 
             if (hasFullPage) {
               setPublished(normalised);
@@ -664,6 +720,103 @@ export default function GencoStudioAdmin() {
     );
   };
 
+  /* --- new pages -------------------------------------------------------- */
+  /**
+   * Yeni sayfa açar ve menü linkini site genelindeki tüm sayfalara ekler.
+   * Değişiklikler "Kaydet & Yayınla" ile Firestore'a yazılır.
+   */
+  const createPage = () => {
+    const slug = slugify(npSlug);
+    if (!slug) {
+      setNpError(
+        "Geçerli bir adres gerekli. Örnek: blog, kalite-politikasi, ekip."
+      );
+      return;
+    }
+    if (PAGES.some((p) => p.id === slug)) {
+      setNpError(`"${slug}" adresinde bir sayfa zaten var.`);
+      return;
+    }
+    const tr = npTr.trim() || slug;
+    const en = npEn.trim() || tr;
+    const link = { id: `lnk_${slug}`, label: { tr, en }, href: `/${slug}` };
+
+    setDraft((prev) => {
+      const next = { ...prev };
+      // Yeni sayfanın menüsü, ana sayfadaki güncel menü linklerini temel alır
+      // (kullanıcının eklediği/sildiği linkler de aktarılır).
+      const homeNav = (prev.home || []).find((b) => b?.type === "nav");
+      const baseLinks = (homeNav?.links || NAV_DEFAULTS.links).filter(
+        (l) => l.href !== link.href
+      );
+
+      for (const key of Object.keys(next)) {
+        next[key] = withNavLink(next[key], link);
+      }
+      next[slug] = createPageBlocks(slug, tr, en, baseLinks);
+      return next;
+    });
+    setPublished((prev) => {
+      const next = { ...prev };
+      for (const key of Object.keys(next)) {
+        next[key] = withNavLink(next[key], link);
+      }
+      return next;
+    });
+
+    setCustomPages((prev) => [
+      ...prev,
+      { slug, label: { tr, en }, createdAt: Date.now() },
+    ]);
+    setActivePage(slug);
+    setSelectedId(null);
+    setShowNewPage(false);
+    setNpSlug("");
+    setNpTr("");
+    setNpEn("");
+    setNpError("");
+    flash(`"${tr}" sayfası oluşturuldu. Menüye eklendi — yayınlamayı unutmayın.`);
+  };
+
+  /** Yeni sayfayı ve tüm menülerdeki linkini kaldırır. */
+  const removePage = (slug) => {
+    const target = PAGES.find((p) => p.id === slug);
+    if (!target?.custom) return;
+    if (!window.confirm(`"${target.label}" sayfası silinsin mi?`)) return;
+
+    setDraft((prev) => {
+      const next = {};
+      for (const [key, list] of Object.entries(prev)) {
+        if (key === slug) continue;
+        next[key] = (list || []).map((b) =>
+          b?.type === "nav"
+            ? { ...b, links: (b.links || []).filter((l) => l.href !== `/${slug}`) }
+            : b
+        );
+      }
+      return next;
+    });
+    setPublished((prev) => {
+      const next = {};
+      for (const [key, list] of Object.entries(prev)) {
+        if (key === slug) continue;
+        next[key] = (list || []).map((b) =>
+          b?.type === "nav"
+            ? { ...b, links: (b.links || []).filter((l) => l.href !== `/${slug}`) }
+            : b
+        );
+      }
+      return next;
+    });
+
+    setCustomPages((prev) => prev.filter((p) => p.slug !== slug));
+    if (activePage === slug) {
+      setActivePage("home");
+      setSelectedId(null);
+    }
+    flash(`"${target.label}" sayfası silindi — yayınlayınca siteden kalkar.`);
+  };
+
   /* --- publish ---------------------------------------------------------- */
   const publish = async () => {
     setSaving(true);
@@ -680,6 +833,7 @@ export default function GencoStudioAdmin() {
         {
           pagesContent: payload,
           mediaLibrary: media,
+          customPages,
           publishedAt: serverTimestamp(),
         },
         { merge: true }
@@ -797,15 +951,9 @@ export default function GencoStudioAdmin() {
             </span>
             <span className="hidden sm:block text-sm font-semibold truncate">
               {activePageMeta?.label}
-              {activePageMeta?.live ? (
-                <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                  ● canlı sayfaya bağlı
-                </span>
-              ) : (
-                <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  içerik deposu
-                </span>
-              )}
+              <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                ● /{PAGE_PATHS[activePage] ?? activePage}
+              </span>
             </span>
             {dirty && (
               <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2 py-1 rounded">
@@ -1221,26 +1369,111 @@ export default function GencoStudioAdmin() {
               {leftTab === "pages" && (
                 <div className="space-y-1.5">
                   {PAGES.map((p) => (
+                    <div key={p.id} className="flex items-stretch gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActivePage(p.id);
+                          setSelectedId(null);
+                        }}
+                        className={cx(
+                          "flex-1 text-left px-3 py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-between border",
+                          activePage === p.id
+                            ? "bg-genco-ink text-white border-genco-ink"
+                            : "bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300"
+                        )}
+                      >
+                        <span className="truncate">{p.label}</span>
+                        <span className="text-[10px] opacity-60 font-mono shrink-0 ml-2">
+                          {(draft[p.id] || []).length} blok
+                        </span>
+                      </button>
+                      {p.custom && (
+                        <button
+                          type="button"
+                          onClick={() => removePage(p.id)}
+                          title="Sayfayı sil"
+                          className="px-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-400 hover:text-red-600 hover:border-red-200 transition text-[11px] font-bold"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* ---- Yeni sayfa ---- */}
+                  {!showNewPage ? (
                     <button
-                      key={p.id}
                       type="button"
                       onClick={() => {
-                        setActivePage(p.id);
-                        setSelectedId(null);
+                        setShowNewPage(true);
+                        setNpError("");
                       }}
-                      className={cx(
-                        "w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-between border",
-                        activePage === p.id
-                          ? "bg-genco-ink text-white border-genco-ink"
-                          : "bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300"
-                      )}
+                      className="w-full rounded-lg border-2 border-dashed border-slate-300 bg-white px-3 py-2.5 text-[11px] font-bold text-slate-500 hover:border-[#f97316] hover:text-[#f97316] transition"
                     >
-                      <span className="truncate">{p.label}</span>
-                      <span className="text-[10px] opacity-60 font-mono shrink-0 ml-2">
-                        {(draft[p.id] || []).length} blok
-                      </span>
+                      + Yeni Sayfa Ekle
                     </button>
-                  ))}
+                  ) : (
+                    <div className="rounded-lg border border-slate-200 bg-white p-3 space-y-2">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        Yeni sayfa
+                      </div>
+
+                      <input
+                        value={npSlug}
+                        onChange={(e) => {
+                          setNpSlug(e.target.value);
+                          setNpError("");
+                        }}
+                        placeholder="adres: blog"
+                        className="w-full rounded-lg border border-slate-200 px-2.5 py-2 text-[11px] font-mono focus:outline-none focus:border-[#f97316]"
+                      />
+                      <input
+                        value={npTr}
+                        onChange={(e) => setNpTr(e.target.value)}
+                        placeholder="Menü adı (TR) — Blog"
+                        className="w-full rounded-lg border border-slate-200 px-2.5 py-2 text-[11px] focus:outline-none focus:border-[#f97316]"
+                      />
+                      <input
+                        value={npEn}
+                        onChange={(e) => setNpEn(e.target.value)}
+                        placeholder="Menu label (EN) — Blog"
+                        className="w-full rounded-lg border border-slate-200 px-2.5 py-2 text-[11px] focus:outline-none focus:border-[#f97316]"
+                      />
+
+                      {npError && (
+                        <p className="text-[10px] font-semibold text-red-600">
+                          {npError}
+                        </p>
+                      )}
+
+                      <div className="flex gap-1.5">
+                        <button
+                          type="button"
+                          onClick={createPage}
+                          className="flex-1 rounded-lg bg-[#f97316] px-3 py-2 text-[11px] font-bold text-white hover:bg-orange-600 transition"
+                        >
+                          Oluştur
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowNewPage(false);
+                            setNpError("");
+                          }}
+                          className="rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-500 hover:bg-slate-50"
+                        >
+                          Vazgeç
+                        </button>
+                      </div>
+
+                      <p className="text-[10px] leading-snug text-slate-400">
+                        Sayfa boş bir iskeletle (menü + başlık + alt bilgi) açılır
+                        ve menü linki tüm sayfalara eklenir. İçeriği soldaki
+                        blok listesinden eklersiniz.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

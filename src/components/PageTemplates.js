@@ -694,4 +694,70 @@ export function getPageTemplate(key) {
   return PAGE_TEMPLATES[key] || [];
 }
 
+/* ========================================================================== *
+ *  Yeni sayfalar
+ * --------------------------------------------------------------------------
+ *  Stüdyoda "Yeni Sayfa Ekle" ile açılan sayfalar için başlangıç iskeleti:
+ *  menü + boş sayfa başlığı + alt bilgi. İçerik sonradan blok eklenerek
+ *  doldurulur.
+ * ========================================================================== */
+
+/** URL adresinde kullanılamayacak adlar (gerçek sayfalarla çakışmasın). */
+export const RESERVED_SLUGS = [
+  "home",
+  "admin",
+  "method",
+  "_next",
+  "api",
+  "favicon.ico",
+];
+
+/**
+ * Adres parçasını normalize eder: küçük harf, sadece harf/rakam/tire,
+ * boşluklar tireye çevrilir. Geçersizse null döner.
+ */
+export function slugify(input) {
+  const base = String(input || "")
+    .trim()
+    .toLowerCase()
+    .replace(/ı/g, "i")
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  if (!base || RESERVED_SLUGS.includes(base)) return null;
+  return base;
+}
+
+/** Adres parçası + iki dilli menü adından yeni sayfanın başlangıç blokları. */
+export function createPageBlocks(slug, labelTr, labelEn, baseLinks = NAV_DEFAULTS.links) {
+  const links = [
+    ...baseLinks,
+    {
+      id: `lnk_${slug}`,
+      label: bi(labelTr || "Yeni Sayfa", labelEn || "New Page"),
+      href: `/${slug}`,
+    },
+  ];
+
+  return [
+    { ...NAV_DEFAULTS, id: `page_${slug}_nav`, links },
+    {
+      ...PAGE_HEADER_DEFAULTS,
+      id: `page_${slug}_header`,
+      badge: bi("Yeni Bölüm", "New Section"),
+      heading: bi(labelTr || "Yeni Sayfa", labelEn || "New Page"),
+      sub: bi(
+        "Bu alana sayfanın kısa açıklamasını yazın.",
+        "Add a short description for this page."
+      ),
+    },
+    { ...FOOTER_DEFAULTS, id: `page_${slug}_footer` },
+  ];
+}
+
 export default PAGE_TEMPLATES;

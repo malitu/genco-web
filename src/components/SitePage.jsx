@@ -13,8 +13,17 @@
  */
 
 import { useEffect, useState } from "react";
-import GencoBlocks, { DEFAULT_SITE_BLOCKS, normaliseBlock } from "./GencoBlocks";
+import GencoBlocks, {
+  DEFAULT_SITE_BLOCKS,
+  NAV_DEFAULTS,
+  PAGE_HEADER_DEFAULTS,
+  FOOTER_DEFAULTS,
+  normaliseBlock,
+} from "./GencoBlocks";
 import { getPageTemplate } from "./PageTemplates";
+
+/** Hiç şablonu ve yayınlanmış içeriği olmayan yeni sayfalar için iskelet. */
+const EMPTY_PAGE = [NAV_DEFAULTS, PAGE_HEADER_DEFAULTS, FOOTER_DEFAULTS];
 
 export default function SitePage({
   pageKey,
@@ -52,7 +61,11 @@ export default function SitePage({
   // Yayınlanmış blok yoksa sayfanın kendi şablonu kullanılır; site hiçbir
   // zaman boş kalmaz.
   const fallback =
-    pageKey === "home" ? DEFAULT_SITE_BLOCKS : getPageTemplate(pageKey);
+    pageKey === "home"
+      ? DEFAULT_SITE_BLOCKS
+      : getPageTemplate(pageKey).length
+        ? getPageTemplate(pageKey)
+        : EMPTY_PAGE;
   const source = blocks && blocks.length ? blocks : fallback;
   const resolved = source.map((b, i) => normaliseBlock(b, i));
 
