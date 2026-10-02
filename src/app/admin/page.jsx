@@ -24,8 +24,10 @@ import {
 } from "firebase/auth";
 import GencoBlocks, {
   BLOCK_LIBRARY,
+  DEFAULT_SITE_BLOCKS,
   getBlockDef,
   normaliseBlock,
+  L,
 } from "../../components/GencoBlocks";
 import HomePage from "../../components/HomePage";
 
@@ -42,39 +44,10 @@ const PAGES = [
   { id: "about", label: "Hakkımızda" },
 ];
 
+// Ana sayfa şablonu GencoBlocks içinde tanımlıdır (DEFAULT_SITE_BLOCKS).
+// Böylece canlı site ile stüdyo aynı varsayılan içeriği kullanır.
 const DEFAULT_PAGES = {
-  home: [
-    {
-      id: "seed_hero",
-      type: "hero",
-      badge: "Uluslararası İş Geliştirme Ortağınız",
-      title: "Türkiye'deki Uluslararası Ticaret Ekibiniz",
-      subtitle:
-        "Sadece dış ticaret danışmanlığı sunmuyoruz. Fırsatları araştırıyor, doğru uluslararası partnerleri buluyor ve tüm ticari operasyonu sizin adınıza bizzat yönetiyoruz.",
-      image: "",
-      primaryLabel: "Proje Başlatın",
-      primaryHref: "/contact",
-      secondaryLabel: "Hizmetlerimizi İnceleyin",
-      secondaryHref: "/services",
-    },
-    {
-      id: "seed_ind",
-      type: "industries",
-      badge: "Sektörel Yetkinlik",
-      heading: "Ağırlıklı Çalıştığımız Sektörler",
-      description:
-        "Derinlemesine ağa ve teknik bilgiye sahip olduğumuz ana alanların yanı sıra, esnek metodolojimizle her sektörde uluslararası ticaret operasyonu yönetebiliyoruz.",
-      items: [
-        { title: "Demir Çelik" },
-        { title: "Denizcilik" },
-        { title: "Tohumculuk" },
-        { title: "Medikal" },
-        { title: "Otomotiv" },
-        { title: "Femtech" },
-      ],
-      note: "* Uzmanlık alanlarımız haricinde, talebe göre her sektörde özel pazar araştırması ve operasyon yönetimi sağlanmaktadır.",
-    },
-  ],
+  home: DEFAULT_SITE_BLOCKS,
   services: [],
   industries: [],
   caseStudies: [],
@@ -83,6 +56,44 @@ const DEFAULT_PAGES = {
 };
 
 const DEFAULT_MEDIA = [{ id: "seed_logo", name: "GENCO Logo", url: "/logo.png" }];
+
+/**
+ * Eski (tek dilli) kayıtları iki dilli şablona taşır.
+ *
+ * Veritabanındaki eski bloklarda metinler düz string olarak durur. Bu
+ * fonksiyon o düz metni, şablondaki TR/EN karşılıklarıyla birleştirir:
+ *   • Alan zaten {tr,en} ise olduğu gibi korunur.
+ *   • Alan düz metinse ve şablonda İngilizcesi varsa {tr: eski, en: şablon}
+ *     hâline getirilir — eski Türkçe içerik kaybolmaz.
+ *   • Şablonda karşılığı yoksa yalnızca TR'si doldurulur.
+ */
+function mergeLegacyBlock(template, saved) {
+  const out = { ...template };
+  if (!saved || typeof saved !== "object") return out;
+
+  for (const key of Object.keys(template)) {
+    if (key === "id" || key === "type") continue;
+
+    const tplVal = template[key];
+    const savedVal = saved[key];
+
+    // Dizi alanlar (link, item, kart) her zaman şablondan gelir; eski
+    // dizilerde dil çifti olmadığı için içerik kaybına yol açmasın.
+    if (Array.isArray(tplVal)) continue;
+    if (typeof tplVal === "object" && tplVal !== null) continue;
+    if (typeof tplVal !== "string") continue;
+
+    if (savedVal && typeof savedVal === "object") {
+      out[key] = savedVal; // zaten iki dilli
+    } else if (typeof savedVal === "string" && savedVal.trim()) {
+      out[key] = { tr: savedVal, en: tplVal };
+    }
+  }
+
+  // Kayıttaki kimlik korunur ki seçim/silme doğru çalışsın.
+  if (saved.id) out.id = saved.id;
+  return out;
+}
 
 /* -------------------------------------------------------------------------- */
 /*  Helpers                                                                   */
@@ -209,6 +220,9 @@ export default function GencoStudioAdmin() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
   const [uploading, setUploading] = useState(false);
+  // Tuvalde düzenlenen dil. Her metin iki dilli olduğu için TR ve EN'yi
+  // ayrı ayrı yazabilirsiniz.
+  const [editLang, setEditLang] = useState("TR");
 
   const fileInputRef = useRef(null);
   const toastTimer = useRef(null);
@@ -254,12 +268,44 @@ export default function GencoStudioAdmin() {
           if (data.pagesContent) {
             const normalised = {};
             Object.keys(data.pagesContent).forEach((key) => {
-              normalised[key] = (data.pagesContent[key] || []).map((b, i) =>
-                normaliseBlock(b, i)
-              );
+              const list = data.pagesContent[key];
+              normalised[key] = Array.isArray(list)
+                ? list.map((b, i) => normaliseBlock(b, i))
+                : [];
             });
-            setPublished(normalised);
-            setDraft(normalised);
+            // Ana sayfada kayıtlı blok YOKSA tam şablonu kullan. Kayıtlı
+            // bloklar eski (tek dilli) formatta olabileceği için, yalnızca
+            // "hero" varsa bu eksik kabul edilir ve şablon uygulanır; böylece
+            // menü, sektörler, ticari hedef, farkımız ve footer de panelde
+            // düzenlenebilir olur.
+            const hasFullPage =
+              (normalised.home || []).filter((b) => b.type !== "hero").length > 0;
+
+            if (hasFullPage) {
+              setPublished(normalised);
+              setDraft(normalised);
+            } else {
+              // Yayınlanmış sürüm varsa onu koru, yoksa şablonu kullan.
+              // Eski (tek dilli) kayıtlar iki dillileştirilir: düz metin
+              // alanlar, içinde TR ve EN bulunan bir alana dönüştürülür.
+              // Böylece eski içerik korunur ve İngilizce karşılıklar da gelir.
+              const fallback = { ...DEFAULT_PAGES };
+              // Ham (normalize edilmemiş) kayıt kullanılır; aksi halde eski
+              // düz metin şablona karışır ve iki dillileştirme gerçekleşmez.
+              const rawHome = Array.isArray(data.pagesContent.home)
+                ? data.pagesContent.home
+                : [];
+              if (rawHome.length) {
+                fallback.home = DEFAULT_SITE_BLOCKS.map((base) => {
+                  const saved = rawHome.find(
+                    (b) => (b?.type || "textBlock") === base.type
+                  );
+                  return saved ? mergeLegacyBlock(base, saved) : base;
+                });
+              }
+              setPublished(fallback);
+              setDraft(fallback);
+            }
           }
           if (Array.isArray(data.mediaLibrary) && data.mediaLibrary.length) {
             setMedia(data.mediaLibrary);
@@ -688,6 +734,34 @@ export default function GencoStudioAdmin() {
               ))}
             </div>
 
+            {/* Düzenlenen dil — her metin iki dilli olduğu için TR ve EN
+                ayrı ayrı yazılabilir. */}
+            <div className="flex items-center gap-1 rounded-lg bg-slate-800 p-0.5">
+              <span className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Dil
+              </span>
+              {["TR", "EN"].map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  title={
+                    code === "TR"
+                      ? "Türkçe metinleri düzenliyorsunuz"
+                      : "İngilizce metinleri düzenliyorsunuz"
+                  }
+                  onClick={() => setEditLang(code)}
+                  className={cx(
+                    "px-2.5 py-1.5 text-[10px] font-bold rounded-md transition",
+                    editLang === code
+                      ? "bg-genco-flame text-white"
+                      : "text-slate-300 hover:text-white"
+                  )}
+                >
+                  {code}
+                </button>
+              ))}
+            </div>
+
             <Button tone="slate" onClick={() => setPreview((p) => !p)}>
               {preview ? "✏️ Düzenlemeye Dön" : "🔍 Önizle"}
             </Button>
@@ -808,7 +882,11 @@ export default function GencoStudioAdmin() {
                         {blocks.map((b, i) => {
                           const def = getBlockDef(b.type);
                           const label =
-                            b.title || b.heading || b.badge || def?.label || b.type;
+                            L(b.title, editLang) ||
+                            L(b.heading, editLang) ||
+                            L(b.badge, editLang) ||
+                            def?.label ||
+                            b.type;
                           return (
                             <div
                               key={b.id}
@@ -1100,11 +1178,14 @@ export default function GencoStudioAdmin() {
                 <HomePage
                   blocks={blocks}
                   mode={preview ? "live" : "edit"}
+                  lang={editLang}
+                  onLangChange={setEditLang}
                   selectedId={selectedId}
                   onSelect={setSelectedId}
                   onChange={handleChangeField}
                   onDelete={deleteBlock}
                   onMove={moveBlock}
+                  onDuplicate={duplicateBlock}
                 />
               ) : (
                 <div className="bg-[#fafafa] min-h-[600px]">
