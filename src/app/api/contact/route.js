@@ -115,14 +115,23 @@ export async function POST(request) {
   }
 
   // --- CAPTCHA doğrulaması (sunucu tarafı) --------------------------------
+  /*
+   * Kritik tasarım kararı — "fail open":
+   *
+   * CAPTCHA token'ı GELİYORSA kesinlikle doğrulanır; geçersizse istek
+   * reddedilir. Token hiç GELMİYORSA (ziyaretçinin ağı Cloudflare'a
+   * ulaşamıyor, reklam engelleyici, eski tarayıcı vb.) istek reddedilmez;
+   * çünkü o durumda gerçek bir müşteri formu kullanamaz hale gelir.
+   *
+   * Token'ın gelmediği durumda koruma zayıflar ama tamamen kapanmaz: gizli bot
+   * tuzağı (honeypot) ve kaba kuvvet sınırı devrede kalır. Ayrıca olay
+   * sunucu günlüğüne düşer, böylece CAPTCHA'nın gerçekten çalışıp
+   * çalışmadığını izleyebiliriz.
+   */
   const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (secret) {
-    if (!data.captchaToken) {
-      return NextResponse.json(
-        { ok: false, error: "CAPTCHA doğrulanamadı. Lütfen tekrar deneyin." },
-        { status: 400 }
-      );
-    }
+  let captchaVerified = false;
+
+  if (secret && data.captchaToken) {
     try {
       const res = await fetch(TURNSTILE_VERIFY_URL, {
         method: "POST",
@@ -140,12 +149,14 @@ export async function POST(request) {
           { status: 400 }
         );
       }
+      captchaVerified = true;
     } catch {
-      return NextResponse.json(
-        { ok: false, error: "CAPTCHA servisine ulaşılamadı. Lütfen tekrar deneyin." },
-        { status: 502 }
-      );
+      // Doğrulama servisine ulaşılamadı: gerçek kullanıcıyı engellememek için
+      // isteği reddetmiyoruz, ama olayı kaydediyoruz.
+      console.warn("CAPTCHA doğrulama servisine ulaşılamadı; istek kabul edildi.");
     }
+  } else if (secret && !data.captchaToken) {
+    console.warn("CAPTCHA token'ı gelmedi; istek gizli bot tuzağıyla süzüldü.");
   }
 
   // --- E-posta gönderimi --------------------------------------------------
@@ -179,7 +190,9 @@ export async function POST(request) {
       },
       body: JSON.stringify({
         access_key: accessKey,
-        subject: "GENCO web sitesi — iletişim formu",
+        subject: captchaVerified
+          ? "GENCO web sitesi — iletişim formu"
+          : "GENCO web sitesi — iletişim formu (CAPTCHA doğrulanmadı)",
         from_name: `GENCO — ${data.name}`,
         // Gelen e-postada "Yanıtla" düğmesi ziyaretçiye gider.
         replyto: data.email,
