@@ -19,6 +19,8 @@ import {
   ARTICLE_LIST_DEFAULTS,
   CTA_BAND_DEFAULTS,
   CONTACT_DEFAULTS,
+  FAQ_DEFAULTS,
+  STATS_BAND_DEFAULTS,
 } from "./GencoBlocks";
 
 const bi = (tr, en) => ({ tr, en });
@@ -34,10 +36,15 @@ const header = (badge, heading, sub) => ({
   sub: bi(sub.tr, sub.en),
 });
 
-const feature = (id, eyebrow, heading, desc, items, boxTitle, boxSub) => ({
+/**
+ * @param {string} scope  Vaka analizlerinde gösterilecek kapsam satırı
+ *                        (sektör · pazar · yapılan iş). Boş bırakılırsa gizlenir.
+ */
+const feature = (id, eyebrow, heading, desc, items, boxTitle, boxSub, scope = null) => ({
   ...FEATURE_BLOCK_DEFAULTS,
   id,
   eyebrow: bi(eyebrow.tr, eyebrow.en),
+  scope: scope ? bi(scope.tr, scope.en) : bi("", ""),
   heading: bi(heading.tr, heading.en),
   desc: bi(desc.tr, desc.en),
   items: items.map((t, i) => ({ id: `${id}_i${i}`, title: bi(t.tr, t.en) })),
@@ -64,12 +71,12 @@ const services = [
   header(
     { tr: "Uçtan Uca Ticaret Yönetimi", en: "End-to-End Trade Management" },
     {
-      tr: "Aktif İş Geliştirme ve Operasyonel Çözümlerimiz",
-      en: "Active Business Development & Operational Solutions",
+      tr: "Dış ticaret operasyonunuzu baştan sona yönetiyoruz",
+      en: "We Manage Your Entire Foreign Trade Operation",
     },
     {
-      tr: "GENCO olarak şirketlere sadece dışarıdan tavsiye vermiyoruz; tescilli küresel ticaret istihbarat ağımız ve stratejik veritabanlarımızla doğrudan pazar açıyor, müzakereleri yürütüyor ve sevkiyat kapanışına kadar operasyonu bizzat yönetiyoruz.",
-      en: "As GENCO, we don't just offer external advice; using our proprietary global trade intelligence network and strategic databases, we directly open markets, conduct negotiations, and manage operations until shipment closure.",
+      tr: "Kendi bünyenizde bir ihracat departmanı kurmadan, dışarıdan çalışan profesyonel bir ekip gibi hizmet veriyoruz: doğru pazarı buluyor, doğru alıcıyı tespit ediyor, müzakereleri yürütüyor ve sevkiyat kapanışına kadar süreci biz yönetiyoruz.",
+      en: "We work as a professional team outside your organisation instead of asking you to build an in-house export department: we identify the right market and the right buyer, run the negotiations, and manage the process through to shipment closure.",
     }
   ),
   feature(
@@ -189,6 +196,121 @@ const services = [
     },
     { tr: "Projenizi Görüşelim", en: "Discuss Your Project" }
   ),
+
+  /* ---- Nasıl çalışıyoruz: süreç, koşul değil ---- */
+  {
+    ...ARTICLE_LIST_DEFAULTS,
+    id: "tpl_svc_process",
+    heading: bi("Nasıl çalışıyoruz?", "How We Work"),
+    articles: [
+      {
+        id: "tpl_svc_p1",
+        eyebrow: bi("ADIM 01", "STEP 01"),
+        category: bi("TANIMA", "DISCOVERY"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Talebi ve kapsamı netleştirme", "Clarifying your need and scope"),
+        body: bi(
+          "Ürününüzü, hedef pazarınızı ve beklentinizi konuşuyoruz. Hangi ülkeye, hangi standartla, ne sıklıkla göndermek istediğinizi anladıktan sonra çalışma kapsamını birlikte tanımlıyoruz.",
+          "We start by understanding your product, your target market and your expectations. Once we are clear on which country, which standards and how often you want to ship, we define the scope of work together."
+        ),
+      },
+      {
+        id: "tpl_svc_p2",
+        eyebrow: bi("ADIM 02", "STEP 02"),
+        category: bi("ANALİZ", "RESEARCH"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Pazar ve alıcı analizi", "Market and buyer analysis"),
+        body: bi(
+          "Tescilli ticaret istihbarat ağımız ve veritabanlarımız üzerinden hedef pazardaki gerçek alıcıları, ithalatçıları ve distribütörleri tespit ediyor; teknik şartname ve regülasyon gereksinimlerini çıkarıyoruz.",
+          "Through our proprietary trade intelligence network and databases, we identify real buyers, importers and distributors in your target market, and extract the technical specification and regulatory requirements involved."
+        ),
+      },
+      {
+        id: "tpl_svc_p3",
+        eyebrow: bi("ADIM 03", "STEP 03"),
+        category: bi("UYGULAMA", "EXECUTION"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Tedarik, denetim ve müzakere", "Sourcing, auditing and negotiation"),
+        body: bi(
+          "Üretici kapasitesini ve kalite süreçlerini yerinde denetliyor, teklifleri koordine ediyor, müzakereleri bizzat yürütüyor ve sevkiyat planını oluşturuyoruz.",
+          "We audit manufacturer capacity and quality processes on site, coordinate quotations, conduct the negotiations ourselves, and prepare the shipment plan."
+        ),
+      },
+      {
+        id: "tpl_svc_p4",
+        eyebrow: bi("ADIM 04", "STEP 04"),
+        category: bi("SÜREKLİLİK", "CONTINUITY"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Kapanış ve uzun vadeli ağ", "Closure and long-term network"),
+        body: bi(
+          "Sevkiyat kapanışına kadar süreci yönetiyor, ardından tek seferlik satış yerine kalıcı distribütörlük ve bayi ağları kurarak büyümeyi sürdürüyoruz.",
+          "We manage the process through to shipment closure, then go beyond one-off sales by building permanent distributor and dealer networks to sustain growth."
+        ),
+      },
+    ],
+  },
+
+  /* ---- Sıkça sorulan sorular ---- */
+  {
+    ...FAQ_DEFAULTS,
+    id: "tpl_svc_faq",
+    heading: bi("Sıkça sorulan sorular", "Frequently asked questions"),
+    sub: bi(
+      "En çok merak edilen dört soru. Yanıtını bulamazsanız iletişim formundan yazabilirsiniz.",
+      "The four questions we are asked most. If your answer is not here, contact us through the form."
+    ),
+    items: [
+      {
+        id: "tpl_svc_fq1",
+        question: bi(
+          "Kendi bünyemizde ihracat departmanı kurmamız gerekiyor mu?",
+          "Do we need to set up our own export department?"
+        ),
+        answer: bi(
+          "Hayır. Dış kaynaklı ihracat departmanı hizmetimiz tam olarak bunun için var: dışarıdan çalışan profesyonel bir ekip, sizin ekibinize ek yük bindirmeden aynı işi yapar. Sonradan kendi ekibinizi kurmak isterseniz bu süreçte de yol gösteriyoruz.",
+          "No. Our outsourced export department service exists precisely for this: a professional team working from outside performs the same job without adding load to your own staff. If you later prefer to build an internal team, we guide you through that transition as well."
+        ),
+      },
+      {
+        id: "tpl_svc_fq2",
+        question: bi(
+          "Çalışma şekliniz ve ücretlendirmeniz nedir?",
+          "How does your working and pricing model look?"
+        ),
+        answer: bi(
+          "Kapsam her proje için farklılaşır; sabit bir paket uygulamıyoruz. İlk görüşmede ürününüzü, pazarınızı ve hedefinizi dinleyip size özel bir kapsam ve öneri hazırlıyoruz.",
+          "Scope differs for every project; we do not run a fixed package. In the first meeting we listen to your product, market and goals, then prepare a scope and proposal tailored to you."
+        ),
+      },
+      {
+        id: "tpl_svc_fq3",
+        question: bi(
+          "Hangi sektörlerde çalışıyorsunuz?",
+          "Which sectors do you work in?"
+        ),
+        answer: bi(
+          "Demir çelik, medikal, denizcilik, tohumculuk, otomotiv ve femtech başta olmak üzere altı ana sektörde özel uzmanlığımız var. Bunların dışındaki sektörler için de aynı metodolojiyle çalışabiliyoruz.",
+          "We have dedicated expertise in six core sectors, led by steel, medical, marine, agriculture, automotive and femtech. We also apply the same methodology in sectors outside these core domains."
+        ),
+      },
+      {
+        id: "tpl_svc_fq4",
+        question: bi(
+          "Sonuç garantisi veriyor musunuz?",
+          "Do you guarantee results?"
+        ),
+        answer: bi(
+          "Pazara giriş sürecinin tamamını birlikte yürütüyor, teknik uygunluğu sahada doğruluyor ve sevkiyatın kapanmasına kadar operasyonu yönetiyoruz. Ticari sonucun garanti edilmesi yerine, sürecin şeffaf ve denetlenebilir ilerlemesini taahhüt ediyoruz.",
+          "We run the full market-entry process together, verify technical compliance on site, and manage operations until the shipment closes. Rather than promising a guaranteed commercial outcome, we commit to a transparent, auditable process."
+        ),
+      },
+    ],
+  },
+
   footer(),
 ];
 
@@ -204,12 +326,12 @@ const industries = [
       en: "Sectoral Competence & Expertise",
     },
     {
-      tr: "Derinlemesine Hakim Olduğumuz Alanlar ve Esnek Çözüm Ağımız",
-      en: "Our Core Domains and Flexible Solution Network",
+      tr: "Uzmanlaştığımız sektörler",
+      en: "Industries We Specialise In",
     },
     {
-      tr: "GENCO olarak kritik endüstriyel dikey sektörlerde tescilli teknik bilgiye ve küresel alıcı ağlarına sahibiz. Sınırlarımızı bu alanlarla sınırlamayarak, esnek metodolojimizle her sektörde uluslararası ticaret operasyonu yönetebiliyoruz.",
-      en: "As GENCO, we possess proprietary technical knowledge and global buyer networks across critical industrial vertical sectors. Beyond these core domains, our flexible methodology enables us to manage international trade operations in any sector.",
+        tr: "GENCO olarak kritik endüstriyel dikey sektörlerde tescilli teknik bilgiye ve yerleşik tedarikçi–alıcı ağlarına sahibiz. Bu altı alanda ithalat ve ihracat operasyonlarını bizzat kendimiz yürütüyoruz.",
+        en: "At GENCO we hold proprietary technical knowledge and established supplier–buyer networks across critical industrial sectors. In these six areas we run the import and export operations ourselves.",
     }
   ),
   {
@@ -222,37 +344,34 @@ const industries = [
       {
         id: "tpl_ind_1",
         eyebrow: bi("01 / SEKTÖR", "01 / SECTOR"),
-        title: bi("Demir Çelik & Metaller", "Steel & Metals"),
+        title: bi("Vasıflı Çelik Çubuk", "Engineering Steel Bars"),
         desc: bi(
-          "Karbon, alaşımlı, paslanmaz ve sementasyon çelik çubuk gruplarında uluslararası standartlara (EN, ASTM) tam hakimiyet. İnç/milimetre tolerans dönüşümleri ve Avrupa pazarında sürdürülebilir distribütör ağı yönetimi.",
-          "Full mastery of international standards (EN, ASTM) in carbon, alloy, stainless, and case-hardening steel bar groups. Inch/mm tolerance conversions and sustainable European distributor network management."
+          "Vasıflı (engineering) çelik çubuk gruplarında ithalat ve ihracat. EN ve ASTM normlarına uyum, hassas ölçü ve tolerans yönetimi ile tedarikçi ve alıcı koordinasyonu.",
+          "Import and export of engineering steel bar groups. EN and ASTM compliance, precision dimension and tolerance management, and supplier–buyer coordination."
         ),
-        note: bi(
-          "✓ Alaşım Standartları & Tolerans Uzmanlığı",
-          "✓ Alloy Standards & Tolerance Expertise"
-        ),
+        note: bi("✓ Vasıflı Çelik İthalat & İhracat", "✓ Engineering Steel Import & Export"),
         image: "",
       },
       {
         id: "tpl_ind_2",
         eyebrow: bi("02 / SEKTÖR", "02 / SECTOR"),
-        title: bi("Denizcilik (Marine)", "Marine"),
+        title: bi("Yatçılık & Marine Ekipman", "Yachting & Marine Equipment"),
         desc: bi(
-          "Tekne, deniz araçları ve kritik marine ekipmanlarının uluslararası ticareti, tescil regülasyonları, CE ve gürültü emisyon uyumluluk belgeleri ile küresel tedarik zinciri yönetimi.",
-          "International trade, registration regulations, CE and noise emission compliance documentation for boats, watercraft, and critical marine equipment."
+          "Yatçılık ve marine ekipmanı üzerinden ithalat-ihracat. Taşımacılık değil; aksesuar ve güvenlik ekipmanları, CE ve tescil uyumu, sevkiyat süreçleri.",
+          "Import and export in yachting and marine equipment. Not shipping — accessories and safety equipment, CE and registration compliance, shipment processes."
         ),
-        note: bi("✓ Tekne & Marine Ekipmanları Tedariği", "✓ Boat & Marine Equipment Sourcing"),
+        note: bi("✓ Aksesuar & Güvenlik Ekipmanları", "✓ Accessories & Safety Equipment"),
         image: "",
       },
       {
         id: "tpl_ind_3",
         eyebrow: bi("03 / SEKTÖR", "03 / SECTOR"),
-        title: bi("Tohumculuk & Tarım", "Agriculture & Seeds"),
+        title: bi("Tohumculuk", "Seed Trade"),
         desc: bi(
-          "Tohumculuk endüstrisinde küresel pazar araştırmaları, uluslararası dağıtım kanalları ve tarımsal ticaret operasyonlarında güvenilir iş geliştirme ve tedarikçi koordine etme kabiliyeti.",
-          "Global market research in the seed industry, international distribution channels, and reliable business development and supplier coordination in agricultural trade."
+          "Tohum ithalat ve ihracatı. Ürün izinlerinin alınması, analiz süreçlerinin yönetilmesi, bitki sağlığı ve sertifikasyon gereksinimlerinin takibi.",
+          "Seed import and export. Securing product permits, managing analysis processes, tracking phytosanitary and certification requirements."
         ),
-        note: bi("✓ Küresel Tarım Ağı & Dağıtım", "✓ Global Agriculture Network & Distribution"),
+        note: bi("✓ İzin & Analiz Süreçleri", "✓ Permit & Analysis Processes"),
         image: "",
       },
       {
@@ -260,13 +379,10 @@ const industries = [
         eyebrow: bi("04 / SEKTÖR", "04 / SECTOR"),
         title: bi("Medikal & Sağlık", "Medical & Healthcare"),
         desc: bi(
-          "Medikal malzemeler, cerrahi sarf malzemeleri, hastane donanımları ve uluslararası sağlık sektörü standartlarına tam uyumlu tedarikçi ağları ile global distribütör eşleştirme operasyonları.",
-          "Global distributor matching operations with medical supplies, surgical consumables, hospital equipment, and supplier networks fully compliant with international health sector standards."
+          "Medikal malzemeler ve cerrahi sarf ürünlerinde ithalat-ihracat. Ürün grubunun regülasyon gereksinimlerine göre tedarikçi, alıcı ve sevkiyat koordinasyonu.",
+          "Import and export of medical supplies and surgical consumables. Supplier, buyer and shipment coordination shaped by each product group's regulatory requirements."
         ),
-        note: bi(
-          "✓ Medikal Malzemeler & Cerrahi Sarflar",
-          "✓ Medical Supplies & Surgical Consumables"
-        ),
+        note: bi("✓ Cerrahi Sarf & Medikal Ürünleri", "✓ Surgical & Medical Products"),
         image: "",
       },
       {
@@ -274,10 +390,10 @@ const industries = [
         eyebrow: bi("05 / SEKTÖR", "05 / SECTOR"),
         title: bi("Otomotiv & Yan Sanayi", "Automotive & Supply Chain"),
         desc: bi(
-          "Otomotiv endüstrisi için talep edilen yüksek kalite standartlarına uygun parça tedariği, üretici kapasite denetimleri ve uluslararası OEM/Aftermarket alıcılarıyla stratejik buluşturma operasyonları.",
-          "Part procurement meeting high quality standards required for the automotive industry, manufacturer capacity audits, and strategic matchmaking with international OEM/Aftermarket buyers."
+          "Otomotiv yan sanayi ürünlerinde ithalat-ihracat. Ürün grubuna uygun tedarikçi ve alıcı tespiti, kalite koordinasyonu ve düzenli sevkiyat akışı.",
+          "Import and export of automotive supply chain products. Identifying the right suppliers and buyers, coordinating quality, and managing a regular shipment flow."
         ),
-        note: bi("✓ OEM & Yan Sanayi Buluşturma", "✓ OEM & Aftermarket Matchmaking"),
+        note: bi("✓ Yan Sanayi & Yedek Parça", "✓ Supply Chain & Spare Parts"),
         image: "",
       },
       {
@@ -288,13 +404,10 @@ const industries = [
           "Femtech & Health Tech"
         ),
         desc: bi(
-          "Kadın sağlığı ve yenilikçi sağlık teknolojileri alanında yükselen pazar trendleri, uluslararası ürün konumlandırma ve bu niş pazarda büyüme gösteren markalar için stratejik iş geliştirme desteği.",
-          "Strategic business development support for rising market trends in women's health and innovative health technologies, international product positioning, and growth in this niche market."
+          "Kadın sağlığı ve yenilikçi sağlık teknolojileri alanında ihracat. Hedef pazar analizi, alıcı tespiti, düzenleyici gereksinimlerin takibi ve sevkiyat koordinasyonu.",
+          "Exports in women's health and innovative health technologies. Market analysis, buyer identification, tracking regulatory requirements and shipment coordination."
         ),
-        note: bi(
-          "✓ Niş Pazar ve Büyüme Stratejisi",
-          "✓ Niche Market & Growth Strategy"
-        ),
+        note: bi("✓ Sağlık Ürünleri İhracatı", "✓ Health Product Exports"),
         image: "",
       },
     ],
@@ -304,8 +417,8 @@ const industries = [
     { tr: "Sınırsız Operasyonel Esneklik", en: "Unlimited Operational Flexibility" },
     { tr: "Uzmanlık Alanlarımız Dışında Mısınız?", en: "Outside Our Core Fields?" },
     {
-      tr: "GENCO'nun tescilli pazar araştırma ve aktif dış ticaret metodolojisi, sektörel ayrıcalık gözetmeksizin her türlü endüstriyel ürüne ve hammaddeye uyarlanabilir. Hangi sektörde olursanız olun, küresel ticari hedeflerinizi sahada gerçeğe dönüştürüyoruz.",
-      en: "GENCO's proprietary market research and active foreign trade methodology can adapt to any industrial product and raw material without sectoral limitations. No matter your industry, we turn your global trade goals into reality on the ground.",
+      tr: "GENCO'nun tescilli tedarik ve pazar araştırma metodolojisi, sektörel ayrıcalık gözetmeksizin her türlü ürüne ve hammaddeye uyarlanabilir. Hangi sektörde olursanız olun, ithalat ve ihracat hedefinizi sahada gerçeğe dönüştürüyoruz.",
+      en: "GENCO's proprietary sourcing and market research methodology can adapt to any product or raw material without sectoral limitations. No matter your industry, we turn your import and export goals into reality on the ground.",
     },
     { tr: "Sektörünüzü Görüşelim", en: "Discuss Your Industry" }
   ),
@@ -321,147 +434,171 @@ const caseStudies = [
   header(
     { tr: "Sahadaki İcraatlarımız", en: "Our Field Execution" },
     {
-      tr: "Ağırlıklı Çalıştığımız Sektörlerde Başarı Hikayeleri",
-      en: "Success Stories in Our Core Industries",
+      tr: "Uzmanlaştığımız sektörlerden operasyon örnekleri",
+      en: "Operations Across Our Core Industries",
     },
     {
-      tr: "Demir çelikten medikal malzemelere, denizcilikten femtech ve tarım teknolojilerine kadar uzmanlık alanlarımızda yürüttüğümüz stratejik operasyonları ve teknik çözümleri inceleyin.",
-      en: "Examine the strategic operations and technical solutions we execute across our core domains, ranging from steel to medical supplies, marine, femtech, and agricultural technologies.",
+      tr: "Uzmanlaştığımız altı sektörde ithalat ve ihracat operasyonları yürütüyoruz. Müşteri ve hacim bilgileri gizlilik nedeniyle paylaşılmamaktadır; her vakada sektör, pazar ve kapsam belirtilmiştir.",
+      en: "We run import and export operations across the six sectors we specialise in. Client and volume figures are withheld for confidentiality; each case states its sector, market and scope.",
     }
   ),
   feature(
     "tpl_cs_1",
     { tr: "SEKTÖREL VAKA / 01", en: "SECTORAL CASE / 01" },
     {
-      tr: "Demir Çelik Çubuk Grubunda Avrupa Pazarı ve Tolerans Yönetimi",
-      en: "European Market & Tolerance Management in Steel Bar Groups",
+      tr: "Vasıflı Çelik Çubuk İthalat ve İhracatı",
+      en: "Engineering Steel Bar Import and Export",
     },
     {
-      tr: "Karbon, alaşımlı, paslanmaz ve sementasyon çelik çubuk kategorisinde üreticilerimiz için Avrupa pazarında doğrudan karar vericilere ulaşıldı. EN ve ASTM alaşım standartlarına tam uyum sağlanarak inç/milimetre hassas boyut dönüşümleri ve tedarik zinciri süreçleri hatasız olarak yönetildi.",
-      en: "Direct decision-makers were reached in the European market for our manufacturers in carbon, alloy, stainless, and case-hardening steel bars. Full compliance with EN and ASTM standards was achieved, flawlessly managing inch/mm precise dimension conversions and supply chain processes.",
+      tr: "Vasıflı (engineering) çelik çubuk grubunda ithalat ve ihracat operasyonları yürütüyoruz. Ürün gamını EN ve ASTM normlarına uygun hale getirme, hassas ölçü ve tolerans yönetimi ile tedarikçi ve alıcı koordinasyonu tek merkezden yürütülür.",
+      en: "We run import and export operations in the engineering steel bar segment. Bringing the product range into EN and ASTM compliance, managing precision dimensions and tolerances, and coordinating suppliers and buyers are all handled from a single point.",
     },
     [
-      { tr: "Demir Çelik", en: "Steel & Metals" },
-      { tr: "Alaşım & Tolerans", en: "Alloy & Tolerance" },
-      { tr: "Distribütör Ağı", en: "Distributor Network" },
+      { tr: "Vasıflı Çelik", en: "Engineering Steel" },
+      { tr: "Çelik Çubuk", en: "Steel Bars" },
+      { tr: "İthalat & İhracat", en: "Import & Export" },
     ],
     {
-      tr: "Uluslararası Standart Uyumu",
-      en: "International Standard Compliance",
+      tr: "Standart ve Ölçü Uyumu",
+      en: "Standard and Dimensional Compliance",
     },
     {
-      tr: "EN ve ASTM normlarına tam hakimiyetle, metalurjik gereksinimlerin küresel alıcı beklentileriyle kusursuz buluşması sağlandı.",
-      en: "With complete mastery of EN and ASTM norms, metallurgical requirements perfectly matched global buyer expectations.",
+      tr: "EN ve ASTM normlarında tam hakimiyetle metalurjik ve ölçüsel gereksinimlerin pazar beklentileriyle kusursuz buluşması sağlanır.",
+      en: "With complete mastery of EN and ASTM norms, metallurgical and dimensional requirements are made to meet market expectations exactly.",
+    },
+    {
+      tr: "Çelik çubuk tedarikçileri ve alıcıları · uluslararası pazarlar · ithalat ve ihracat",
+      en: "Steel bar suppliers and buyers · international markets · import and export",
     }
   ),
   feature(
     "tpl_cs_2",
     { tr: "SEKTÖREL VAKA / 02", en: "SECTORAL CASE / 02" },
     {
-      tr: "Denizcilik Sektöründe Tekne ve Ekipman Tedariği",
-      en: "Boat and Equipment Sourcing in Marine Sector",
+      tr: "Yat ve Marine Ekipman İthalat-İhracatı",
+      en: "Yacht and Marine Equipment Import-Export",
     },
     {
-      tr: "Denizcilik alanında faaliyet gösteren üreticilerimiz için tekne ve marine ekipmanlarının uluslararası sevkiyat süreçleri ele alındı. Ürünlerin Avrupa Birliği normlarına uygunluk beyanları (Declaration of Conformity) ve teknik dokümantasyon süreçleri titizlikle yönetilerek pazar engelleri ortadan kaldırıldı.",
-      en: "International shipment processes for boats and marine equipment were managed for our manufacturers operating in the marine field. Market barriers were eliminated by meticulously governing EU Declaration of Conformity and technical documentation processes.",
+      tr: "Yatçılık ve marine ekipmanı alanında taşımacılık değil, aksesuar ve güvenlik ekipmanları üzerinden ithalat-ihracat yapıyoruz. CE ve tescil dokümantasyonu, ürün uygunluğu ve sevkiyat süreçleri birlikte yönetilir.",
+      en: "In the yachting and marine equipment field we trade in accessories and safety equipment, not shipping. CE and registration documentation, product compliance and shipment processes are managed together.",
     },
     [
-      { tr: "Denizcilik", en: "Marine" },
-      { tr: "Tekne & Donanım", en: "Boats & Equipment" },
-      { tr: "CE & Mevzuat Uyumu", en: "CE & Regulatory Compliance" },
+      { tr: "Yatçılık", en: "Yachting" },
+      { tr: "Aksesuar & Güvenlik", en: "Accessories & Safety" },
+      { tr: "İthalat & İhracat", en: "Import & Export" },
     ],
-    { tr: "Regülasyon ve Sertifikasyon", en: "Regulation & Certification" },
+    { tr: "CE ve Tescil Uyumu", en: "CE and Registration Compliance" },
     {
-      tr: "Tekne ve kritik marine ekipmanlarının uluslararası tescil gereksinimleri, CE ve gürültü emisyon belgeleri eksiksiz koordine edildi.",
-      en: "International registration requirements, CE, and noise emission documents for boats and critical marine equipment were fully coordinated.",
+      tr: "Yat ve kritik marine ekipmanlarının tescil gereksinimleri, CE ve gürültü emisyon belgeleri eksiksiz koordine edilir.",
+      en: "Registration requirements, CE and noise emission documents for yachts and critical marine equipment are fully coordinated.",
+    },
+    {
+      tr: "Yat ve marine ekipmanı · uluslararası pazarlar · aksesuar ve güvenlik ekipmanı",
+      en: "Yacht and marine equipment · international markets · accessories and safety equipment",
     }
   ),
   feature(
     "tpl_cs_3",
     { tr: "SEKTÖREL VAKA / 03", en: "SECTORAL CASE / 03" },
     {
-      tr: "Tohumculuk ve Tarımsal Ticarette Küresel Ağ",
-      en: "Global Network in Agriculture and Seed Trade",
+      tr: "Tohum İthalat-İhracatı ve İzin Süreçleri",
+      en: "Seed Import-Export and Permit Processes",
     },
     {
-      tr: "Tarım ve tohumculuk endüstrisindeki üreticilerimizin küresel pazarlara açılması amacıyla hedef odaklı alıcı araştırmaları gerçekleştirildi. Lojistik ve iklimlendirme gereksinimlerine duyarlı dağıtım kanalları analiz edilerek uluslararası ticaret ortaklıkları tesis edildi.",
-      en: "Targeted buyer research was carried out to expand our manufacturers in the agricultural and seed industries into global markets. International trade partnerships were established by analyzing distribution channels sensitive to logistics and climate control.",
+      tr: "Tohum ithalat ve ihracatında ürün izinlerinin alınmasını, analiz süreçlerinin yönetilmesini ve lojistiği birlikte yürütüyoruz. Hedef ülkenin bitki sağlığı ve sertifikasyon gereksinimlerini takip ediyoruz.",
+      en: "For seed import and export we handle product permits, analysis processes and logistics together. We track the phytosanitary and certification requirements of each destination country.",
     },
     [
-      { tr: "Tohumculuk", en: "Agriculture" },
-      { tr: "Küresel Dağıtım", en: "Global Distribution" },
-      { tr: "Stratejik Ortaklıklar", en: "Strategic Partnerships" },
+      { tr: "Tohumculuk", en: "Seed Trade" },
+      { tr: "İzin & Analiz", en: "Permits & Analysis" },
+      { tr: "İthalat & İhracat", en: "Import & Export" },
     ],
-    { tr: "Tarımsal Lojistik", en: "Agricultural Logistics" },
+    { tr: "İzin ve Analiz Süreçleri", en: "Permit and Analysis Processes" },
     {
-      tr: "Tohumculukta hassas taşıma ve depolama standartlarına uygun uluslararası alıcı eşleştirmeleri başarıyla tamamlandı.",
-      en: "International buyer matchings meeting sensitive transport and storage standards in seeds were successfully completed.",
+      tr: "Tohumculukta hassas taşıma ve depolama standartlarına uygun uluslararası alıcı eşleştirmeleri tamamlanır.",
+      en: "International buyer matchings meeting the sensitive transport and storage standards of seed products are completed.",
+    },
+    {
+      tr: "Tohum tedarikçileri ve alıcıları · uluslararası pazarlar · izin, analiz ve ithalat-ihracat",
+      en: "Seed suppliers and buyers · international markets · permits, analysis and trade",
     }
   ),
   feature(
     "tpl_cs_4",
     { tr: "SEKTÖREL VAKA / 04", en: "SECTORAL CASE / 04" },
     {
-      tr: "Medikal Malzemeler ve Cerrahi Sarf Tedariği",
-      en: "Medical Supplies & Surgical Consumables Sourcing",
+      tr: "Cerrahi Sarf Ürünleri İthalat-İhracatı",
+      en: "Surgical Consumables Import-Export",
     },
     {
-      tr: "Uluslararası sağlık sektörü alıcıları için medikal malzemeler, hastane donanımları ve cerrahi sarf ürünlerinde tedarik zinciri operasyonları yürütüldü. Yerel üretim tesislerinin kapasite ve kalite denetimleri yapılarak, uluslararası standartlara tam uyumlu sevkiyatlar güvence altına alındı.",
-      en: "Supply chain operations were conducted for international healthcare buyers regarding medical supplies, hospital equipment, and surgical consumables. Capacity and quality audits of local manufacturing facilities ensured shipments fully compliant with international standards.",
+      tr: "Medikal malzemeler ve cerrahi sarf ürünlerinde ithalat ve ihracat operasyonları yürütüyoruz. Ürün grubunun pazar ve regülasyon gereksinimlerine göre tedarikçi ve alıcı koordinasyonu ile sevkiyat süreçleri yönetilir.",
+      en: "We run import and export operations for medical supplies and surgical consumables. Supplier and buyer coordination and shipment processes are managed according to the market and regulatory requirements of each product group.",
     },
     [
       { tr: "Medikal & Sağlık", en: "Medical & Health" },
       { tr: "Cerrahi Sarf Ürünleri", en: "Surgical Consumables" },
-      { tr: "Yerinde Denetim", en: "On-Site Auditing" },
+      { tr: "İthalat & İhracat", en: "Import & Export" },
     ],
-    { tr: "Kritik Kalite", en: "Critical Quality" },
+    { tr: "Regülasyon Uyumlu Tedarik", en: "Regulation-Compliant Supply" },
     {
-      tr: "Medikal malzemeler ve cerrahi sarf ürünlerinde üretim denetiminden nihai sevkiyata kadar tüm kalite güvence adımları yönetildi.",
-      en: "All quality assurance steps from production audit to final shipment were managed for medical supplies and surgical consumables.",
+      tr: "Üretim ve sevkiyat arasındaki tüm kalite güvence adımları tek merkezden yönetilir.",
+      en: "Every quality assurance step between production and shipment is managed from a single point.",
+    },
+    {
+      tr: "Cerrahi sarf ve medikal ürün grupları · uluslararası pazarlar · ithalat-ihracat",
+      en: "Surgical and medical product groups · international markets · import and export",
     }
   ),
   feature(
     "tpl_cs_5",
     { tr: "SEKTÖREL VAKA / 05", en: "SECTORAL CASE / 05" },
     {
-      tr: "Otomotiv Yan Sanayi İçin OEM Eşleştirmeleri",
-      en: "OEM Matchmaking for Automotive Sub-Industry",
+      tr: "Otomotiv Yan Sanayi İthalat-İhracatı",
+      en: "Automotive Supply Chain Import-Export",
     },
     {
-      tr: "Otomotiv yan sanayi üreticilerimizin küresel OEM ve aftermarket tedarik zincirlerine entegre olması için veri odaklı alıcı analizleri gerçekleştirildi. Yüksek kalite beklentilerine sahip uluslararası markalarla doğrudan köprü kurularak ticari müzakereler yönetildi.",
-      en: "Data-driven buyer analyses were executed to integrate our automotive sub-industry manufacturers into global OEM and aftermarket supply chains. Commercial negotiations were directed by building direct bridges with high-expectation international brands.",
+      tr: "Otomotiv yan sanayi ürünlerinde ithalat ve ihracat operasyonları yürütüyoruz. Ürün grubuna uygun tedarikçi ve alıcı tespiti, kalite koordinasyonu ve düzenli sevkiyat akışının yönetilmesi bize aittir.",
+      en: "We run import and export operations for automotive supply chain products. Identifying the right suppliers and buyers, coordinating quality, and managing a regular shipment flow are all ours to handle.",
     },
     [
       { tr: "Otomotiv", en: "Automotive" },
-      { tr: "Yan Sanayi & OEM", en: "Sub-Industry & OEM" },
-      { tr: "Global Tedarik Ağı", en: "Global Supply Network" },
+      { tr: "Yan Sanayi", en: "Supply Chain" },
+      { tr: "İthalat & İhracat", en: "Import & Export" },
     ],
-    { tr: "Otomotiv Standartları", en: "Automotive Standards" },
+    { tr: "Yedek Parça ve Yan Sanayi", en: "Spare Parts and Supply Chain" },
     {
-      tr: "Otomotiv sektörünün katı kalite ve teslimat zamanlaması kriterlerine uygun operasyonel altyapı kuruldu.",
-      en: "Operational infrastructure compliant with the strict quality and delivery timing criteria of the automotive sector was established.",
+      tr: "Otomotiv sektörünün katı kalite ve teslimat zamanlaması kriterlerine uygun operasyon akışı kurulur.",
+      en: "An operational flow meeting the automotive sector's strict quality and delivery-scheduling criteria is established.",
+    },
+    {
+      tr: "Otomotiv yan sanayi tedarikçileri ve alıcıları · uluslararası pazarlar · ithalat-ihracat",
+      en: "Automotive supply chain suppliers and buyers · international markets · import and export",
     }
   ),
   feature(
     "tpl_cs_6",
     { tr: "SEKTÖREL VAKA / 06", en: "SECTORAL CASE / 06" },
     {
-      tr: "Femtech ve Sağlık Teknolojilerinde Büyüme",
-      en: "Growth in Femtech and Health Technologies",
+      tr: "Femtech ve Sağlık Ürünleri İhracatı",
+      en: "Femtech and Health Product Exports",
     },
     {
-      tr: "Femtech ve yenilikçi sağlık teknolojileri sektöründe faaliyet gösteren markaların uluslararası pazarlara giriş süreçleri koordine edildi. Doğru hedef kitle analizi ve niş distribütör ağları üzerinden markaların küresel ölçekte büyümesi desteklendi.",
-      en: "Market entry processes for brands operating in femtech and innovative health technologies were coordinated. Global scaling of brands was supported through precise target audience analysis and niche distributor networks.",
+      tr: "Kadın sağlığı ve yenilikçi sağlık teknolojileri alanındaki markaların ihracat süreçlerini yürütüyoruz. Hedef pazar analizi, alıcı tespiti, düzenleyici gereksinimlerin takibi ve sevkiyat koordinasyonu ile ihracatı birlikte kuruyoruz.",
+      en: "We run export operations for brands in women's health and innovative health technologies. Market analysis, buyer identification, tracking regulatory requirements and shipment coordination — we build the export operation together.",
     },
     [
       { tr: "Femtech", en: "Femtech" },
       { tr: "Sağlık Teknolojileri", en: "Health Technologies" },
-      { tr: "Uluslararası Büyüme", en: "International Growth" },
+      { tr: "İhracat", en: "Export" },
     ],
-    { tr: "Yenilikçi Pazar", en: "Niche Market" },
+    { tr: "İhracat Operasyonu", en: "Export Operations" },
     {
-      tr: "Kadın sağlığı ve sağlık teknolojileri alanında yükselen trendlere uygun uluslararası iş geliştirme stratejileri hayata geçirildi.",
-      en: "International business development strategies aligned with rising trends in women's health and health technologies were brought to life.",
+      tr: "Uluslararası iş geliştirme stratejileri hayata geçirilir ve markaların dış pazarlara açılması desteklenir.",
+      en: "International business development strategies are put into action and brands are supported in opening new markets.",
+    },
+    {
+      tr: "Sağlık teknolojisi ve femtech markaları · uluslararası pazarlar · ihracat",
+      en: "Health technology and femtech brands · international markets · export",
     }
   ),
   cta(
@@ -492,12 +629,12 @@ const insights = [
       en: "Sectoral Analysis & Insights",
     },
     {
-      tr: "Trade Intelligence: Sahadan ve Veriden Notlar",
-      en: "Trade Intelligence: Notes from the Field and Data",
+      tr: "Sektörel Analizler: Sahadan Notlar",
+      en: "Sector Insights: Notes from the Field",
     },
     {
-      tr: "Demir çelik toleranslarından medikal tedarik zincirlerine, denizcilik regülasyonlarından niş pazar dinamiklerine kadar uluslararası ticarette bizzat deneyimlediğimiz stratejik içgörüleri paylaşıyoruz.",
-      en: "We share the strategic insights we personally experience in international trade, ranging from steel tolerances to medical supply chains, marine regulations to niche market dynamics.",
+      tr: "Demir çelik toleranslarından medikal tedarik zincirlerine, denizcilik regülasyonlarından niş pazar dinamiklerine kadar uluslararası ticarette kendi deneyimimizden çıkardığımız stratejik notları paylaşıyoruz.",
+      en: "We share strategic notes drawn from our own experience in international trade, ranging from steel tolerances to medical supply chains, marine regulations to niche market dynamics.",
     }
   ),
   {
@@ -512,6 +649,9 @@ const insights = [
           "TEKNİK & STRATEJİK ANALİZ",
           "TECHNICAL & STRATEGIC ANALYSIS"
         ),
+        // Tarih ve yazar bilgisi şirketin kendi verisidir; panelden doldurulur.
+        date: bi("", ""),
+        author: bi("", ""),
         title: bi(
           "Çelik Çubuk İhracatında EN ve ASTM Standartları Neden Kritik?",
           "Why EN and ASTM Standards Are Critical in Steel Bar Exports?"
@@ -525,6 +665,8 @@ const insights = [
         id: "tpl_ins_2",
         eyebrow: bi("02 / MEDİKAL & SAĞLIK", "02 / MEDICAL & HEALTH"),
         category: bi("TEDARİK ZİNCİRİ & DENETİM", "SUPPLY CHAIN & AUDITING"),
+        date: bi("", ""),
+        author: bi("", ""),
         title: bi(
           "Cerrahi Sarf Malzemeleri Tedariğinde Yerinde Denetimin Önemi",
           "The Importance of On-Site Auditing in Surgical Consumables Sourcing"
@@ -548,39 +690,53 @@ const about = [
   header(
     { tr: "Kurumsal Kimlik & Vizyon", en: "Corporate Identity & Vision" },
     {
-      tr: "Analiz Yön Gösterir. İcraat Ticaret Yaratır.",
-      en: "Analysis guides. Execution creates trade.",
+      tr: "Analiz yön gösterir. Uygulama ticareti büyütür.",
+      en: "Analysis guides. Execution grows trade.",
     },
     {
-      tr: "GENCO Imports & Exports olarak şirketlere sadece dışarıdan rapor sunan pasif bir danışmanlık kurumu değiliz; küresel ticaret ağlarında sizin adınıza bizzat masaya oturan ve sahada operasyon yürüten aktif iş geliştirme ortağınızız.",
-      en: "As GENCO Imports & Exports, we are not a passive consultancy providing outside reports; we are your active business development partner sitting at the table on your behalf and running operations on the ground.",
+      tr: "GENCO Imports & Exports olarak şirketlere dışarıdan rapor sunan pasif bir danışmanlık kurumu değiliz; küresel ticaret ağlarında sizin adınıza masaya oturan ve sahada operasyon yürüten bir iş ortağıyız.",
+      en: "As GENCO Imports & Exports, we are not a passive consultancy handing over outside reports; we are a business partner who sits at the table on your behalf and runs operations on the ground.",
     }
   ),
+
+  /* ---- Kurum bilgileri: sayılar doğrulanana kadar boş kalır ---- */
+  {
+    ...STATS_BAND_DEFAULTS,
+    id: "tpl_about_facts",
+    heading: bi("", ""),
+    items: [
+      { id: "tpl_about_f1", value: bi("2008", "2008"), label: bi("Kuruluş yılı", "Founded") },
+      { id: "tpl_about_f2", value: bi("18", "18"), label: bi("Yıllık deneyim", "Years of experience") },
+      { id: "tpl_about_f3", value: bi("48+", "48+"), label: bi("Aktif pazar sayısı", "Active markets") },
+      { id: "tpl_about_f4", value: bi("1000+", "1000+"), label: bi("Tamamlanan proje", "Completed projects") },
+    ],
+  },
+
   feature(
     "tpl_about_intro",
     { tr: "İzmir'den Küresel Arenaya", en: "From Izmir to the Global Arena" },
     {
-      tr: "Uluslararası Ticarette Operasyonel Güç ve Güven",
-      en: "Operational Strength and Trust in International Trade",
+      tr: "Neden buradayız",
+      en: "Why We Exist",
     },
     {
-      tr: "İzmir Bornova merkezli kurulan GENCO, demir çelikten medikal malzemelere, denizcilikten tarım ve tohumculuğa, otomotivden yenilikçi femtech teknolojilerine kadar geniş bir dikey yelpazede tescilli teknik bilgiye ve küresel alıcı ağlarına sahiptir.\n\nGeleneksel dış ticaret danışmanlık modellerinin ötesine geçerek; tescilli ticaret istihbarat altyapılarımız ve çok katmanlı araştırma ağlarımızla doğrudan C-level karar vericilere ulaşıyor, ürünlerinizin teknik şartnamelere tam uyumunu yerinde denetliyor ve sevkiyat kapanışına kadar tüm süreci yönetiyoruz.",
-      en: "Founded in Izmir Bornova, GENCO possesses proprietary technical knowledge and global buyer networks across a wide vertical spectrum ranging from steel and metals to medical supplies, marine, agriculture, automotive, and innovative femtech technologies.\n\nMoving beyond traditional foreign trade consultancy models, through our proprietary trade intelligence infrastructure and multi-layered research networks, we reach C-level decision-makers directly, audit your products' compliance with technical specifications on-site, and manage the entire process until shipment closure.",
+      tr: "İzmir Bornova merkezli kurulan GENCO; demir çelikten medikal malzemelere, denizcilikten tarım ve tohumculuğa, otomotivden yenilikçi femtech teknolojilerine kadar geniş bir dikey yelpazede tescilli teknik bilgiye ve yerleşik alıcı ağlarına sahiptir.\n\nBu bilgi ve ağları müşterimiz adına sahada kullanıyoruz: doğrudan karar vericiye ulaşmak, teknik şartname uyumunu yerinde doğrulamak ve sevkiyat kapanışına kadar süreci yönetmek.",
+      en: "Founded in Izmir Bornova, GENCO holds proprietary technical knowledge and established buyer networks across a wide vertical spectrum: from steel and metals to medical supplies, marine, agriculture, automotive, and innovative femtech technologies.\n\nWe put that knowledge and those networks to work on the ground on our clients' behalf: reaching decision-makers directly, verifying technical specification compliance on site, and managing the process through to shipment closure.",
     },
     [],
-    { tr: "Aktif Saha Operasyonu", en: "Active Field Operation" },
+    { tr: "Ölçütümüz", en: "Our Standard" },
     {
-      tr: "Küresel ticarette başarı; jenerik pazar araştırmalarıyla vakit kaybetmek değil, doğru teknik standartları bilmek, doğrudan karar vericiyle temas kurmak ve operasyonun her aşamasında sahada var olmaktır.",
-      en: "Success in global trade is not about wasting time with generic market research; it is knowing the right technical standards, contacting decision-makers directly, and being present on the ground at every stage of the operation.",
+      tr: "Küresel ticarette başarı, genel listelerle vakit kaybetmek değil; doğru teknik standartları bilmek, doğrudan karar vericiyle temas kurmak ve operasyonun her aşamasında sahada var olmaktır.",
+      en: "Success in global trade is not about wasting time on generic lists; it is knowing the right technical standards, reaching decision-makers directly, and being on the ground at every stage of the operation.",
     }
   ),
   {
     ...CARD_GRID_DEFAULTS,
     id: "tpl_about_steps",
-    heading: bi("Operasyonel Felsefemiz — The GENCO Method", "Our Operational Philosophy — The GENCO Method"),
+    heading: bi("The GENCO Method — Dört Aşama", "The GENCO Method — Four Steps"),
     sub: bi(
-      "Uluslararası ticareti masada bırakmıyor; araştırmadan kapanışa kadar uçtan uca yönettiğimiz 4 aşamalı tescilli icraat metodolojimizle fark yaratıyoruz.",
-      "We don't leave international trade at the table; we make a difference with our 4-step proprietary execution methodology managed end-to-end from research to closure."
+      "Uluslararası ticareti masada bırakmıyoruz; araştırmadan kapanışa kadar dört aşamalı bir icraat metodolojisiyle ilerliyoruz.",
+      "We don't leave international trade at the table; we run a four-step execution methodology from research through to closure."
     ),
     columns: 2,
     cards: [
@@ -592,8 +748,8 @@ const about = [
           "Research & Target Market Analysis"
         ),
         desc: bi(
-          "Jenerik listelerle vakit kaybetmiyoruz. Tescilli ticaret istihbarat ağlarımız üzerinden ürününüzün küresel pazardaki en doğru alıcılarını nokta atışı tespit ediyor; EN, ASTM ve sektörel teknik şartnameleri eksiksiz analiz ederek stratejimizi kuruyoruz.",
-          "We don't waste time with generic lists. Through our proprietary trade intelligence networks, we pinpoint the right buyers for your product in the global market and build our strategy by thoroughly analyzing EN, ASTM, and sectoral technical specs."
+          "Genel listelerle vakit kaybetmiyoruz. Tescilli ticaret istihbarat ağlarımız üzerinden ürününüzün küresel pazardaki en doğru alıcılarını nokta atışı tespit ediyor; EN, ASTM ve sektörel teknik şartnameleri eksiksiz analiz ederek stratejimizi kuruyoruz.",
+          "We don't waste time with generic lists. Through our proprietary trade intelligence networks, we pinpoint the right buyers for your product in the global market and build our strategy by thoroughly analysing EN, ASTM, and sectoral technical specs."
         ),
         note: bi("", ""),
         image: "",
@@ -677,6 +833,116 @@ const contact = [
 ];
 
 /* ========================================================================== *
+ *  Gizlilik Politikası (KVKK) — /gizlilik
+ * --------------------------------------------------------------------------
+ *  İletişim formu KVKK kapsamında kişisel veri topladığı için aydınlatma
+ *  metni zorunludur. Bilinen şirket bilgileriyle yazılmıştır; hukuki
+ *  denetimden geçirilmesi önerilir.
+ * ========================================================================== */
+
+const privacy = [
+  nav(),
+  header(
+    { tr: "Yasal Bilgilendirme", en: "Legal Notice" },
+    { tr: "Gizlilik Politikası", en: "Privacy Policy" },
+    {
+      tr: "6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında, web sitemiz üzerinden paylaştığınız kişisel verilerin nasıl işlendiğini bu sayfada açıklıyoruz.",
+      en: "Under Turkish Personal Data Protection Law no. 6698 (KVKK), this page explains how personal data shared through our website is processed.",
+    }
+  ),
+  {
+    ...ARTICLE_LIST_DEFAULTS,
+    id: "tpl_priv_body",
+    heading: bi("", ""),
+    articles: [
+      {
+        id: "tpl_priv_1",
+        eyebrow: bi("01", "01"),
+        category: bi("VERİ SORUMLUSU", "DATA CONTROLLER"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Veri sorumlusu kimdir?", "Who is the data controller?"),
+        body: bi(
+          "Veri sorumlusu, GENCO Imports & Exports Ltd. Şti.'dir.\n\nAdres: Meriç Mah. 5746/5 SK. No: 3 İç Kapı No: Z1 Bornova / İzmir – TÜRKİYE\nTelefon: +90 232 462 16 49\nE-posta: info@gencotr.com",
+          "The data controller is GENCO Imports & Exports Ltd.\n\nAddress: Meriç Mah. 5746/5 SK. No: 3 Inner Door No: Z1 Bornova / Izmir – TURKEY\nPhone: +90 232 462 16 49\nEmail: info@gencotr.com"
+        ),
+      },
+      {
+        id: "tpl_priv_2",
+        eyebrow: bi("02", "02"),
+        category: bi("İŞLENEN VERİLER", "DATA PROCESSED"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Hangi verileri işliyoruz?", "Which data do we process?"),
+        body: bi(
+          "Web sitemizde yalnızca iletişim formu aracılığıyla tarafınızca iletilen bilgileri işleriz: ad soyad, kurumsal e-posta adresi, telefon numarası ve talebinize ilişkin mesaj metni. Bu bilgiler formu doldururken sizin tarafınızdan açıkça iletilir.",
+          "Through our website we process only the information you submit via the contact form: your name, corporate email address, phone number, and the message describing your request. This information is provided by you at the time you complete the form."
+        ),
+      },
+      {
+        id: "tpl_priv_3",
+        eyebrow: bi("03", "03"),
+        category: bi("AMAÇ VE HUKUKİ SEBEP", "PURPOSE AND LEGAL BASIS"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Neden ve hangi sebeple işliyoruz?", "Why and on what legal basis?"),
+        body: bi(
+          "İletilen bilgiler yalnızca talebinizin değerlendirilmesi, size dönüş yapılması ve iş ilişkisi kapsamında yürütülecek hizmetlerin planlanması amacıyla işlenir.\n\nİşleme faaliyeti KVKK 5. maddesi uyarınca açık rızanız veya sözleşmenin kurulması veya ifasıyla doğrudan ilgili olması, kanuni yükümlülüklerimizin yerine getirilmesi ve meşru menfaat hukuki sebeplerine dayanır. Bu amaç dışında kullanılmayacak ve üçüncü taraflara satış veya paylaşım yapılmayacaktır.",
+          "The submitted information is processed solely to evaluate your request, to respond to you, and to plan services within the scope of a potential business relationship.\n\nProcessing is carried out under Article 5 of KVKK on the basis of your explicit consent, the necessity of processing for the conclusion or performance of a contract, the fulfilment of our legal obligations, and our legitimate interests. Your data will not be used for any other purpose, nor sold or shared with third parties."
+        ),
+      },
+      {
+        id: "tpl_priv_4",
+        eyebrow: bi("04", "04"),
+        category: bi("SAKLANMA SÜRESİ", "RETENTION PERIOD"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Verilerinizi ne kadar süre saklıyoruz?", "How long do we retain your data?"),
+        body: bi(
+          "İletişim formu aracılığıyla iletilen bilgiler, talebinizin sonuçlandırılmasını takiben ticari ve hukuki yükümlülüklerimizin gerektirdiği süre boyunca saklanır; bu süre sonunda silinir veya anonim hâle getirilir.",
+          "Information submitted through the contact form is retained for as long as required to conclude your request and to meet our commercial and legal obligations, after which it is deleted or anonymised."
+        ),
+      },
+      {
+        id: "tpl_priv_5",
+        eyebrow: bi("05", "05"),
+        category: bi("HAKLARINIZ", "YOUR RIGHTS"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Haklarınızı nasıl kullanabilirsiniz?", "How can you exercise your rights?"),
+        body: bi(
+          "KVKK 11. madde kapsamında; verilerinize erişme, düzeltilmesini veya silinmesini isteme, işlemenin sınırlandırılmasını talep etme ve verilerinizin aktarıldığı üçüncü kişileri öğrenme haklarına sahipsiniz.\n\nBu haklarınızı kullanmak için info@gencotr.com adresine yazmanız yeterlidir. Talebiniz en geç 30 gün içinde sonuçlandırılır.",
+          "Under Article 11 of KVKK you have the right to access your data, to request its correction or deletion, to request restriction of processing, and to learn the third parties to whom your data has been transferred.\n\nTo exercise these rights, write to info@gencotr.com. Your request will be concluded within 30 days at the latest."
+        ),
+      },
+      {
+        id: "tpl_priv_6",
+        eyebrow: bi("06", "06"),
+        category: bi("GÜNCELLEME", "UPDATES"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Bu metin güncellenebilir mi?", "May this notice be updated?"),
+        body: bi(
+          "Bu aydınlatma metni yasal değişiklikler veya işleme amaçlarının değişmesi hâlinde güncellenebilir. Güncel metin bu sayfada yayımlanır.",
+          "This notice may be updated in the event of legislative changes or a change in processing purposes. The current version is published on this page."
+        ),
+      },
+    ],
+  },
+  cta(
+    "tpl_priv_cta",
+    { tr: " SORULARINIZ MI VAR?", en: "QUESTIONS?" },
+    { tr: "Verilerinizle ilgili bir sorunuz mu var?", en: "Any question about your data?" },
+    {
+      tr: "KVKK kapsamındaki haklarınızı kullanmak ya da verileriniz hakkında bilgi almak için bize yazabilirsiniz.",
+      en: "To exercise your rights under KVKK or to obtain information about your data, you can contact us.",
+    },
+    { tr: "Bize Ulaşın", en: "Contact Us" }
+  ),
+  footer(),
+];
+
+/* ========================================================================== *
  *  Dışa aktarım
  * ========================================================================== */
 
@@ -687,6 +953,7 @@ export const PAGE_TEMPLATES = {
   insights,
   about,
   contact,
+  gizlilik: privacy,
 };
 
 /** Sayfa anahtarına karşılık gelen şablonu döner (yoksa boş dizi). */

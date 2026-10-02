@@ -83,7 +83,7 @@ export const NAV_LINKS = [
   { id: "lnk_services", label: bi("Hizmetler", "Services"), href: "/services" },
   { id: "lnk_industries", label: bi("Sektörler", "Industries"), href: "/industries" },
   { id: "lnk_cases", label: bi("Vaka Analizleri", "Case Studies"), href: "/case-studies" },
-  { id: "lnk_insights", label: bi("Trade Intelligence", "Trade Intelligence"), href: "/insights" },
+  { id: "lnk_insights", label: bi("Sektör Analizleri", "Sector Insights"), href: "/insights" },
   { id: "lnk_about", label: bi("Hakkımızda", "About Us"), href: "/about" },
   { id: "lnk_contact", label: bi("İletişim", "Contact"), href: "/contact" },
 ];
@@ -92,6 +92,7 @@ export const NAV_DEFAULTS = {
   id: "seed_nav",
   type: "nav",
   logo: "/logo.png",
+  phone: "+90 232 462 16 49",
   links: NAV_LINKS,
 };
 
@@ -107,22 +108,19 @@ export const HERO_DEFAULTS = {
     "Your International Trade Team in Turkey"
   ),
   subtitle: bi(
-    "Sadece dış ticaret danışmanlığı sunmuyoruz. Fırsatları araştırıyor, doğru uluslararası partnerleri buluyor ve tüm ticari operasyonu sizin adınıza bizzat yönetiyoruz.",
-    "We don't just offer foreign trade consultancy. We research opportunities, find the right international partners, and personally manage your entire commercial operation."
+    "Ürününüz hazır, doğru alıcıya ulaşacak kanalınız yok. Tescilli ticaret istihbarat ağımızla doğru pazardaki karar vericileri tespit ediyor, müzakereleri yürütüyor ve sevkiyat kapanışına kadar operasyonu sizin adınıza yönetiyoruz.",
+    "Your product is ready; what you lack is a channel to the right buyers. Through our proprietary trade intelligence network we identify decision-makers in the right markets, run the negotiations, and manage the operation on your behalf until the shipment closes."
   ),
-  primaryLabel: bi("Proje Başlatın", "Start a Project"),
+  primaryLabel: bi("Görüşelim", "Let's Talk"),
   primaryHref: "/contact",
-  secondaryLabel: bi("Hizmetlerimizi İnceleyin", "Inspect Our Services"),
+  secondaryLabel: bi("Hizmetlerimizi Keşfedin", "Explore Our Services"),
   secondaryHref: "/services",
   image: "",
   boxBadge: bi("Aktif Ticaret Yönetimi", "Active Trade Management"),
-  boxTitle: bi(
-    "Masada ve Sahada Doğrudan Operasyon",
-    "Direct Operation at the Table and in the Field"
-  ),
+  boxTitle: bi("Rapordan çok, sonuç", "Deliverables, Not Reports"),
   boxDesc: bi(
-    "Jenerik pazar araştırmalarıyla vakit kaybetmiyoruz. Tescilli ticaret istihbarat altyapılarımızı kullanarak doğrudan karar vericilere ulaşıyor; demir çelikten medikal, denizcilik ve femtech projelerine kadar teknik standartları bizzat yönetiyoruz.",
-    "We don't waste time with generic market research. Using our proprietary trade intelligence infrastructure, we reach decision-makers directly and manage technical standards from steel to medical, marine, and femtech projects."
+    "Doğru karar vericilere doğrudan ulaşıyor, teknik şartname uyumunu sahada denetliyor ve sevkiyat kapanışına kadar süreci birlikte yönetiyoruz.",
+    "We reach the right decision-makers directly, verify technical specification compliance on site, and run the process with you until the shipment closes."
   ),
   check1: bi("✓ Doğrudan C-Level Erişim", "✓ Direct C-Level Access"),
   check2: bi("✓ Teknik Şartname Uyumu", "✓ Technical Spec Compliance"),
@@ -134,18 +132,15 @@ export const INDUSTRIES_DEFAULTS = {
   id: "seed_industries",
   type: "industries",
   badge: bi("Sektörel Yetkinlik", "Sectoral Competence"),
-  heading: bi(
-    "Ağırlıklı Çalıştığımız Sektörler",
-    "Industries We Focus On"
-  ),
+  heading: bi("Uzmanlaştığımız sektörler", "Industries We Specialise In"),
   description: bi(
-    "Derinlemesine ağa ve teknik bilgiye sahip olduğumuz ana alanların yanı sıra, esnek metodolojimizle her sektörde uluslararası ticaret operasyonu yönetebiliyoruz.",
-    "In addition to our core domains where we hold deep technical knowledge and networks, our flexible methodology allows us to manage trade operations in any sector."
+    "Bu alanlarda tescilli teknik bilgiye ve yerleşik alıcı ağlarına sahibiz. Dışındaki tüm sektörler için de aynı metodolojiyle pazar araştırması ve operasyon yönetimi yapıyoruz.",
+    "In these sectors we hold proprietary technical knowledge and established buyer networks. For any other sector we apply the same methodology: market research and operational management."
   ),
   items: [
-    { id: "ind_1", title: bi("Demir Çelik", "Steel & Metals"), image: "" },
-    { id: "ind_2", title: bi("Denizcilik", "Marine"), image: "" },
-    { id: "ind_3", title: bi("Tohumculuk", "Agriculture"), image: "" },
+    { id: "ind_1", title: bi("Vasıflı Çelik", "Engineering Steel"), image: "" },
+    { id: "ind_2", title: bi("Yatçılık & Marine", "Yachting & Marine"), image: "" },
+    { id: "ind_3", title: bi("Tohumculuk", "Seed Trade"), image: "" },
     { id: "ind_4", title: bi("Medikal", "Medical"), image: "" },
     { id: "ind_5", title: bi("Otomotiv", "Automotive"), image: "" },
     { id: "ind_6", title: bi("Femtech", "Femtech"), image: "" },
@@ -183,7 +178,7 @@ export const ROUTES_DEFAULTS = {
         "Doğru üreticiyi bulma, kapasite denetimi, fiyat teklifi koordinasyonu ve uluslararası standartlara uygunluk süreçlerini yönetiyoruz.",
         "We handle manufacturer discovery, capacity audits, quotation coordination, and international standards compliance."
       ),
-      link: bi("Tedarik Süreçlerini Gör →", "View Sourcing Processes →"), href: "/services", image: "",
+      link: bi("Tedarik Süreçlerimiz →", "See Our Sourcing Process →"), href: "/services", image: "",
     },
     {
       id: "card_3",
@@ -203,7 +198,7 @@ export const METHOD_DEFAULTS = {
   type: "method",
   badge: bi("Farkımız", "Our Differentiator"),
   title1: bi("Analiz yön gösterir.", "Analysis guides."),
-  title2: bi("İcraat ticaret yaratır.", "Execution creates trade."),
+  title2: bi("Uygulama ticareti büyütür.", "Execution grows trade."),
   desc: bi(
     "Pek çok kurum sadece rapor sunar ve çekilir; GENCO ise masada sizinle birlikte oturur, müzakereleri yürütür ve siparişin kapanışına kadar sahada yer alır.",
     "Many firms hand over reports and walk away; GENCO sits at the table with you, leads negotiations, and stays on the ground until order closure."
@@ -795,6 +790,9 @@ export const FEATURE_BLOCK_DEFAULTS = {
   id: "seed_feature",
   type: "featureBlock",
   eyebrow: bi("01 / ADIM", "01 / STEP"),
+  // Vaka analizlerinde "kapsam" satırı: sektör + pazar + yapılan iş.
+  // Boş bırakılırsa hiçbir yerde görünmez.
+  scope: bi("", ""),
   heading: bi("Bölüm Başlığı", "Section Title"),
   desc: bi("Açıklama metni.", "Description text."),
   items: [
@@ -817,8 +815,28 @@ export const ARTICLE_LIST_DEFAULTS = {
       id: "al_1",
       eyebrow: bi("01 / KONU", "01 / TOPIC"),
       category: bi("ANALİZ", "ANALYSIS"),
+      date: bi("", ""),
+      author: bi("", ""),
       title: bi("Makale Başlığı", "Article Title"),
       body: bi("Makale metni.", "Article body text."),
+    },
+  ],
+};
+
+/** Sıkça sorulan sorular — satış öncesi tereddütleri kapatır, SEO kazandırır. */
+export const FAQ_DEFAULTS = {
+  id: "seed_faq",
+  type: "faq",
+  heading: bi("Sıkça Sorulan Sorular", "Frequently Asked Questions"),
+  sub: bi(
+    "Aşağıdaki sorular en çok merak edilen konuları özetler. Yanıtını bulamazsanız iletişim formundan yazabilirsiniz.",
+    "The questions below cover the topics we are asked about most. If your answer is not here, feel free to contact us."
+  ),
+  items: [
+    {
+      id: "fq_1",
+      question: bi("Sorunuz burada", "Your question here"),
+      answer: bi("Yanıtınız burada.", "Your answer here."),
     },
   ],
 };
@@ -852,6 +870,13 @@ export const CONTACT_DEFAULTS = {
   phoneLabel: bi("Telefon Numarası", "Phone Number"),
   messageLabel: bi("Proje Detayları ve Talebiniz", "Project Details & Inquiry"),
   submitLabel: bi("Mesajı Gönder", "Send Message"),
+  // KVKK aydınlatma metni: form gönderilmeden önce onay zorunludur.
+  consent: bi(
+    "Kişisel verilerimin, talebimin değerlendirilmesi amacıyla işlenmesini ve tarafıma dönüş yapılmasını kabul ediyorum.",
+    "I consent to the processing of my personal data for the purpose of evaluating my request and for GENCO to contact me."
+  ),
+  privacyLabel: bi("Gizlilik Politikası", "Privacy Policy"),
+  privacyHref: "/gizlilik",
   infoTitle: bi("İletişim Bilgilerimiz", "Our Contact Information"),
   addressLabel: bi("Merkez Adres", "Headquarters"),
   addressVal: bi(
@@ -898,6 +923,24 @@ export const FOOTER_DEFAULTS = {
     "Meriç Mah. 5746/5 SK. No: 3 İç Kapı No: Z1 Bornova/İzmir - TÜRKİYE | Tel: +90 232 462 16 49 | info@gencotr.com",
     "Meriç Mah. 5746/5 SK. No: 3 Inner Door No: Z1 Bornova/İzmir - TURKEY | Phone: +90 232 462 16 49 | info@gencotr.com"
   ),
+  // Yasal ve yardımcı bağlantılar (menüde değil, alt bilgide görünür).
+  links: [{ id: "fl_privacy", label: bi("Gizlilik Politikası", "Privacy Policy"), href: "/gizlilik" }],
+};
+
+/**
+ * Ana sayfa sayaç şeridi — şirketin doğrulanmış rakamları.
+ * GENCO tarafından teyit edilmiştir (2008 kuruluş).
+ */
+const GENCO_STATS = {
+  id: "seed_stats_home",
+  type: "statsBand",
+  heading: bi("", ""),
+  items: [
+    { id: "st_1", value: bi("2008", "2008"), label: bi("Kuruluş yılı", "Founded") },
+    { id: "st_2", value: bi("18", "18"), label: bi("Yıllık deneyim", "Years of experience") },
+    { id: "st_3", value: bi("48+", "48+"), label: bi("Aktif pazar", "Active markets") },
+    { id: "st_4", value: bi("1000+", "1000+"), label: bi("Tamamlanan proje", "Completed projects") },
+  ],
 };
 
 /** Firestore'da hiç blok yoksa devreye giren tam sayfa şablonu. */
@@ -907,6 +950,7 @@ export const DEFAULT_SITE_BLOCKS = [
   INDUSTRIES_DEFAULTS,
   ROUTES_DEFAULTS,
   METHOD_DEFAULTS,
+  GENCO_STATS,
   FOOTER_DEFAULTS,
 ];
 
@@ -935,6 +979,7 @@ const SLIDER_DEFAULTS = {
 };
 
 export const BLOCK_LIBRARY = [
+  { type: "faq", label: "Sıkça Sorulan Sorular", hint: "Açılır-kapanır soru/yanıt listesi. Satış öncesi tereddütleri kapatır.", accent: "#6366f1", create: () => ({ ...FAQ_DEFAULTS, id: uid(), items: FAQ_DEFAULTS.items.map((i) => ({ ...i, id: uid() })) }) },
   { type: "contact", label: "İletişim Formu + Harita", hint: "Mesaj formu, koyu bilgi kutusu ve gömülü harita.", accent: "#0f172a", create: () => ({ ...CONTACT_DEFAULTS, id: uid() }) },
   { type: "pageHeader", label: "Sayfa Başlığı", hint: "Üst etiket + büyük başlık + açıklama (alt sayfaların tepesi).", accent: "#f97316", create: () => ({ ...PAGE_HEADER_DEFAULTS, id: uid() }) },
   { type: "cardGrid", label: "Kart Izgarası", hint: "Sütun sayısı seçilebilir, her kartta başlık/açıklama/alt not ve görsel.", accent: "#0ea5e9", create: () => ({ ...CARD_GRID_DEFAULTS, id: uid(), cards: CARD_GRID_DEFAULTS.cards.map((c) => ({ ...c, id: uid() })) }) },
@@ -966,6 +1011,7 @@ const DEFAULTS_BY_TYPE = {
   textBlock: TEXT_DEFAULTS,
   slider: SLIDER_DEFAULTS,
   contact: CONTACT_DEFAULTS,
+  faq: FAQ_DEFAULTS,
   pageHeader: PAGE_HEADER_DEFAULTS,
   cardGrid: CARD_GRID_DEFAULTS,
   featureBlock: FEATURE_BLOCK_DEFAULTS,
@@ -1030,6 +1076,16 @@ export function normaliseBlock(raw, index = 0) {
       href: typeof l?.href === "string" && l.href ? l.href : "#",
     }));
     merged.logo = typeof raw?.logo === "string" ? raw.logo : base.logo;
+    merged.phone = typeof raw?.phone === "string" ? raw.phone : base.phone;
+  }
+
+  if (type === "footer") {
+    const links = Array.isArray(raw?.links) ? raw.links : base.links;
+    merged.links = links.map((l, i) => ({
+      id: l?.id || `fl_${i}`,
+      label: l?.label ?? bi("", ""),
+      href: typeof l?.href === "string" && l.href ? l.href : "#",
+    }));
   }
 
   if (type === "industries") {
@@ -1112,6 +1168,8 @@ export function normaliseBlock(raw, index = 0) {
       id: a?.id || `al_${i}`,
       eyebrow: a?.eyebrow ?? bi("", ""),
       category: a?.category ?? bi("", ""),
+      date: a?.date ?? bi("", ""),
+      author: a?.author ?? bi("", ""),
       title: a?.title ?? bi("", ""),
       body: a?.body ?? bi("", ""),
     }));
@@ -1123,6 +1181,15 @@ export function normaliseBlock(raw, index = 0) {
       id: it?.id || `st_${i}`,
       value: it?.value ?? bi("", ""),
       label: it?.label ?? bi("", ""),
+    }));
+  }
+
+  if (type === "faq") {
+    const items = Array.isArray(raw?.items) ? raw.items : base.items;
+    merged.items = items.map((it, i) => ({
+      id: it?.id || `fq_${i}`,
+      question: it?.question ?? bi("", ""),
+      answer: it?.answer ?? bi("", ""),
     }));
   }
 
@@ -1327,6 +1394,21 @@ function NavBlock({ block, ctx }) {
               />
             </a>
           )}
+        </div>
+
+        {/* Telefon numarası: B2B'de en değerli eylem çağrısı. Bilerek
+            menünün sağında, TR/EN düğmesinin hemen solunda duruyor. */}
+        <div className="hidden xl:flex items-center">
+          <EditableText
+            as="a"
+            editable={edit}
+            value={block.phone || ""}
+            onChange={(v) => set("phone", v)}
+            href={edit || !block.phone ? undefined : `tel:${String(block.phone).replace(/\s/g, "")}`}
+            onClick={(e) => edit && e.preventDefault()}
+            className="text-[13px] font-bold text-[#0f172a] hover:text-[#f97316] transition whitespace-nowrap"
+            placeholder="Telefon numarası"
+          />
         </div>
 
         <div className="hidden md:flex space-x-6 text-sm font-semibold text-gray-600">
@@ -1732,14 +1814,58 @@ function SliderBlock({ block, ctx }) {
 
 function FooterBlock({ block, ctx }) {
   const { set, edit, lang } = ctx;
+  const links = Array.isArray(block.links) ? block.links : [];
+
   return (
     <footer className="bg-white py-12 border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-gray-500">
         <EditableText as="div" editable={edit} value={L(block.rights, lang)}
           onChange={(v) => set("rights", mergeLang(block.rights, lang, v))} placeholder="Telif" />
-        <EditableText as="div" editable={edit} value={L(block.address, lang)}
-          onChange={(v) => set("address", mergeLang(block.address, lang, v))}
-          className="mt-4 md:mt-0 text-center md:text-right" placeholder="Adres" />
+        <div className="text-center md:text-right">
+          <EditableText as="div" editable={edit} value={L(block.address, lang)}
+            onChange={(v) => set("address", mergeLang(block.address, lang, v))}
+            placeholder="Adres" />
+
+          {/* Yasal / yardımcı bağlantılar (Gizlilik Politikası vb.). */}
+          {(edit || links.length > 0) && (
+            <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1">
+              {links.map((l) => (
+                <EditableText
+                  key={l.id}
+                  as="a"
+                  editable={edit}
+                  value={L(l.label, lang)}
+                  onChange={(v) =>
+                    set("links", links.map((x) => (x.id === l.id ? { ...x, label: mergeLang(x.label, lang, v) } : x)))
+                  }
+                  href={edit ? undefined : l.href || "#"}
+                  onClick={(e) => edit && e.preventDefault()}
+                  className="text-[12px] hover:text-[#f97316] transition"
+                  placeholder="Bağlantı adı"
+                />
+              ))}
+              {edit && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    set("links", [
+                      ...links,
+                      {
+                        id: `fl_${Math.random().toString(36).slice(2, 7)}`,
+                        label: bi("Yeni bağlantı", "New link"),
+                        href: "/",
+                      },
+                    ]);
+                  }}
+                  className="text-[11px] font-bold text-slate-400 hover:text-[#f97316]"
+                >
+                  + bağlantı ekle
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </footer>
   );
@@ -1991,6 +2117,17 @@ function FeatureBlockView({ block, ctx }) {
             className="text-[#f97316] font-mono text-sm font-bold mb-3"
             placeholder="01 / ADIM"
           />
+          {/* Kapsam satırı: sektör + pazar + yapılan iş. Boşsa gizlenir. */}
+          {(edit || L(block.scope, lang)) && (
+            <EditableText
+              as="div"
+              editable={edit}
+              value={L(block.scope, lang)}
+              onChange={(v) => set("scope", mergeLang(block.scope, lang, v))}
+              className="text-[11px] font-mono uppercase tracking-wider text-gray-400 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 mb-4 inline-block"
+              placeholder="Kapsam: sektör · pazar · yapılan iş"
+            />
+          )}
           <EditableText
             as="h2"
             editable={edit}
@@ -2132,6 +2269,27 @@ function ArticleListBlock({ block, ctx }) {
                   placeholder="KATEGORİ"
                 />
               </div>
+
+              {/* Tarih ve yazar: yazıya uzmanlık ve tazelik sinyali verir.
+                  Boş bırakılırsa satır hiç görünmez. */}
+              {(edit || L(a.date, lang) || L(a.author, lang)) && (
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-500 mb-4 pr-8">
+                  <EditableText
+                    as="span"
+                    editable={edit}
+                    value={L(a.date, lang)}
+                    onChange={(v) => update(a.id, { date: mergeLang(a.date, lang, v) })}
+                    placeholder="Tarih (örn. 12 Eylül 2026)"
+                  />
+                  <EditableText
+                    as="span"
+                    editable={edit}
+                    value={L(a.author, lang)}
+                    onChange={(v) => update(a.id, { author: mergeLang(a.author, lang, v) })}
+                    placeholder="Yazar / ekip"
+                  />
+                </div>
+              )}
               <EditableText
                 as="h2"
                 editable={edit}
@@ -2394,6 +2552,51 @@ function ContactBlock({ block, ctx }) {
                     className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:border-[#f97316] text-sm"
                   />
                 </div>
+
+                {/* ---- KVKK onayı: gönderim için zorunlu ---- */}
+                <label className="flex items-start gap-2.5 text-[11px] leading-relaxed text-gray-600">
+                  <input
+                    type="checkbox"
+                    name="kvkk"
+                    required
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-[#f97316]"
+                  />
+                  <span>
+                    <EditableText
+                      as="span"
+                      editable={edit}
+                      value={L(block.consent, lang)}
+                      onChange={(v) => set("consent", mergeLang(block.consent, lang, v))}
+                      placeholder="KVKK onay metni"
+                    />{" "}
+                    <EditableText
+                      as="a"
+                      editable={edit}
+                      value={L(block.privacyLabel, lang)}
+                      onChange={(v) =>
+                        set("privacyLabel", mergeLang(block.privacyLabel, lang, v))
+                      }
+                      href={edit ? undefined : block.privacyHref || "#"}
+                      onClick={(e) => edit && e.preventDefault()}
+                      className="font-bold text-[#f97316] hover:underline"
+                      placeholder="Gizlilik Politikası"
+                    />
+                    <span
+                      role="textbox"
+                      contentEditable={edit}
+                      suppressContentEditableWarning
+                      spellCheck={false}
+                      className={edit ? "genco-editable inline" : "hidden"}
+                      onClick={(e) => e.stopPropagation()}
+                      onInput={(e) =>
+                        set("privacyHref", e.currentTarget.textContent.trim() || "/gizlilik")
+                      }
+                    >
+                      {block.privacyHref}
+                    </span>
+                  </span>
+                </label>
+
                 <button
                   type="submit"
                   className="w-full bg-[#f97316] text-white p-4 font-bold rounded-lg hover:bg-orange-600 transition shadow-md"
@@ -2474,7 +2677,140 @@ function ContactBlock({ block, ctx }) {
   );
 }
 
+/**
+ * Sıkça sorulan sorular bloğu.
+ *
+ * Canlı sitede ilk soru açık gelir, diğerleri tıklanınca açılır. Soru/yanıt
+ * metinleri iki dildir; blok tamamen panelden düzenlenir.
+ */
+function FaqBlock({ block, ctx }) {
+  const { set, edit, lang } = ctx;
+  const items = Array.isArray(block.items) ? block.items : [];
+  const [open, setOpen] = useState(0);
+  const update = (id, patch) =>
+    set("items", items.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+
+  return (
+    <section className="py-16 sm:py-20 bg-white border-b border-gray-100">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <EditableText
+          as="h2"
+          editable={edit}
+          value={L(block.heading, lang)}
+          onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+          className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-4"
+          placeholder="Bölüm başlığı"
+        />
+        <EditableText
+          as="p"
+          editable={edit}
+          value={L(block.sub, lang)}
+          onChange={(v) => set("sub", mergeLang(block.sub, lang, v))}
+          className="text-gray-600 text-center mb-10"
+          placeholder="Açıklama"
+        />
+
+        <div className="space-y-3">
+          {items.map((it, i) => {
+            const isOpen = edit || open === i;
+            return (
+              <div
+                key={it.id}
+                className="border border-gray-200 rounded-xl overflow-hidden bg-white"
+              >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpen(open === i ? -1 : i);
+                  }}
+                  className="w-full text-left px-5 py-4 flex items-center justify-between gap-3 hover:bg-slate-50 transition"
+                >
+                  <EditableText
+                    as="span"
+                    editable={edit}
+                    value={L(it.question, lang)}
+                    onChange={(v) => update(it.id, { question: mergeLang(it.question, lang, v) })}
+                    className="font-bold text-[#0f172a] text-[15px] flex-1"
+                    placeholder="Soru"
+                  />
+                  <span className="text-[#f97316] font-bold text-lg leading-none shrink-0">
+                    {isOpen ? "−" : "+"}
+                  </span>
+                </button>
+                {isOpen && (
+                  <div className="px-5 pb-5">
+                    <EditableText
+                      as="div"
+                      editable={edit}
+                      value={L(it.answer, lang)}
+                      onChange={(v) => update(it.id, { answer: mergeLang(it.answer, lang, v) })}
+                      className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap"
+                      placeholder="Yanıt"
+                    />
+                  </div>
+                )}
+                {edit && (
+                  <div className="flex gap-1 px-4 pb-3">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        set("items", items.filter((x) => x.id !== it.id));
+                      }}
+                      className="grid h-6 w-6 place-items-center rounded bg-red-600 text-[10px] font-bold text-white"
+                      title="Soruyu sil"
+                    >
+                      ✕
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const next = [...items];
+                        const j = i - 1;
+                        if (j < 0) return;
+                        [next[i], next[j]] = [next[j], next[i]];
+                        set("items", next);
+                      }}
+                      className="grid h-6 w-6 place-items-center rounded bg-white border border-slate-300 text-[10px] font-bold text-slate-500"
+                      title="Yukarı taşı"
+                    >
+                      ↑
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {edit && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              set("items", [
+                ...items,
+                {
+                  id: `fq_${Math.random().toString(36).slice(2, 7)}`,
+                  question: bi("Yeni soru", "New question"),
+                  answer: bi("Yeni yanıt", "New answer"),
+                },
+              ]);
+            }}
+            className="mt-4 w-full rounded-xl border-2 border-dashed border-slate-300 py-4 text-[11px] font-semibold text-slate-400 hover:border-[#f97316] hover:text-[#f97316] transition"
+          >
+            + Soru ekle
+          </button>
+        )}
+      </div>
+    </section>
+  );
+}
+
 const RENDERERS = {
+  faq: FaqBlock,
   contact: ContactBlock,
   pageHeader: PageHeaderBlock,
   cardGrid: CardGridBlock,

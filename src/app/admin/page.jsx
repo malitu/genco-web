@@ -69,9 +69,10 @@ const STATIC_PAGES = [
   { id: "services", label: "Hizmetler" },
   { id: "industries", label: "Sektörler" },
   { id: "caseStudies", label: "Vaka Analizleri" },
-  { id: "insights", label: "Trade Intelligence" },
+  { id: "insights", label: "Sektör Analizleri" },
   { id: "about", label: "Hakkımızda" },
   { id: "contact", label: "İletişim" },
+  { id: "gizlilik", label: "Gizlilik Politikası" },
 ];
 
 // Anahtar → canlı adres parçası. Yeni sayfalarda anahtar zaten adrestir.
@@ -89,6 +90,7 @@ const DEFAULT_PAGES = {
   insights: PAGE_TEMPLATES.insights,
   about: PAGE_TEMPLATES.about,
   contact: PAGE_TEMPLATES.contact,
+  gizlilik: PAGE_TEMPLATES.gizlilik,
 };
 
 /**
