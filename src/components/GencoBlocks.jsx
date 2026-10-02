@@ -18,6 +18,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { usePathname } from "next/navigation";
 
 /* ========================================================================== *
  *  Dil yardımcıları
@@ -753,6 +754,132 @@ function MediaBlock({ block, ctx }) {
   );
 }
 
+/* ========================================================================== *
+ *  Alt sayfa blokları
+ * ---------------------------------------------------------------------------
+ *  Alt sayfalar (Hizmetler, Sektörler, Vaka Analizleri, Trade Intelligence,
+ *  Hakkımızda, İletişim) aşağıdaki genel bloklardan kurulur. Böylece her
+ *  sayfa ana sayfayla aynı mantıkla düzenlenebilir olur.
+ * ========================================================================== */
+
+/** Sayfa başlığı: turuncu üst etiket + büyük başlık + açıklama. */
+export const PAGE_HEADER_DEFAULTS = {
+  id: "seed_pageHeader",
+  type: "pageHeader",
+  badge: bi("Bölüm", "Section"),
+  heading: bi("Sayfa Başlığı", "Page Title"),
+  sub: bi("Bu alana sayfanın kısa açıklamasını yazın.", "Add a short description here."),
+};
+
+/** Kart ızgarası — sektör, hizmet ve vaka analizi listelerinde kullanılır. */
+export const CARD_GRID_DEFAULTS = {
+  id: "seed_cardGrid",
+  type: "cardGrid",
+  heading: bi("", ""),
+  sub: bi("", ""),
+  columns: 3,
+  cards: [
+    {
+      id: "cg_1",
+      eyebrow: bi("01", "01"),
+      title: bi("Kart Başlığı", "Card Title"),
+      desc: bi("Kart açıklaması buraya yazılır.", "Card description goes here."),
+      note: bi("✓ Alt not", "✓ Footer note"),
+      image: "",
+    },
+  ],
+};
+
+/** Özellik bloğu — hizmetler sayfasındaki "adım + özellik listesi + kutu" düzeni. */
+export const FEATURE_BLOCK_DEFAULTS = {
+  id: "seed_feature",
+  type: "featureBlock",
+  eyebrow: bi("01 / ADIM", "01 / STEP"),
+  heading: bi("Bölüm Başlığı", "Section Title"),
+  desc: bi("Açıklama metni.", "Description text."),
+  items: [
+    { id: "fb_1", title: bi("Özellik 1", "Feature 1") },
+    { id: "fb_2", title: bi("Özellik 2", "Feature 2") },
+    { id: "fb_3", title: bi("Özellik 3", "Feature 3") },
+    { id: "fb_4", title: bi("Özellik 4", "Feature 4") },
+  ],
+  boxTitle: bi("Kutu Başlığı", "Box Title"),
+  boxSub: bi("Kutu açıklaması.", "Box description."),
+};
+
+/** Makale listesi — Trade Intelligence sayfasındaki uzun içerikler. */
+export const ARTICLE_LIST_DEFAULTS = {
+  id: "seed_articles",
+  type: "articleList",
+  heading: bi("", ""),
+  articles: [
+    {
+      id: "al_1",
+      eyebrow: bi("01 / KONU", "01 / TOPIC"),
+      category: bi("ANALİZ", "ANALYSIS"),
+      title: bi("Makale Başlığı", "Article Title"),
+      body: bi("Makale metni.", "Article body text."),
+    },
+  ],
+};
+
+/** Koyu renkli eylem çağrısı şeridi. */
+export const CTA_BAND_DEFAULTS = {
+  id: "seed_cta",
+  type: "ctaBand",
+  badge: bi("BİZİMLE ÇALIŞIN", "WORK WITH US"),
+  heading: bi("Başlık", "Call to Action"),
+  sub: bi("Destek metni.", "Supporting text."),
+  buttonLabel: bi("Bize Ulaşın", "Contact Us"),
+  buttonHref: "/contact",
+  image: "",
+};
+
+/**
+ * İletişim bloğu — solda mesaj formu, sağda koyu renkli iletişim bilgileri
+ * kutusu ve altında harita. Form içeriği panelden düzenlenebilir.
+ */
+export const CONTACT_DEFAULTS = {
+  id: "seed_contact",
+  type: "contact",
+  formTitle: bi("Doğrudan Mesaj Gönderin", "Send a Direct Message"),
+  successMsg: bi(
+    "Mesajınız başarıyla alınmıştır. En kısa sürede dönüş yapacağız.",
+    "Your message has been received. We will get back to you shortly."
+  ),
+  nameLabel: bi("Ad Soyad / İsim", "Full Name"),
+  emailLabel: bi("Kurumsal E-Posta", "Corporate Email"),
+  phoneLabel: bi("Telefon Numarası", "Phone Number"),
+  messageLabel: bi("Proje Detayları ve Talebiniz", "Project Details & Inquiry"),
+  submitLabel: bi("Mesajı Gönder", "Send Message"),
+  infoTitle: bi("İletişim Bilgilerimiz", "Our Contact Information"),
+  addressLabel: bi("Merkez Adres", "Headquarters"),
+  addressVal: bi(
+    "Meriç Mah. 5746/5 SK. No: 3 İç Kapı No: Z1 Bornova/İzmir - TÜRKİYE",
+    "Meriç Mah. 5746/5 SK. No: 3 Inner Door No: Z1 Bornova/İzmir - TURKEY"
+  ),
+  phoneVal: bi("+90 232 462 16 49", "+90 232 462 16 49"),
+  emailVal: bi("info@gencotr.com", "info@gencotr.com"),
+  targetEmail: "info@gencotr.com",
+  mapUrl: bi(
+    "https://www.google.com/maps?q=Bornova%2C%20%C4%B0zmir%2C%20T%C3%BCrkiye&z=13&output=embed",
+    "https://www.google.com/maps?q=Bornova%2C%20Izmir%2C%20Turkey&z=13&output=embed"
+  ),
+};
+
+/** Sayaç şeridi. */
+export const STATS_BAND_DEFAULTS = {
+  id: "seed_stats",
+  type: "statsBand",
+  heading: bi("", ""),
+  items: [
+    { id: "st_1", value: bi("18+", "18+"), label: bi("Yıllık deneyim", "Years of experience") },
+    { id: "st_2", value: bi("40", "40"), label: bi("İhracat yapılan ülke", "Export destinations") },
+    { id: "st_3", value: bi("1200+", "1200+"), label: bi("Tamamlanan sevkiyat", "Completed shipments") },
+    { id: "st_4", value: bi("99%", "99%"), label: bi("Zamanında teslim", "On-time delivery") },
+  ],
+};
+
 export const FOOTER_DEFAULTS = {
   id: "seed_footer",
   type: "footer",
@@ -801,6 +928,13 @@ const SLIDER_DEFAULTS = {
 };
 
 export const BLOCK_LIBRARY = [
+  { type: "contact", label: "İletişim Formu + Harita", hint: "Mesaj formu, koyu bilgi kutusu ve gömülü harita.", accent: "#0f172a", create: () => ({ ...CONTACT_DEFAULTS, id: uid() }) },
+  { type: "pageHeader", label: "Sayfa Başlığı", hint: "Üst etiket + büyük başlık + açıklama (alt sayfaların tepesi).", accent: "#f97316", create: () => ({ ...PAGE_HEADER_DEFAULTS, id: uid() }) },
+  { type: "cardGrid", label: "Kart Izgarası", hint: "Sütun sayısı seçilebilir, her kartta başlık/açıklama/alt not ve görsel.", accent: "#0ea5e9", create: () => ({ ...CARD_GRID_DEFAULTS, id: uid(), cards: CARD_GRID_DEFAULTS.cards.map((c) => ({ ...c, id: uid() })) }) },
+  { type: "featureBlock", label: "Özellik + Kutu", hint: "Solda başlık ve kontrol listesi, sağda koyu kutu.", accent: "#22c55e", create: () => ({ ...FEATURE_BLOCK_DEFAULTS, id: uid(), items: FEATURE_BLOCK_DEFAULTS.items.map((i) => ({ ...i, id: uid() })) }) },
+  { type: "articleList", label: "Makale / İçerik Listesi", hint: "Üstü etiketli, başlıklı uzun metin kartları.", accent: "#8b5cf6", create: () => ({ ...ARTICLE_LIST_DEFAULTS, id: uid(), articles: ARTICLE_LIST_DEFAULTS.articles.map((a) => ({ ...a, id: uid() })) }) },
+  { type: "ctaBand", label: "Eylem Çağrısı (Koyu Şerit)", hint: "Koyu zeminli büyük çağrı bölümü, isteğe bağlı arka plan görseli.", accent: "#14b8a6", create: () => ({ ...CTA_BAND_DEFAULTS, id: uid() }) },
+  { type: "statsBand", label: "Sayaçlar", hint: "Koyu zeminde sayı + açıklama şeridi.", accent: "#f59e0b", create: () => ({ ...STATS_BAND_DEFAULTS, id: uid(), items: STATS_BAND_DEFAULTS.items.map((i) => ({ ...i, id: uid() })) }) },
   { type: "hero", label: "Hero / Manşet", hint: "Manşet: büyük başlık, açıklama, butonlar ve sağdaki kutu.", accent: "#f97316", create: () => ({ ...HERO_DEFAULTS, id: uid() }) },
   { type: "industries", label: "Sektörler", hint: "6'lı sektör ızgarası.", accent: "#0ea5e9", create: () => ({ ...INDUSTRIES_DEFAULTS, id: uid() }) },
   { type: "routes", label: "Ticari Hedef Kartları", hint: "Başlık + 3 hedef kartı.", accent: "#22c55e", create: () => ({ ...ROUTES_DEFAULTS, id: uid() }) },
@@ -824,6 +958,13 @@ const DEFAULTS_BY_TYPE = {
   media: MEDIA_DEFAULTS,
   textBlock: TEXT_DEFAULTS,
   slider: SLIDER_DEFAULTS,
+  contact: CONTACT_DEFAULTS,
+  pageHeader: PAGE_HEADER_DEFAULTS,
+  cardGrid: CARD_GRID_DEFAULTS,
+  featureBlock: FEATURE_BLOCK_DEFAULTS,
+  articleList: ARTICLE_LIST_DEFAULTS,
+  ctaBand: CTA_BAND_DEFAULTS,
+  statsBand: STATS_BAND_DEFAULTS,
 };
 
 /** Eksik alanları güvenle tamamlar; eski tek dilli kayıtları korur. */
@@ -931,6 +1072,52 @@ export function normaliseBlock(raw, index = 0) {
   if (type === "slider") {
     merged.images = Array.isArray(raw?.images) ? raw.images.filter(Boolean) : [];
     merged.interval = Number(raw?.interval) > 0 ? Number(raw.interval) : 4;
+  }
+
+  if (type === "cardGrid") {
+    const cards = Array.isArray(raw?.cards) ? raw.cards : base.cards;
+    merged.columns = [2, 3, 4].includes(Number(raw?.columns)) ? Number(raw.columns) : 3;
+    merged.cards = cards.map((c, i) => ({
+      id: c?.id || `cg_${i}`,
+      eyebrow: c?.eyebrow ?? bi("01", "01"),
+      title: c?.title ?? bi("", ""),
+      desc: c?.desc ?? bi("", ""),
+      note: c?.note ?? bi("", ""),
+      image: typeof c?.image === "string" ? c.image : "",
+    }));
+  }
+
+  if (type === "featureBlock") {
+    const items = Array.isArray(raw?.items) ? raw.items : base.items;
+    merged.items = items.map((it, i) => ({
+      id: it?.id || `fb_${i}`,
+      title: it?.title ?? bi("", ""),
+    }));
+  }
+
+  if (type === "articleList") {
+    const articles = Array.isArray(raw?.articles) ? raw.articles : base.articles;
+    merged.articles = articles.map((a, i) => ({
+      id: a?.id || `al_${i}`,
+      eyebrow: a?.eyebrow ?? bi("", ""),
+      category: a?.category ?? bi("", ""),
+      title: a?.title ?? bi("", ""),
+      body: a?.body ?? bi("", ""),
+    }));
+  }
+
+  if (type === "statsBand") {
+    const items = Array.isArray(raw?.items) ? raw.items : base.items;
+    merged.items = items.map((it, i) => ({
+      id: it?.id || `st_${i}`,
+      value: it?.value ?? bi("", ""),
+      label: it?.label ?? bi("", ""),
+    }));
+  }
+
+  if (type === "ctaBand") {
+    merged.image = typeof raw?.image === "string" ? raw.image : "";
+    merged.buttonHref = typeof raw?.buttonHref === "string" && raw.buttonHref ? raw.buttonHref : "#";
   }
 
   if (type === "hero") {
@@ -1074,6 +1261,8 @@ function ImageField({ value, onChange, onPick, edit, label = "Görsel Ekle", cla
 
 function NavBlock({ block, ctx }) {
   const { set, edit, lang, onLangChange, selected, id } = ctx;
+  // Bulunulan sayfa linki turuncu ve kalın gösterilir.
+  const pathname = usePathname();
 
   return (
     <nav className="bg-white border-b border-gray-200 py-4 sticky top-0 z-50 shadow-sm">
@@ -1122,7 +1311,11 @@ function NavBlock({ block, ctx }) {
               }
               href={edit ? undefined : link.href}
               onClick={(e) => edit && e.preventDefault()}
-              className="hover:text-[#f97316] transition whitespace-nowrap"
+              className={`transition whitespace-nowrap ${
+                !edit && pathname === link.href
+                  ? "text-[#f97316] font-bold"
+                  : "hover:text-[#f97316]"
+              }`}
               placeholder="Menü adı"
             />
           ))}
@@ -1517,7 +1710,726 @@ function FooterBlock({ block, ctx }) {
   );
 }
 
+/* -------------------------------------------------------------------------- *
+ *  Alt sayfa bloklarının görünümleri
+ * -------------------------------------------------------------------------- */
+
+function PageHeaderBlock({ block, ctx }) {
+  const { set, edit, lang } = ctx;
+  return (
+    <header className="py-16 sm:py-20 bg-white border-b border-gray-100">
+      <div className="max-w-5xl mx-auto px-4 text-center">
+        <EditableText
+          as="span"
+          editable={edit}
+          value={L(block.badge, lang)}
+          onChange={(v) => set("badge", mergeLang(block.badge, lang, v))}
+          className="text-[#f97316] font-bold tracking-wider text-sm mb-3 uppercase inline-block"
+          placeholder="Üst etiket"
+        />
+        <EditableText
+          as="h1"
+          editable={edit}
+          value={L(block.heading, lang)}
+          onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+          className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-6"
+          placeholder="Sayfa başlığı"
+        />
+        <EditableText
+          as="p"
+          editable={edit}
+          value={L(block.sub, lang)}
+          onChange={(v) => set("sub", mergeLang(block.sub, lang, v))}
+          className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto"
+          placeholder="Açıklama"
+        />
+      </div>
+    </header>
+  );
+}
+
+function CardGridBlock({ block, ctx }) {
+  const { set, edit, lang, pick } = ctx;
+  const cards = Array.isArray(block.cards) ? block.cards : [];
+  const cols =
+    block.columns === 2
+      ? "md:grid-cols-2"
+      : block.columns === 4
+        ? "md:grid-cols-2 lg:grid-cols-4"
+        : "md:grid-cols-2 lg:grid-cols-3";
+
+  const update = (id, patch) =>
+    set("cards", cards.map((c) => (c.id === id ? { ...c, ...patch } : c)));
+
+  const addCard = () =>
+    set("cards", [
+      ...cards,
+      {
+        id: `cg_${Math.random().toString(36).slice(2, 8)}`,
+        eyebrow: bi("Yeni", "New"),
+        title: bi("Kart Başlığı", "Card Title"),
+        desc: bi("Kart açıklaması buraya yazılır.", "Card description goes here."),
+        note: bi("", ""),
+        image: "",
+      },
+    ]);
+
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= cards.length) return;
+    const list = [...cards];
+    [list[i], list[j]] = [list[j], list[i]];
+    set("cards", list);
+  };
+
+  return (
+    <section className="py-16 sm:py-20 bg-white border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <EditableText
+          as="h2"
+          editable={edit}
+          value={L(block.heading, lang)}
+          onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+          className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-4"
+          placeholder="Bölüm başlığı"
+        />
+        <EditableText
+          as="p"
+          editable={edit}
+          value={L(block.sub, lang)}
+          onChange={(v) => set("sub", mergeLang(block.sub, lang, v))}
+          className="text-gray-600 text-center max-w-3xl mx-auto mb-12"
+          placeholder="Açıklama"
+        />
+
+        {edit && (
+          <div className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              Sütun
+            </span>
+            {[2, 3, 4].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  set("columns", n);
+                }}
+                className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition ${
+                  block.columns === n
+                    ? "bg-[#f97316] text-white"
+                    : "bg-white text-slate-600 border border-slate-300 hover:bg-slate-100"
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+            <span className="ml-auto text-[10px] text-slate-500">
+              Kart sayısı: {cards.length}
+            </span>
+          </div>
+        )}
+
+        <div className={`grid grid-cols-1 gap-8 ${cols}`}>
+          {cards.map((card, i) => (
+            <div
+              key={card.id}
+              className="bg-white border border-gray-200 rounded-xl shadow-sm hover:border-[#f97316] transition flex flex-col overflow-hidden"
+            >
+              <ImageField
+                value={card.image}
+                edit={edit}
+                onChange={(v) => update(card.id, { image: v })}
+                onPick={() => pick(`card:${card.id}`)}
+                label="Kart görseli"
+                className="w-full h-40"
+              />
+              <div className="p-8 flex-1">
+                <EditableText
+                  as="div"
+                  editable={edit}
+                  value={L(card.eyebrow, lang)}
+                  onChange={(v) => update(card.id, { eyebrow: mergeLang(card.eyebrow, lang, v) })}
+                  className="text-[#f97316] font-mono text-sm font-bold mb-2"
+                  placeholder="01 / KONU"
+                />
+                <EditableText
+                  as="h3"
+                  editable={edit}
+                  value={L(card.title, lang)}
+                  onChange={(v) => update(card.id, { title: mergeLang(card.title, lang, v) })}
+                  className="text-2xl font-bold text-[#0f172a] mb-3"
+                  placeholder="Kart başlığı"
+                />
+                <EditableText
+                  as="p"
+                  editable={edit}
+                  value={L(card.desc, lang)}
+                  onChange={(v) => update(card.id, { desc: mergeLang(card.desc, lang, v) })}
+                  className="text-gray-600 text-sm leading-relaxed"
+                  placeholder="Kart açıklaması"
+                />
+              </div>
+              <div className="border-t border-gray-100 pt-4 px-8 pb-5 text-xs font-semibold text-gray-500">
+                <EditableText
+                  as="div"
+                  editable={edit}
+                  value={L(card.note, lang)}
+                  onChange={(v) => update(card.id, { note: mergeLang(card.note, lang, v) })}
+                  placeholder="Alt not"
+                />
+              </div>
+              {edit && (
+                <div className="flex gap-1 px-4 pb-3">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      move(i, -1);
+                    }}
+                    title="Önceki karta taşı"
+                    className="grid h-6 w-6 place-items-center rounded bg-white border border-slate-300 text-[10px] font-bold text-slate-500 hover:bg-slate-100"
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      move(i, 1);
+                    }}
+                    title="Sonraki karta taşı"
+                    className="grid h-6 w-6 place-items-center rounded bg-white border border-slate-300 text-[10px] font-bold text-slate-500 hover:bg-slate-100"
+                  >
+                    →
+                  </button>
+                  <span className="flex-1" />
+                  <button
+                    type="button"
+                    title="Kartı sil"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      set("cards", cards.filter((c) => c.id !== card.id));
+                    }}
+                    className="grid h-6 w-6 place-items-center rounded bg-red-600 text-[10px] font-bold text-white hover:bg-red-700"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {edit && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                addCard();
+              }}
+              className="grid place-items-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 py-10 text-[11px] font-semibold text-slate-400 hover:border-[#f97316] hover:text-[#f97316] transition"
+            >
+              <span className="text-lg leading-none">+</span>Kart ekle
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FeatureBlockView({ block, ctx }) {
+  const { set, edit, lang } = ctx;
+  const items = Array.isArray(block.items) ? block.items : [];
+  const updateItem = (id, patch) =>
+    set("items", items.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+
+  return (
+    <section className="py-16 sm:py-20 bg-white border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <EditableText
+            as="div"
+            editable={edit}
+            value={L(block.eyebrow, lang)}
+            onChange={(v) => set("eyebrow", mergeLang(block.eyebrow, lang, v))}
+            className="text-[#f97316] font-mono text-sm font-bold mb-3"
+            placeholder="01 / ADIM"
+          />
+          <EditableText
+            as="h2"
+            editable={edit}
+            value={L(block.heading, lang)}
+            onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+            className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-4"
+            placeholder="Bölüm başlığı"
+          />
+          <EditableText
+            as="p"
+            editable={edit}
+            value={L(block.desc, lang)}
+            onChange={(v) => set("desc", mergeLang(block.desc, lang, v))}
+            className="text-gray-600 leading-relaxed mb-6"
+            placeholder="Açıklama"
+          />
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {items.map((it) => (
+              <li key={it.id} className="flex items-start gap-2 text-sm text-gray-700">
+                <span className="text-[#f97316] font-bold">✓</span>
+                <span className="flex-1">
+                  <EditableText
+                    as="span"
+                    editable={edit}
+                    value={L(it.title, lang)}
+                    onChange={(v) => updateItem(it.id, { title: mergeLang(it.title, lang, v) })}
+                    placeholder="Özellik"
+                  />
+                </span>
+                {edit && (
+                  <button
+                    type="button"
+                    title="Sil"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      set("items", items.filter((x) => x.id !== it.id));
+                    }}
+                    className="text-red-500 font-bold text-xs"
+                  >
+                    ✕
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+          {edit && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                set("items", [
+                  ...items,
+                  {
+                    id: `fb_${Math.random().toString(36).slice(2, 8)}`,
+                    title: bi("Yeni özellik", "New feature"),
+                  },
+                ]);
+              }}
+              className="mt-4 rounded-lg border border-dashed border-slate-300 px-3 py-1.5 text-[11px] font-semibold text-slate-500 hover:border-[#f97316] hover:text-[#f97316]"
+            >
+              + Özellik ekle
+            </button>
+          )}
+        </div>
+
+        <div className="bg-[#0f172a] p-8 rounded-xl text-white shadow-lg">
+          <EditableText
+            as="h3"
+            editable={edit}
+            value={L(block.boxTitle, lang)}
+            onChange={(v) => set("boxTitle", mergeLang(block.boxTitle, lang, v))}
+            className="text-xl font-bold mb-3 text-[#f97316]"
+            placeholder="Kutu başlığı"
+          />
+          <EditableText
+            as="p"
+            editable={edit}
+            value={L(block.boxSub, lang)}
+            onChange={(v) => set("boxSub", mergeLang(block.boxSub, lang, v))}
+            className="text-gray-300 text-sm leading-relaxed"
+            placeholder="Kutu açıklaması"
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ArticleListBlock({ block, ctx }) {
+  const { set, edit, lang } = ctx;
+  const articles = Array.isArray(block.articles) ? block.articles : [];
+  const update = (id, patch) =>
+    set("articles", articles.map((a) => (a.id === id ? { ...a, ...patch } : a)));
+
+  return (
+    <section className="py-16 sm:py-20 bg-white border-b border-gray-100">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <EditableText
+          as="h2"
+          editable={edit}
+          value={L(block.heading, lang)}
+          onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+          className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-10"
+          placeholder="Bölüm başlığı"
+        />
+        <div className="space-y-8">
+          {articles.map((a) => (
+            <article
+              key={a.id}
+              className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:border-[#f97316] transition relative"
+            >
+              {edit && (
+                <button
+                  type="button"
+                  title="Makaleyi sil"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    set("articles", articles.filter((x) => x.id !== a.id));
+                  }}
+                  className="absolute right-3 top-3 grid h-7 w-7 place-items-center rounded bg-red-600 text-white text-[10px] font-bold hover:bg-red-700"
+                >
+                  ✕
+                </button>
+              )}
+              <div className="flex justify-between items-center text-xs text-gray-400 font-mono mb-4 pr-8">
+                <EditableText
+                  as="span"
+                  editable={edit}
+                  value={L(a.eyebrow, lang)}
+                  onChange={(v) => update(a.id, { eyebrow: mergeLang(a.eyebrow, lang, v) })}
+                  className="text-[#f97316] font-bold text-sm tracking-wider"
+                  placeholder="01 / KONU"
+                />
+                <EditableText
+                  as="span"
+                  editable={edit}
+                  value={L(a.category, lang)}
+                  onChange={(v) => update(a.id, { category: mergeLang(a.category, lang, v) })}
+                  placeholder="KATEGORİ"
+                />
+              </div>
+              <EditableText
+                as="h2"
+                editable={edit}
+                value={L(a.title, lang)}
+                onChange={(v) => update(a.id, { title: mergeLang(a.title, lang, v) })}
+                className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-5"
+                placeholder="Makale başlığı"
+              />
+              <EditableText
+                as="div"
+                editable={edit}
+                value={L(a.body, lang)}
+                onChange={(v) => update(a.id, { body: mergeLang(a.body, lang, v) })}
+                className="text-gray-600 text-sm md:text-base leading-relaxed whitespace-pre-wrap"
+                placeholder="Makale metni"
+              />
+            </article>
+          ))}
+          {edit && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                set("articles", [
+                  ...articles,
+                  {
+                    id: `al_${Math.random().toString(36).slice(2, 8)}`,
+                    eyebrow: bi("Yeni", "New"),
+                    category: bi("", ""),
+                    title: bi("Makale Başlığı", "Article Title"),
+                    body: bi("", ""),
+                  },
+                ]);
+              }}
+              className="w-full rounded-xl border-2 border-dashed border-slate-300 py-8 text-[11px] font-semibold text-slate-400 hover:border-[#f97316] hover:text-[#f97316] transition"
+            >
+              + Makale ekle
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CtaBandBlock({ block, ctx }) {
+  const { set, edit, lang, pick } = ctx;
+  return (
+    <section className="py-16 sm:py-20 text-white relative overflow-hidden bg-[#0f172a]">
+      {block.image ? (
+        <img src={block.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20" />
+      ) : null}
+      {edit && !block.image && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            pick("image");
+          }}
+          className="absolute right-3 top-3 rounded-md bg-white/90 px-2 py-1 text-[10px] font-bold text-slate-700 hover:bg-orange-50"
+        >
+          Arka plan görseli ekle
+        </button>
+      )}
+      <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
+        <EditableText
+          as="span"
+          editable={edit}
+          value={L(block.badge, lang)}
+          onChange={(v) => set("badge", mergeLang(block.badge, lang, v))}
+          className="text-[#f97316] font-mono text-xs uppercase tracking-widest mb-3 block"
+          placeholder="ÜST ETİKET"
+        />
+        <EditableText
+          as="h2"
+          editable={edit}
+          value={L(block.heading, lang)}
+          onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+          className="text-2xl md:text-3xl font-bold mb-4"
+          placeholder="Başlık"
+        />
+        <EditableText
+          as="p"
+          editable={edit}
+          value={L(block.sub, lang)}
+          onChange={(v) => set("sub", mergeLang(block.sub, lang, v))}
+          className="text-gray-300 leading-relaxed max-w-3xl mx-auto mb-8"
+          placeholder="Açıklama"
+        />
+        <a
+          href={edit ? undefined : block.buttonHref || "#"}
+          onClick={(e) => edit && e.preventDefault()}
+          className="inline-block px-8 py-3.5 font-bold rounded bg-[#f97316] hover:opacity-90 transition"
+        >
+          <EditableText
+            as="span"
+            editable={edit}
+            value={L(block.buttonLabel, lang)}
+            onChange={(v) => set("buttonLabel", mergeLang(block.buttonLabel, lang, v))}
+            placeholder="Buton metni"
+          />
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function StatsBandBlock({ block, ctx }) {
+  const { set, edit, lang } = ctx;
+  const items = Array.isArray(block.items) ? block.items : [];
+  const update = (id, patch) =>
+    set("items", items.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+
+  return (
+    <section className="py-14 text-white bg-[#0f172a]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <EditableText
+          as="h2"
+          editable={edit}
+          value={L(block.heading, lang)}
+          onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+          className="text-2xl font-bold text-center mb-10"
+          placeholder="Başlık"
+        />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+          {items.map((it) => (
+            <div key={it.id} className="relative">
+              <div className="text-4xl font-extrabold text-[#f97316]">
+                <EditableText
+                  as="div"
+                  editable={edit}
+                  value={L(it.value, lang)}
+                  onChange={(v) => update(it.id, { value: mergeLang(it.value, lang, v) })}
+                  placeholder="00"
+                />
+              </div>
+              <div className="mt-2 text-sm text-gray-300">
+                <EditableText
+                  as="div"
+                  editable={edit}
+                  value={L(it.label, lang)}
+                  onChange={(v) => update(it.id, { label: mergeLang(it.label, lang, v) })}
+                  placeholder="Açıklama"
+                />
+              </div>
+              {edit && (
+                <button
+                  type="button"
+                  title="Sil"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    set("items", items.filter((x) => x.id !== it.id));
+                  }}
+                  className="absolute -top-2 -right-2 grid h-6 w-6 place-items-center rounded bg-red-600 text-[10px] font-bold text-white hover:bg-red-700"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * İletişim bloğu — mesaj formu + iletişim bilgileri + harita.
+ * Stüdyo modunda form alanları kapatılır (kullanıcı yanlışlıkla test mesajı
+ * göndermesin); canlı sitede form gerçekten çalışır.
+ */
+function ContactBlock({ block, ctx }) {
+  const { set, edit, lang } = ctx;
+  const [sent, setSent] = useState(false);
+
+  const E = (field, Tag, cls, placeholder, multiline = false) => (
+    <EditableText
+      as={Tag}
+      editable={edit}
+      value={L(block[field], lang)}
+      onChange={(v) => set(field, mergeLang(block[field], lang, v))}
+      className={cls}
+      placeholder={placeholder}
+      style={multiline ? undefined : undefined}
+    />
+  );
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (edit) return;
+    console.log(
+      `Form verisi ${block.targetEmail || "info@gencotr.com"} adresine gönderiliyor:`,
+      Object.fromEntries(new FormData(e.currentTarget).entries())
+    );
+    setSent(true);
+  };
+
+  return (
+    <section className="py-20 bg-[#fafafa]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+          {/* ---- Mesaj formu ---- */}
+          <div className="bg-white border border-gray-200 p-8 md:p-12 rounded-xl shadow-sm">
+            {E("formTitle", "h2", "text-2xl font-bold text-[#0f172a] mb-6", "Form başlığı")}
+
+            {!edit && sent ? (
+              <div className="bg-green-50 border border-green-200 text-green-800 p-6 rounded-lg text-sm font-medium">
+                {L(block.successMsg, lang)}
+              </div>
+            ) : edit ? (
+              <p className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-xs text-slate-500">
+                Canlı sitede bu alanda ziyaretçi doldurulabilir bir iletişim
+                formu görür. Stüdyo modunda form kapatılır.
+              </p>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {[
+                  ["name", block.nameLabel, "text", "Ali Tunçdamar", true],
+                  ["email", block.emailLabel, "email", "info@gencotr.com", true],
+                  ["phone", block.phoneLabel, "tel", "+90 ...", false],
+                ].map(([field, label, type, placeholder, required]) => (
+                  <div key={field}>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+                      {L(label, lang)}
+                    </label>
+                    <input
+                      type={type}
+                      name={field}
+                      required={required}
+                      placeholder={placeholder}
+                      className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:border-[#f97316] text-sm"
+                    />
+                  </div>
+                ))}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+                    {L(block.messageLabel, lang)}
+                  </label>
+                  <textarea
+                    name="message"
+                    rows={4}
+                    required
+                    className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:border-[#f97316] text-sm"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-[#f97316] text-white p-4 font-bold rounded-lg hover:bg-orange-600 transition shadow-md"
+                >
+                  {L(block.submitLabel, lang)}
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* ---- İletişim bilgileri ---- */}
+          <div className="bg-[#0f172a] p-8 md:p-12 rounded-xl text-white shadow-xl relative overflow-hidden">
+            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-[#f97316] opacity-10 rounded-full blur-2xl" />
+            <div className="relative">
+              {E("infoTitle", "h2", "text-2xl font-bold mb-8", "Bilgi başlığı")}
+              <div className="space-y-6 text-sm text-gray-300">
+                {[
+                  ["addressLabel", "addressVal", "leading-relaxed text-gray-300"],
+                  ["phoneLabel", "phoneVal", "font-bold text-white"],
+                  ["emailLabel", "emailVal", "font-bold text-white"],
+                ].map(([labelKey, valueKey, cls]) => (
+                  <div key={valueKey}>
+                    <EditableText
+                      as="span"
+                      editable={edit}
+                      value={L(block[labelKey], lang)}
+                      onChange={(v) => set(labelKey, mergeLang(block[labelKey], lang, v))}
+                      className="text-[#f97316] font-mono text-xs uppercase tracking-widest block mb-1"
+                      placeholder="ÜST ETİKET"
+                    />
+                    <EditableText
+                      as="p"
+                      editable={edit}
+                      value={L(block[valueKey], lang)}
+                      onChange={(v) => set(valueKey, mergeLang(block[valueKey], lang, v))}
+                      className={cls}
+                      placeholder="Değer"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ---- Harita ---- */}
+        {edit ? (
+          <div className="rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 p-5">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+              Harita bağlantısı (Google haritalar gömme adresi)
+            </span>
+            <EditableText
+              as="div"
+              editable
+              value={L(block.mapUrl, lang)}
+              onChange={(v) => set("mapUrl", mergeLang(block.mapUrl, lang, v))}
+              className="text-[11px] font-mono text-slate-600 break-all"
+              placeholder="https://www.google.com/maps/embed?..."
+            />
+          </div>
+        ) : L(block.mapUrl, lang) ? (
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm p-4">
+            <div className="w-full h-[400px] rounded-lg overflow-hidden">
+              <iframe
+                title="GENCO Location"
+                src={L(block.mapUrl, lang)}
+                className="w-full h-full"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
 const RENDERERS = {
+  contact: ContactBlock,
+  pageHeader: PageHeaderBlock,
+  cardGrid: CardGridBlock,
+  featureBlock: FeatureBlockView,
+  articleList: ArticleListBlock,
+  ctaBand: CtaBandBlock,
+  statsBand: StatsBandBlock,
   nav: NavBlock,
   hero: HeroBlock,
   industries: IndustriesBlock,

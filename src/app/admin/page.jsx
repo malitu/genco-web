@@ -30,6 +30,8 @@ import GencoBlocks, {
   L,
 } from "../../components/GencoBlocks";
 import HomePage from "../../components/HomePage";
+import SitePage from "../../components/SitePage";
+import { PAGE_TEMPLATES } from "../../components/PageTemplates";
 
 
 const STUDIO_DOC = ["settings", "genco_studio"];
@@ -43,20 +45,62 @@ const PAGES = [
   { id: "caseStudies", label: "Vaka Analizleri" },
   { id: "insights", label: "Trade Intelligence" },
   { id: "about", label: "Hakkımızda" },
+  { id: "contact", label: "İletişim" },
 ];
 
-// Ana sayfa şablonu GencoBlocks içinde tanımlıdır (DEFAULT_SITE_BLOCKS).
-// Böylece canlı site ile stüdyo aynı varsayılan içeriği kullanır.
+// Her sayfanın başlangıç şablonu. Ana sayfa GencoBlocks içinde, alt sayfalar
+// src/components/PageTemplates.js içinde tanımlıdır. Böylece canlı site ile
+// stüdyo aynı varsayılan içeriği kullanır ve stüdyoda hiçbir sayfa boş
+// görünmez.
 const DEFAULT_PAGES = {
   home: DEFAULT_SITE_BLOCKS,
-  services: [],
-  industries: [],
-  caseStudies: [],
-  insights: [],
-  about: [],
+  services: PAGE_TEMPLATES.services,
+  industries: PAGE_TEMPLATES.industries,
+  caseStudies: PAGE_TEMPLATES.caseStudies,
+  insights: PAGE_TEMPLATES.insights,
+  about: PAGE_TEMPLATES.about,
+  contact: PAGE_TEMPLATES.contact,
 };
 
 const DEFAULT_MEDIA = [{ id: "seed_logo", name: "GENCO Logo", url: "/logo.png" }];
+
+/**
+ * Stüdyo tuvali — seçili sayfayı canlı sitedekiyle aynı bileşenle çizer.
+ * Ana sayfa için HomePage, alt sayfalar için SitePage kullanılır; ikisi de
+ * blok motorunu paylaştığı için önizleme ile yayın sonucu birebir aynıdır.
+ */
+function StudioCanvas({
+  pageKey,
+  blocks,
+  preview,
+  editLang,
+  setEditLang,
+  selectedId,
+  setSelectedId,
+  onChange,
+  onDelete,
+  onMove,
+  onDuplicate,
+  onPickImage,
+}) {
+  const shared = {
+    blocks,
+    mode: preview ? "live" : "edit",
+    lang: editLang,
+    onLangChange: setEditLang,
+    selectedId,
+    onSelect: setSelectedId,
+    onChange,
+    onDelete,
+    onMove,
+    onDuplicate,
+    onPickImage,
+  };
+
+  if (pageKey === "home") return <HomePage {...shared} />;
+
+  return <SitePage pageKey={pageKey} {...shared} />;
+}
 
 /**
  * Eski (tek dilli) kayıtları iki dilli şablona taşır.
@@ -1229,59 +1273,20 @@ export default function GencoStudioAdmin() {
               {/* Tuval, canlı sitedekiyle BİREBİR aynı bileşeni render eder.
                   Bu yüzden burada gördüğünüz şey, Yayınla'dan sonra
                   gencotr.com'da açılacak şeyin ta kendisidir. */}
-              {activePage === "home" ? (
-                <HomePage
-                  blocks={blocks}
-                  mode={preview ? "live" : "edit"}
-                  lang={editLang}
-                  onLangChange={setEditLang}
-                  selectedId={selectedId}
-                  onSelect={setSelectedId}
-                  onChange={handleChangeField}
-                  onDelete={deleteBlock}
-                  onMove={moveBlock}
-                  onDuplicate={duplicateBlock}
-                  onPickImage={openImagePicker}
-                />
-              ) : (
-                <div className="bg-[#fafafa] min-h-[600px]">
-                  <div className="bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center">
-                    <img
-                      src="/logo.png"
-                      alt="GENCO"
-                      className="h-8 w-auto object-contain"
-                    />
-                    <div className="hidden sm:flex gap-5 text-[11px] font-semibold text-gray-500">
-                      <span>Hizmetler</span>
-                      <span>Sektörler</span>
-                      <span>Vaka Analizleri</span>
-                      <span>Trade Intelligence</span>
-                      <span>Hakkımızda</span>
-                      <span>İletişim</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-[10px] font-bold">
-                      <span className="bg-[#f97316] text-white px-1.5 py-0.5 rounded">
-                        TR
-                      </span>
-                      <span className="text-gray-300">|</span>
-                      <span className="text-gray-400">EN</span>
-                    </div>
-                  </div>
-                  <GencoBlocks
-                    blocks={blocks}
-                    mode={preview ? "live" : "edit"}
-                    selectedId={selectedId}
-                    onSelect={setSelectedId}
-                    onChange={handleChangeField}
-                    onDelete={deleteBlock}
-                    onMove={moveBlock}
-                  />
-                  <div className="bg-white py-8 border-t border-gray-200 px-6 flex flex-col md:flex-row justify-between items-center gap-2 text-[10px] text-gray-400 text-center">
-                    <div>© 2026 GENCO Imports & Exports LTD.</div>
-                    <div>Meriç Mah. 5746/5 SK. Bornova/İzmir — info@gencotr.com</div>
-                  </div>
-                </div>
-              )}
+              <StudioCanvas
+                pageKey={activePage}
+                blocks={blocks}
+                preview={preview}
+                editLang={editLang}
+                setEditLang={setEditLang}
+                selectedId={selectedId}
+                setSelectedId={setSelectedId}
+                onChange={handleChangeField}
+                onDelete={deleteBlock}
+                onMove={moveBlock}
+                onDuplicate={duplicateBlock}
+                onPickImage={openImagePicker}
+              />
             </div>
 
             {!preview && (
