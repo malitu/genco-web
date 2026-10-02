@@ -15,7 +15,16 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { db, storage, auth } from "../../lib/firebase";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  getDocs,
+  collection,
+  setDoc,
+  deleteDoc,
+  deleteField,
+  serverTimestamp,
+} from "firebase/firestore";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
   onAuthStateChanged,
@@ -40,6 +49,18 @@ import {
 
 
 const STUDIO_DOC = ["settings", "genco_studio"];
+
+/**
+ * Medya kütüphanesi artık stüdyo belgesinin içinde değil, ayrı belgelerde
+ * tutulur (genco_media/<id>).
+ *
+ * Neden: Firestore'un belge sınırı 1 MB'dır. Görseller eskiden aynı belgede
+ * saklanıyordu; sayfa metinleriyle birlikte sınır dolduğunda YAYINLAMA
+ * tamamen başarısız oluyordu. Her görsel kendi belgesinde olduğu için artık
+ * yalnızca tek bir görselin 1 MB'ı aşması sorun olur — o durumda zaten
+ * küçültme ile uyarı veriyoruz.
+ */
+const MEDIA_COLLECTION = "genco_media";
 
 /* Canonical page keys. Kept identical to the previous studio so any content
    already saved in Firestore keeps loading. */
@@ -207,35 +228,136 @@ function authErrorMessage(error) {
   }
 }
 
-/** Client-side downscale so we never push a huge blob into Firestore. */
-function fileToDataUrl(file, maxDim = 1600, quality = 0.82) {
+/** Bir işlemin süresini sınırlar. Storage takılırsa kullanıcı sonsuza kadar beklemez. */
+function withTimeout(promise, ms, label) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} zaman aşımı`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+/** MIME boş olsa bile dosyanın görsel olup olmadığını uzantıdan anlar. */
+const IMAGE_EXT = /\.(jpe?g|png|gif|webp|avif|bmp|svg|heic|heif|tiff?)$/i;
+const isImageFile = (f) =>
+  (typeof f.type === "string" && f.type.startsWith("image/")) ||
+  IMAGE_EXT.test(f.name || "");
+
+/**
+ * Görseli tarayıcıda küçültür ve hem Blob hem data URL üretir.
+ *
+ * Neden önemli:
+ *   • Storage'a küçültülmüş dosya gider (orijinal 10 MB telefon fotoğrafı
+ *     yüklenirse yükleme çok yavaşlar / başarısız olur).
+ *   • Storage çalışmazsa belgeye gömülecek data URL küçük kalır; Firestore'ın
+ *     1 MB belge sınırını tüketmez.
+ *   • PNG/JPEG dışındaki biçimler (HEIC vb.) tarayıcıda çözülemeyebilir;
+ *     o durumda dosya olduğu gibi kullanılır.
+ */
+function compressImage(file, maxDim = 1400, quality = 0.72) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(new Error("Dosya okunamadı."));
     reader.onload = () => {
-      const dataUrl = reader.result;
-      if (!file.type || !file.type.startsWith("image/")) {
-        resolve({ dataUrl, blob: file });
-        return;
-      }
+      const rawDataUrl = String(reader.result || "");
       const img = new Image();
-      img.onerror = () => resolve({ dataUrl, blob: file });
+
+      img.onerror = () =>
+        resolve({
+          dataUrl: rawDataUrl,
+          blob: file,
+          shrunk: false,
+          bytes: file.size,
+          reason: "tarayıcı bu biçimi çözemedi, dosya olduğu gibi kullanıldı",
+        });
+
       img.onload = () => {
-        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-        const w = Math.max(1, Math.round(img.width * scale));
-        const h = Math.max(1, Math.round(img.height * scale));
+        const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+        const w = Math.max(1, Math.round(img.naturalWidth * scale));
+        const h = Math.max(1, Math.round(img.naturalHeight * scale));
         const canvas = document.createElement("canvas");
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext("2d");
+        // Şeffaf PNG'lerde arka planın beyazlaşmasını önler (JPEG'a çevirirken).
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, w, h);
         ctx.drawImage(img, 0, 0, w, h);
-        const out = canvas.toDataURL("image/jpeg", quality);
-        resolve({ dataUrl: out, blob: file });
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              resolve({
+                dataUrl: rawDataUrl,
+                blob: file,
+                shrunk: false,
+                bytes: file.size,
+                reason: "sıkıştırılamadı",
+              });
+              return;
+            }
+            const fr = new FileReader();
+            fr.onerror = () =>
+              resolve({ dataUrl: rawDataUrl, blob, shrunk: true, bytes: blob.size });
+            fr.onload = () =>
+              resolve({
+                dataUrl: String(fr.result || rawDataUrl),
+                blob,
+                shrunk: true,
+                bytes: blob.size,
+                width: w,
+                height: h,
+              });
+            fr.readAsDataURL(blob);
+          },
+          "image/jpeg",
+          quality
+        );
       };
-      img.src = dataUrl;
+
+      img.src = rawDataUrl;
     };
     reader.readAsDataURL(file);
   });
+}
+
+/**
+ * Belgeye gömülecek data URL'in Firestore sınırına (1 MB) girmesini garanti
+ * eder. Gerekirse daha da küçültür; son çare olarak görseli atlar.
+ * Dönüş: { dataUrl, blob, bytes, shrunk, note }
+ */
+const INLINE_LIMIT = 700_000; // base64 karakter ≈ 520 KB ham
+
+async function prepareInlineImage(file, url) {
+  // url verilmediyse ilk sıkıştırmayı yap.
+  let result = url
+    ? { dataUrl: url, blob: file, bytes: file.size }
+    : await compressImage(file);
+
+  if (result.dataUrl.length <= INLINE_LIMIT) return result;
+
+  // 2. deneme: daha küçük.
+  const smaller = await compressImage(file, 1000, 0.6);
+  if (smaller.dataUrl.length <= INLINE_LIMIT) return smaller;
+
+  // 3. deneme: en küçük hâli.
+  const tiny = await compressImage(file, 720, 0.5);
+  if (tiny.dataUrl.length <= INLINE_LIMIT) return tiny;
+
+  throw new Error(
+    `Görsel küçültüldükten sonra hâlâ çok büyük (${Math.round(
+      tiny.dataUrl.length / 1024
+    )} KB). Lütfen daha küçük bir görsel seçin.`
+  );
+}
+
+/** Firestore'ın 1 MB belge sınırına ne kadar yaklaştığımızı tahmin eder. */
+function estimateBytes(value) {
+  try {
+    return new Blob([JSON.stringify(value)]).size;
+  } catch {
+    return JSON.stringify(value).length;
+  }
 }
 
 const cx = (...parts) => parts.filter(Boolean).join(" ");
@@ -315,6 +437,9 @@ export default function GencoStudioAdmin() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
   const [uploading, setUploading] = useState(false);
+  // Yükleme günlüğü: hangi dosya ne oldu? Kullanıcı "yüklenmedi" dediğinde
+  // sebebini buradan okuyabilmeli.
+  const [uploadLog, setUploadLog] = useState([]);
   // Tuvalde düzenlenen dil. Her metin iki dilli olduğu için TR ve EN'yi
   // ayrı ayrı yazabilirsiniz.
   const [editLang, setEditLang] = useState("TR");
@@ -410,7 +535,14 @@ export default function GencoStudioAdmin() {
               setDraft(fallback);
             }
           }
-          if (Array.isArray(data.mediaLibrary) && data.mediaLibrary.length) {
+          /* Medya kütüphanesi artık ayrı belgelerde tutulur. */
+          const mediaSnap = await getDocs(collection(db, MEDIA_COLLECTION));
+          if (!cancelled && !mediaSnap.empty) {
+            setMedia(
+              mediaSnap.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }))
+            );
+          } else if (Array.isArray(data.mediaLibrary) && data.mediaLibrary.length) {
+            // Geçiş: eski belgedeki görselleri kendi belgelerine taşı.
             setMedia(data.mediaLibrary);
           }
         }
@@ -550,33 +682,57 @@ export default function GencoStudioAdmin() {
 
   /* --- media ------------------------------------------------------------ */
   const handleFiles = async (files) => {
-    const list = Array.from(files || []).filter((f) =>
-      f.type.startsWith("image/")
-    );
-    if (!list.length) return;
+    const all = Array.from(files || []);
+    const list = all.filter(isImageFile);
+    const skipped = all.filter((f) => !isImageFile(f));
+
+    if (!list.length) {
+      flash(
+        skipped.length
+          ? "Seçilen dosya bir görsel değil. JPG, PNG, WebP veya GIF seçin."
+          : "Dosya seçilmedi.",
+        "warn"
+      );
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
 
     setUploading(true);
+    setUploadLog([]);
     const added = [];
+    const failed = [];
 
     for (const file of list) {
       try {
-        const { dataUrl } = await fileToDataUrl(file);
+        // 1) Görseli küçült. Storage'a da belgeye de bu sürüm gider.
+        const { dataUrl, blob, shrunk, bytes } = await prepareInlineImage(file);
+
         let url = dataUrl;
         let stored = false;
+        let why = "Storage kullanılamıyor, belgeye gömüldü";
 
-        // Prefer Firebase Storage; fall back to an inline data URL if the
-        // bucket is not enabled or security rules reject the write.
+        // 2) Firebase Storage dene. Zaman aşımı koyuyoruz: bucket kapalıysa ya
+        //    da kurallar reddederse SDK üstel geri çekilmeyle tekrar dener ve
+        //    düğme "Yükleniyor…" deyip sonsuza kadar asılı kalırdı.
         try {
-          const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-          const uploaded = await uploadBytes(
-            storageRef(storage, `genco-media/${Date.now()}_${safeName}`),
-            file,
-            { contentType: file.type }
+          const safeName = (file.name || "gorsel").replace(/[^a-zA-Z0-9._-]/g, "_");
+          const uploaded = await withTimeout(
+            uploadBytes(
+              storageRef(storage, `genco-media/${Date.now()}_${safeName}`),
+              blob,
+              { contentType: "image/jpeg" }
+            ),
+            15000,
+            "Storage yüklemesi"
           );
-          url = await getDownloadURL(uploaded);
+          url = await withTimeout(getDownloadURL(uploaded), 8000, "Storage bağlantısı");
           stored = true;
+          why = "Storage'a yüklendi";
         } catch (storageErr) {
-          console.warn("Storage yüklemesi başarısız, data URL kullanılıyor:", storageErr);
+          why =
+            "Storage kullanılamıyor, belgeye gömüldü" +
+            (storageErr?.code ? ` (${storageErr.code})` : "");
+          console.warn("Storage yüklemesi başarısız:", storageErr);
         }
 
         added.push({
@@ -584,22 +740,50 @@ export default function GencoStudioAdmin() {
           name: file.name,
           url,
           stored,
+          bytes,
         });
+        setUploadLog((log) => [
+          ...log,
+          {
+            name: file.name,
+            ok: true,
+            detail:
+              `${why} · ${Math.round((stored ? bytes : url.length) / 1024)} KB` +
+              (shrunk ? ` · ${Math.round(file.size / 1024)} KB'dan küçültüldü` : ""),
+          },
+        ]);
       } catch (e) {
+        failed.push(file.name);
+        setUploadLog((log) => [
+          ...log,
+          { name: file.name, ok: false, detail: `İşlenemedi: ${e?.message || e}` },
+        ]);
         console.error("Görsel işlenemedi:", e);
       }
     }
 
     if (added.length) {
       setMedia((prev) => [...prev, ...added]);
-      const inline = added.filter((m) => !m.stored).length;
-      flash(
+    }
+
+    const inline = added.filter((m) => !m.stored).length;
+    const parts = [];
+    if (added.length) {
+      parts.push(
         inline
-          ? `${added.length} görsel eklendi. ${inline} tanesi Storage'a yüklenemediği için belgeye gömüldü (Firestore 1 MB sınırına dikkat).`
-          : `${added.length} görsel kütüphaneye eklendi.`,
-        inline ? "warn" : "ok"
+          ? `${added.length} görsel eklendi (${inline} tanesi belgeye gömüldü)`
+          : `${added.length} görsel Storage'a yüklendi`
       );
     }
+    if (skipped.length) parts.push(`${skipped.length} dosya görsel olmadığı için atlandı`);
+    if (failed.length) parts.push(`${failed.length} dosya işlenemedi`);
+
+    flash(
+      parts.join(" · ") +
+        " — Kalıcı olması için «Kaydet & Yayınla» düğmesine basın.",
+      failed.length ? "error" : inline ? "warn" : "ok"
+    );
+
     setUploading(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -689,6 +873,12 @@ export default function GencoStudioAdmin() {
     const target = media.find((m) => m.id === id);
     if (!target) return;
     setMedia((prev) => prev.filter((m) => m.id !== id));
+    // Görselin kendi belgesini de sil (yayınlama sırasında yazılıyordu).
+    if (id !== "seed_logo") {
+      deleteDoc(doc(db, MEDIA_COLLECTION, id)).catch((e) =>
+        console.warn("Medya belgesi silinemedi:", e?.code || e?.message || e)
+      );
+    }
     // Detach from any block still referencing it.
     setDraft((prev) => {
       const next = { ...prev };
@@ -828,24 +1018,67 @@ export default function GencoStudioAdmin() {
           (list || []).map(({ __index, ...rest }) => rest),
         ])
       );
+
+      // Belge sınırına çok yaklaşıldıysa baştan uyar: Firestore 1 MB üstünü
+      // sessizce değil, "failed-precondition" hatasıyla reddeder ve kullanıcı
+      // neden yüklenmediğini anlamaz.
+      const bytes = estimateBytes(payload);
+      if (bytes > 900_000) {
+        flash(
+          `Sayfa içeriği ${Math.round(bytes / 1024)} KB — Firestore belge sınırı 1 MB. ` +
+            "Bazı görselleri kaldırın veya sayfa metinlerini kısaltın.",
+          "error"
+        );
+        setSaving(false);
+        return;
+      }
+
+      // Görseller ayrı belgelere yazılır (her biri kendi 1 MB bütçesiyle).
+      await Promise.all(
+        media.map((m) =>
+          setDoc(
+            doc(db, MEDIA_COLLECTION, m.id),
+            { name: m.name, url: m.url, stored: m.stored, bytes: m.bytes },
+            { merge: true }
+          ).catch((e) =>
+            console.warn(`Medya yazılamadı (${m.name}):`, e?.code || e?.message || e)
+          )
+        )
+      );
+
       await setDoc(
         doc(db, ...STUDIO_DOC),
         {
           pagesContent: payload,
-          mediaLibrary: media,
           customPages,
+          // Medya artık genco_media koleksiyonunda; eski alanı temizle ki
+          // belge şişip yayınlamayı bozmasın.
+          mediaLibrary: deleteField(),
           publishedAt: serverTimestamp(),
         },
         { merge: true }
       );
       setPublished(draft);
-      flash("Yayınlandı! Değişiklikler canlı siteye aktarıldı.");
+      flash(
+        media.some((m) => !m.stored)
+          ? "Yayınlandı! Not: Storage'a yüklenemeyen görseller belgeye gömüldü."
+          : "Yayınlandı! Değişiklikler canlı siteye aktarıldı."
+      );
     } catch (e) {
       console.error("Yayınlama hatası:", e);
-      flash(
-        "Yayınlanamadı. Firebase kurallarını ve belge boyutunu (1 MB) kontrol edin.",
-        "error"
-      );
+      const code = e?.code || "";
+      if (code === "permission-denied") {
+        flash("Yayınlanamadı: Firebase kuralları bu yazmayı reddetti.", "error");
+      } else if (code === "failed-precondition" || code === "invalid-argument") {
+        flash(
+          "Yayınlanamadı: Belge 1 MB sınırını aşıyor. Görselleri kaldırıp tekrar deneyin.",
+          "error"
+        );
+      } else if (code === "unavailable" || code === "deadline-exceeded") {
+        flash("Yayınlanamadı: Firebase'e ulaşılamadı. İnternet bağlantısını kontrol edin.", "error");
+      } else {
+        flash(`Yayınlanamadı (${code || "bilinmeyen hata"}). Detaylar konsolda.`, "error");
+      }
     } finally {
       setSaving(false);
     }
@@ -1280,8 +1513,9 @@ export default function GencoStudioAdmin() {
                       Görsel Yükle
                     </h3>
                     <p className="text-[10px] text-slate-500 mb-3">
-                      Firebase Storage&apos;a yüklenir. Depolama kapalıysa görsel
-                      belgeye gömülür.
+                      Görsel önce küçültülür (en fazla 1400 piksel), sonra
+                      Firebase Storage&apos;a yüklenir. Storage kullanılamazsa
+                      görsel kendi belgesine gömülür.
                     </p>
                     <Button
                       tone="dark"
@@ -1299,6 +1533,45 @@ export default function GencoStudioAdmin() {
                       onChange={(e) => handleFiles(e.target.files)}
                     />
                   </div>
+
+                  {/* ---- Yükleme günlüğü: neden yüklenmedi? ---- */}
+                  {uploadLog.length > 0 && (
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                          Son yükleme
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setUploadLog([])}
+                          className="text-[10px] font-bold text-slate-400 hover:text-slate-600"
+                        >
+                          Temizle
+                        </button>
+                      </div>
+                      {uploadLog.map((row, i) => (
+                        <div
+                          key={`${row.name}_${i}`}
+                          className="text-[10px] leading-snug flex gap-1.5"
+                        >
+                          <span className="shrink-0 font-bold">
+                            {row.ok ? "✅" : "❌"}
+                          </span>
+                          <span className="min-w-0">
+                            <strong className="text-slate-700">{row.name}</strong>
+                            <span className="block text-slate-500">
+                              {row.detail}
+                            </span>
+                          </span>
+                        </div>
+                      ))}
+                      <p className="text-[10px] text-slate-500 pt-1 border-t border-slate-200">
+                        Yüklenen görselin kalıcı olması için
+                        <strong> «Kaydet &amp; Yayınla» </strong>
+                        düğmesine basın.
+                      </p>
+                    </div>
+                  )}
 
                   <div className="flex items-center justify-between">
                     <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
