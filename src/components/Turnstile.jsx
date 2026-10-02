@@ -13,7 +13,18 @@
 
 import { useEffect, useRef } from "react";
 
-const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
+/**
+ * Site Key.
+ *
+ * Site Key zaten tasarım olarak herkese açıktır (sayfa HTML'inde görünür), bu
+ * yüzden değeri burada tutmak güvenlik riski oluşturmaz. Vercel'de
+ * NEXT_PUBLIC_TURNSTILE_SITE_KEY tanımlıysa o önceliklidir.
+ *
+ * NOT: Widget, Cloudflare'da tanımlı hostname'ler dışında çizilmez. Yerelde
+ * denemek için Turnstile ayarlarına `localhost` de eklenmelidir.
+ */
+const SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAFMYYY_DdHhEpuSH";
 
 let turnstilePromise = null;
 
@@ -59,11 +70,19 @@ export default function Turnstile({ onToken, disabled = false }) {
           theme: "light",
           callback: (token) => onTokenRef.current?.(token),
           "expired-callback": () => onTokenRef.current?.(null),
-          "error-callback": () => onTokenRef.current?.(null),
+          "error-callback": () => {
+            // Turnstile yüklenemezse (ör. engelli ağ, geçersiz site key)
+            // ziyaretçiyi engellememek için sessizce geçiyoruz; gizli bot
+            // tuzağı zaten devrede.
+            console.warn(
+              "Turnstile yüklenemedi; CAPTCHA bu oturumda atlanıyor."
+            );
+            onTokenRef.current?.(null);
+          },
         });
       })
-      .catch(() => {
-        /* Betik yüklenemezse form yine de gönderilebilir kalır. */
+      .catch((e) => {
+        console.warn("Turnstile betiği yüklenemedi:", e?.message || e);
       });
 
     return () => {

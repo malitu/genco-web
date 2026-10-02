@@ -60,7 +60,8 @@ export async function sendContactMessage(data) {
  * örneklerinde sayfa içinde durur); burada yalnızca sunucu yolu çalışmadığında
  * kullanılır.
  */
-const FALLBACK_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY || "";
+const FALLBACK_KEY =
+  process.env.NEXT_PUBLIC_WEB3FORMS_KEY || "6e9f568a-1ad5-4206-91c3-411c71ae9a82";
 
 async function sendDirect({ name, email, phone, message }) {
   if (!FALLBACK_KEY) return { ok: false };
