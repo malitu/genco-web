@@ -362,6 +362,75 @@ function estimateBytes(value) {
 
 const cx = (...parts) => parts.filter(Boolean).join(" ");
 
+/**
+ * Seçili bloğun düzenlenebilir bağlantı adreslerini listeler.
+ * Dönen her kayıt: { path, label, value, set(block, yeniDeğer) }
+ *   path  → handleChangeField'in güncelleyeceği üst alan (dizi elemanıysa
+ *           yeni dizi döndürür)
+ *
+ * Kapsam: menü linkleri, hero butonları, ticari hedef kartları ve
+ * eylem çağrısı butonu.
+ */
+function linkFieldsOf(block) {
+  if (!block) return [];
+
+  if (block.type === "nav") {
+    return (block.links || []).map((l, i) => ({
+      key: `nav_${l.id}`,
+      label: `${L(l.label, "TR") || `Link ${i + 1}`} adresi`,
+      value: l.href || "",
+      set: (b, v) => ({
+        ...b,
+        links: (b.links || []).map((x) =>
+          x.id === l.id ? { ...x, href: v } : x
+        ),
+      }),
+    }));
+  }
+
+  if (block.type === "hero") {
+    return [
+      {
+        key: "primaryHref",
+        label: `${L(block.primaryLabel, "TR") || "Birincil buton"} adresi`,
+        value: block.primaryHref || "",
+        set: (b, v) => ({ ...b, primaryHref: v }),
+      },
+      {
+        key: "secondaryHref",
+        label: `${L(block.secondaryLabel, "TR") || "İkincil buton"} adresi`,
+        value: block.secondaryHref || "",
+        set: (b, v) => ({ ...b, secondaryHref: v }),
+      },
+    ];
+  }
+
+  if (block.type === "routes") {
+    return (block.cards || []).map((c, i) => ({
+      key: `route_${c.id}`,
+      label: `${L(c.title, "TR") || `Kart ${i + 1}`} adresi`,
+      value: c.href || "/services",
+      set: (b, v) => ({
+        ...b,
+        cards: (b.cards || []).map((x) => (x.id === c.id ? { ...x, href: v } : x)),
+      }),
+    }));
+  }
+
+  if (block.type === "ctaBand") {
+    return [
+      {
+        key: "buttonHref",
+        label: `${L(block.buttonLabel, "TR") || "Buton"} adresi`,
+        value: block.buttonHref || "",
+        set: (b, v) => ({ ...b, buttonHref: v }),
+      },
+    ];
+  }
+
+  return [];
+}
+
 /* -------------------------------------------------------------------------- */
 /*  Small presentational pieces                                               */
 /* -------------------------------------------------------------------------- */
@@ -1430,6 +1499,41 @@ export default function GencoStudioAdmin() {
                                 Görsel yok — Medya sekmesinden atayın.
                               </p>
                             )}
+                          </div>
+                        )}
+
+                        {/* ---- Bağlantı adresleri ----
+                            Metin tuvalden düzenlenir; nereye gittiği ise
+                            buradan. Önceden hiçbir yerden değiştirilemiyordu,
+                            bu yüzden butonlar hep koda gömülü adrese gidiyordu. */}
+                        {linkFieldsOf(selectedBlock).length > 0 && (
+                          <div className="space-y-2 pt-1">
+                            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                              Bağlantı adresleri
+                            </label>
+                            {linkFieldsOf(selectedBlock).map((f) => (
+                              <div key={f.key} className="space-y-0.5">
+                                <span className="block text-[10px] text-slate-500">
+                                  {f.label}
+                                </span>
+                                <input
+                                  value={f.value || ""}
+                                  placeholder="/hizmetler"
+                                  onChange={(e) =>
+                                    handleChangeField(
+                                      selectedBlock.id,
+                                      f.key,
+                                      f.set(selectedBlock, e.target.value)
+                                    )
+                                  }
+                                  className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] font-mono focus:outline-none focus:border-genco-flame"
+                                />
+                              </div>
+                            ))}
+                            <p className="text-[10px] text-slate-400 leading-snug">
+                              Site içi sayfa için: <code>/hizmetler</code> · Dış
+                              bağlantı için tam adres.
+                            </p>
                           </div>
                         )}
 

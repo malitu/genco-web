@@ -173,7 +173,7 @@ export const ROUTES_DEFAULTS = {
         "Şirket içi ihracat departmanı kurma maliyetine katlanmadan, dışarıdan uluslararası satış ekibiniz olarak küresel alıcılara ulaşıyoruz.",
         "Without building an internal export department, we act as your outsourced international sales team reaching global buyers."
       ),
-      link: bi("İhracat Modelini İncele →", "View Export Model →"), image: "",
+      link: bi("İhracat Modelini İncele →", "View Export Model →"), href: "/services", image: "",
     },
     {
       id: "card_2",
@@ -183,7 +183,7 @@ export const ROUTES_DEFAULTS = {
         "Doğru üreticiyi bulma, kapasite denetimi, fiyat teklifi koordinasyonu ve uluslararası standartlara uygunluk süreçlerini yönetiyoruz.",
         "We handle manufacturer discovery, capacity audits, quotation coordination, and international standards compliance."
       ),
-      link: bi("Tedarik Süreçlerini Gör →", "View Sourcing Processes →"), image: "",
+      link: bi("Tedarik Süreçlerini Gör →", "View Sourcing Processes →"), href: "/services", image: "",
     },
     {
       id: "card_3",
@@ -193,7 +193,7 @@ export const ROUTES_DEFAULTS = {
         "Türkiye pazarını analiz etmek, yerel regülasyonlara uyum sağlamak ve güçlü bir distribütör veya bayi ağı kurarak ticari operasyon başlatmak.",
         "Analyzing the Turkish market, ensuring local regulatory compliance, and establishing strong distributor or dealer networks."
       ),
-      link: bi("Pazara Giriş Stratejisi →", "Market Entry Strategy →"), image: "",
+      link: bi("Pazara Giriş Stratejisi →", "Market Entry Strategy →"), href: "/contact", image: "",
     },
   ],
 };
@@ -1042,6 +1042,10 @@ export function normaliseBlock(raw, index = 0) {
       title: cards?.[i]?.title ?? b.title,
       desc: cards?.[i]?.desc ?? b.desc,
       link: cards?.[i]?.link ?? b.link,
+      href:
+        typeof cards?.[i]?.href === "string" && cards[i].href
+          ? cards[i].href
+          : b.href || "/services",
       image: typeof cards?.[i]?.image === "string" ? cards[i].image : "",
     }));
   }
@@ -1132,6 +1136,17 @@ export function normaliseBlock(raw, index = 0) {
  *  Yerinde düzenleme
  * ========================================================================== */
 
+/**
+ * Tıkla-yaz düzenlenebilir metin.
+ *
+ * ÖNEMLİ: as="a" ile kullanıldığında href, target, rel, aria-* gibi tüm
+ * özellikler etikete aktarılır. Daha önce yalnızca className/style
+ * aktarıldığı için canlı sitedeki menü ve kart linkleri hrefsiz <a> olarak
+ * çiziliyor, yani tıklanamıyordu.
+ *
+ * Stüdyo modunda içerik tıklanabilir olduğu için düzenleme sırasında link
+ * takibi yapılmaz (href yine de undefined gelir, ayrıca onClick de engeller).
+ */
 function EditableText({
   value,
   onChange,
@@ -1140,6 +1155,7 @@ function EditableText({
   style,
   placeholder = "Yazmaya başlamak için tıklayın…",
   editable = false,
+  ...rest
 }) {
   const ref = useRef(null);
   const [active, setActive] = useState(false);
@@ -1153,7 +1169,7 @@ function EditableText({
 
   if (!editable) {
     return (
-      <Tag className={className} style={style}>
+      <Tag className={className} style={style} {...rest}>
         {safeValue}
       </Tag>
     );
@@ -1161,6 +1177,7 @@ function EditableText({
 
   return (
     <Tag
+      {...rest}
       ref={ref}
       className={`${className} genco-editable${active ? " is-active" : ""}`}
       style={style}
@@ -1536,7 +1553,7 @@ function RoutesBlock({ block, ctx }) {
                 </div>
                 <EditableText as="a" editable={edit} value={L(card.link, lang)}
                   onChange={(v) => set("cards", block.cards.map((c) => (c.id === card.id ? { ...c, link: mergeLang(c.link, lang, v) } : c)))}
-                  href={edit ? undefined : "/services"}
+                  href={edit ? undefined : card.href || "/services"}
                   onClick={(e) => edit && e.preventDefault()}
                   className="text-[#0f172a] font-bold text-sm hover:text-[#f97316] flex items-center" placeholder="Bağlantı metni" />
               </div>
