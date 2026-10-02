@@ -1282,33 +1282,44 @@ function NavBlock({ block, ctx }) {
   const pathname = usePathname();
 
   return (
-    <nav className="bg-white border-b border-gray-200 py-4 sticky top-0 z-50 shadow-sm">
+    <nav className="bg-white border-b border-gray-200 py-3 sm:py-4 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        <div className="flex items-center">
-          {/* Logo alanı: stüdyoda tıklanınır, canlı sitede sadece görünür. */}
-          <div
-            className={
-              edit
-                ? "h-10 rounded border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center px-2 cursor-pointer hover:border-[#f97316]"
-                : "flex items-center"
-            }
-            onClick={(e) => {
-              if (!edit) return;
-              e.stopPropagation();
-              const url = window.prompt(
-                "Logo dosya yolu (örn. /logo.png):",
-                block.logo || "/logo.png"
-              );
-              if (url) set("logo", url);
-            }}
-            title={edit ? "Logo yolunu değiştir" : ""}
-          >
-            <img
-              src={block.logo || "/logo.png"}
-              alt="GENCO"
-              className="h-10 w-auto object-contain"
-            />
-          </div>
+        {/* Logo: canlı sitede ana sayfaya giden bağlantı, stüdyoda tıklanınır
+            alan (görsel yolunu değiştirmek için). */}
+        <div className="flex items-center -ml-1 sm:ml-0">
+          {edit ? (
+            <div
+              className="rounded border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center px-3 cursor-pointer hover:border-[#f97316]"
+              onClick={(e) => {
+                e.stopPropagation();
+                const url = window.prompt(
+                  "Logo dosya yolu (örn. /logo.png):",
+                  block.logo || "/logo.png"
+                );
+                if (url) set("logo", url);
+              }}
+              title="Logo yolunu değiştir"
+            >
+              <img
+                src={block.logo || "/logo.png"}
+                alt="GENCO"
+                className="h-12 sm:h-14 w-auto object-contain"
+              />
+            </div>
+          ) : (
+            <a
+              href="/"
+              aria-label="GENCO — ana sayfa"
+              title="Ana sayfa"
+              className="flex items-center rounded px-1 transition hover:opacity-80"
+            >
+              <img
+                src={block.logo || "/logo.png"}
+                alt="GENCO Imports & Exports"
+                className="h-12 sm:h-14 w-auto object-contain"
+              />
+            </a>
+          )}
         </div>
 
         <div className="hidden md:flex space-x-6 text-sm font-semibold text-gray-600">
