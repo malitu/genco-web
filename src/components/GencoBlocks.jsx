@@ -19,6 +19,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
+import { sendContactMessage, openMailFallback } from "../lib/contact";
 
 /* ========================================================================== *
  *  Dil yardımcıları
@@ -870,10 +871,22 @@ export const CONTACT_DEFAULTS = {
   phoneLabel: bi("Telefon Numarası", "Phone Number"),
   messageLabel: bi("Proje Detayları ve Talebiniz", "Project Details & Inquiry"),
   submitLabel: bi("Mesajı Gönder", "Send Message"),
+  notRobot: bi("Ben robot değilim", "I am not a robot"),
   // KVKK aydınlatma metni: form gönderilmeden önce onay zorunludur.
   consent: bi(
     "Kişisel verilerimin, talebimin değerlendirilmesi amacıyla işlenmesini ve tarafıma dönüş yapılmasını kabul ediyorum.",
     "I consent to the processing of my personal data for the purpose of evaluating my request and for GENCO to contact me."
+  ),
+  /* Gönderim başarısız olursa kullanıcıya gösterilen not. */
+  fallbackNote: bi(
+    "Mesajınız e-posta uygulamanızda hazır metin olarak açıldı — oradan göndermek için onaylayın.",
+    "Your message has been opened in your email app as a prepared draft — confirm there to send it."
+  ),
+  // Gönderim durumu
+  sendingLabel: bi("Gönderiliyor…", "Sending…"),
+  sendErrorLabel: bi(
+    "Mesaj gönderilemedi. Lütfen info@gencotr.com adresine yazın veya bizi telefonla arayın.",
+    "The message could not be sent. Please email info@gencotr.com or call us."
   ),
   privacyLabel: bi("Gizlilik Politikası", "Privacy Policy"),
   privacyHref: "/gizlilik",
@@ -2480,9 +2493,11 @@ function StatsBandBlock({ block, ctx }) {
  */
 function ContactBlock({ block, ctx }) {
   const { set, edit, lang } = ctx;
-  const [sent, setSent] = useState(false);
+  // status: null | "sending" | "sent" | "error"
+  const [status, setStatus] = useState(null);
+  const [errorText, setErrorText] = useState("");
 
-  const E = (field, Tag, cls, placeholder, multiline = false) => (
+  const E = (field, Tag, cls, placeholder) => (
     <EditableText
       as={Tag}
       editable={edit}
@@ -2490,19 +2505,77 @@ function ContactBlock({ block, ctx }) {
       onChange={(v) => set(field, mergeLang(block[field], lang, v))}
       className={cls}
       placeholder={placeholder}
-      style={multiline ? undefined : undefined}
     />
   );
 
-  const handleSubmit = (e) => {
+  /**
+   * Formu gönderir. Önce Web3Forms denenir; anahtar yoksa ya da gönderim
+   * başarısız olursa mesaj kaybolmaması için kullanıcının mail uygulaması
+   * hazır metinle açılır.
+   */
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (edit) return;
-    console.log(
-      `Form verisi ${block.targetEmail || "info@gencotr.com"} adresine gönderiliyor:`,
-      Object.fromEntries(new FormData(e.currentTarget).entries())
+    if (edit || status === "sending") return;
+
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const data = {
+      name: String(fd.get("name") || "").trim(),
+      email: String(fd.get("email") || "").trim(),
+      phone: String(fd.get("phone") || "").trim(),
+      message: String(fd.get("message") || "").trim(),
+      // Gizli tuzak: botlar doldurur, insanlar göremez.
+      botcheck: String(fd.get("website") || ""),
+    };
+
+    setStatus("sending");
+    setErrorText("");
+
+    const result = await sendContactMessage(data);
+
+    if (result.ok) {
+      setStatus("sent");
+      form.reset();
+      return;
+    }
+
+    // Anahtar tanımlı değilse ya da servis yanıt vermediyse yedek yöntem.
+    openMailFallback(data);
+    setErrorText(
+      result.code === "NO_KEY"
+        ? L(block.fallbackNote, lang) ||
+          "Mesajınız e-posta uygulamanızda açıldı. Göndermek için oradan onaylayın."
+        : L(block.fallbackNote, lang) ||
+          "Mesajınız e-posta uygulamanızda açıldı. Göndermek için oradan onaylayın."
     );
-    setSent(true);
+    setStatus("error");
   };
+
+  // Zorunlu alan ipucuları — sahte isim/adres gösterilmez, çünkü ziyaretçi
+  // bunları gerçek bilgi sanabiliyor.
+  const HINTS = {
+    tr: {
+      name: "Adınız ve soyadınız",
+      email: "ornek@sirketiniz.com",
+      phone: "Örn. +90 5XX XXX XX XX",
+      message: "Talebinizi birkaç cümleyle özetleyin",
+      notRobot: "Ben robot değilim",
+      required: "Zorunlu alan",
+      sending: "Gönderiliyor…",
+      send: L(block.submitLabel, lang),
+    },
+    en: {
+      name: "Your full name",
+      email: "you@company.com",
+      phone: "e.g. +90 5XX XXX XX XX",
+      message: "Briefly describe your request",
+      notRobot: "I am not a robot",
+      required: "Required",
+      sending: "Sending…",
+      send: L(block.submitLabel, lang),
+    },
+  };
+  const h = HINTS[(lang || "TR").toLowerCase()] || HINTS.tr;
 
   return (
     <section className="py-20 bg-[#fafafa]">
@@ -2512,7 +2585,7 @@ function ContactBlock({ block, ctx }) {
           <div className="bg-white border border-gray-200 p-8 md:p-12 rounded-xl shadow-sm">
             {E("formTitle", "h2", "text-2xl font-bold text-[#0f172a] mb-6", "Form başlığı")}
 
-            {!edit && sent ? (
+            {!edit && status === "sent" ? (
               <div className="bg-green-50 border border-green-200 text-green-800 p-6 rounded-lg text-sm font-medium">
                 {L(block.successMsg, lang)}
               </div>
@@ -2524,34 +2597,68 @@ function ContactBlock({ block, ctx }) {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 {[
-                  ["name", block.nameLabel, "text", "Ali Tunçdamar", true],
-                  ["email", block.emailLabel, "email", "info@gencotr.com", true],
-                  ["phone", block.phoneLabel, "tel", "+90 ...", false],
-                ].map(([field, label, type, placeholder, required]) => (
+                  ["name", block.nameLabel, "text", h.name],
+                  ["email", block.emailLabel, "email", h.email],
+                  ["phone", block.phoneLabel, "tel", h.phone],
+                ].map(([field, label, type, placeholder]) => (
                   <div key={field}>
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
-                      {L(label, lang)}
+                      {L(label, lang)}{" "}
+                      <span className="text-[#f97316]" title={h.required}>
+                        *
+                      </span>
                     </label>
                     <input
                       type={type}
                       name={field}
-                      required={required}
+                      required
+                      autoComplete={field === "name" ? "name" : field === "email" ? "email" : "tel"}
                       placeholder={placeholder}
                       className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:border-[#f97316] text-sm"
                     />
                   </div>
                 ))}
+
+                {/* Gizli tuzak: botlar doldurur. Ekran dışında ve aria-hidden. */}
+                <div className="hidden" aria-hidden="true">
+                  <label>
+                    Website
+                    <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+                  </label>
+                </div>
+
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
-                    {L(block.messageLabel, lang)}
+                    {L(block.messageLabel, lang)}{" "}
+                    <span className="text-[#f97316]" title={h.required}>
+                      *
+                    </span>
                   </label>
                   <textarea
                     name="message"
                     rows={4}
                     required
+                    placeholder={h.message}
                     className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:border-[#f97316] text-sm"
                   />
                 </div>
+
+                {/* ---- Ben robot değilim ---- */}
+                <label className="flex items-center gap-2.5 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    name="notRobot"
+                    required
+                    className="h-4 w-4 shrink-0 accent-[#f97316]"
+                  />
+                  <EditableText
+                    as="span"
+                    editable={edit}
+                    value={L(block.notRobot, lang)}
+                    onChange={(v) => set("notRobot", mergeLang(block.notRobot, lang, v))}
+                    placeholder="Ben robot değilim"
+                  />
+                </label>
 
                 {/* ---- KVKK onayı: gönderim için zorunlu ---- */}
                 <label className="flex items-start gap-2.5 text-[11px] leading-relaxed text-gray-600">
@@ -2599,10 +2706,17 @@ function ContactBlock({ block, ctx }) {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#f97316] text-white p-4 font-bold rounded-lg hover:bg-orange-600 transition shadow-md"
+                  disabled={status === "sending"}
+                  className="w-full bg-[#f97316] text-white p-4 font-bold rounded-lg hover:bg-orange-600 transition shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {L(block.submitLabel, lang)}
+                  {status === "sending" ? h.sending : h.send}
                 </button>
+
+                {status === "error" && (
+                  <p className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-[12px] leading-relaxed text-amber-900">
+                    {errorText}
+                  </p>
+                )}
               </form>
             )}
           </div>
