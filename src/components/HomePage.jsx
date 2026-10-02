@@ -30,6 +30,7 @@ export default function HomePage({
   onDelete,
   onMove,
   onDuplicate,
+  onPickImage,
 }) {
   // Dil kaynağı tek yerden yönetilir:
   //   • Stüdyo modunda dil, üstteki "Dil" seçicisinden gelir (langProp).
@@ -73,6 +74,7 @@ export default function HomePage({
         onDelete={onDelete}
         onMove={onMove}
         onDuplicate={onDuplicate}
+        onPickImage={onPickImage}
       />
     </div>
   );

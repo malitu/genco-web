@@ -133,12 +133,12 @@ export const INDUSTRIES_DEFAULTS = {
     "In addition to our core domains where we hold deep technical knowledge and networks, our flexible methodology allows us to manage trade operations in any sector."
   ),
   items: [
-    { id: "ind_1", title: bi("Demir Çelik", "Steel & Metals") },
-    { id: "ind_2", title: bi("Denizcilik", "Marine") },
-    { id: "ind_3", title: bi("Tohumculuk", "Agriculture") },
-    { id: "ind_4", title: bi("Medikal", "Medical") },
-    { id: "ind_5", title: bi("Otomotiv", "Automotive") },
-    { id: "ind_6", title: bi("Femtech", "Femtech") },
+    { id: "ind_1", title: bi("Demir Çelik", "Steel & Metals"), image: "" },
+    { id: "ind_2", title: bi("Denizcilik", "Marine"), image: "" },
+    { id: "ind_3", title: bi("Tohumculuk", "Agriculture"), image: "" },
+    { id: "ind_4", title: bi("Medikal", "Medical"), image: "" },
+    { id: "ind_5", title: bi("Otomotiv", "Automotive"), image: "" },
+    { id: "ind_6", title: bi("Femtech", "Femtech"), image: "" },
   ],
   note: bi(
     "* Uzmanlık alanlarımız haricinde, talebe göre her sektörde özel pazar araştırması ve operasyon yönetimi sağlanmaktadır.",
@@ -163,7 +163,7 @@ export const ROUTES_DEFAULTS = {
         "Şirket içi ihracat departmanı kurma maliyetine katlanmadan, dışarıdan uluslararası satış ekibiniz olarak küresel alıcılara ulaşıyoruz.",
         "Without building an internal export department, we act as your outsourced international sales team reaching global buyers."
       ),
-      link: bi("İhracat Modelini İncele →", "View Export Model →"),
+      link: bi("İhracat Modelini İncele →", "View Export Model →"), image: "",
     },
     {
       id: "card_2",
@@ -173,7 +173,7 @@ export const ROUTES_DEFAULTS = {
         "Doğru üreticiyi bulma, kapasite denetimi, fiyat teklifi koordinasyonu ve uluslararası standartlara uygunluk süreçlerini yönetiyoruz.",
         "We handle manufacturer discovery, capacity audits, quotation coordination, and international standards compliance."
       ),
-      link: bi("Tedarik Süreçlerini Gör →", "View Sourcing Processes →"),
+      link: bi("Tedarik Süreçlerini Gör →", "View Sourcing Processes →"), image: "",
     },
     {
       id: "card_3",
@@ -183,7 +183,7 @@ export const ROUTES_DEFAULTS = {
         "Türkiye pazarını analiz etmek, yerel regülasyonlara uyum sağlamak ve güçlü bir distribütör veya bayi ağı kurarak ticari operasyon başlatmak.",
         "Analyzing the Turkish market, ensuring local regulatory compliance, and establishing strong distributor or dealer networks."
       ),
-      link: bi("Pazara Giriş Stratejisi →", "Market Entry Strategy →"),
+      link: bi("Pazara Giriş Stratejisi →", "Market Entry Strategy →"), image: "",
     },
   ],
 };
@@ -207,6 +207,7 @@ export const METHOD_DEFAULTS = {
     "Extensive experience across Medical, Femtech, Agriculture, Marine, and Automotive sectors."
   ),
   methodTitle: bi("The GENCO Method", "The GENCO Method"),
+  image: "",
   items: [
     { id: "m_1", name: bi("Araştırma (Research)", "Research"), sub: bi("Veri Odaklı", "Data-Driven") },
     { id: "m_2", name: bi("İletişim (Connect)", "Connect"), sub: bi("Stratejik B2B", "Strategic B2B") },
@@ -347,6 +348,7 @@ export function normaliseBlock(raw, index = 0) {
     merged.items = base.items.map((b, i) => ({
       id: items?.[i]?.id || b.id,
       title: items?.[i]?.title ?? b.title,
+      image: typeof items?.[i]?.image === "string" ? items[i].image : "",
     }));
   }
 
@@ -358,6 +360,7 @@ export function normaliseBlock(raw, index = 0) {
       title: cards?.[i]?.title ?? b.title,
       desc: cards?.[i]?.desc ?? b.desc,
       link: cards?.[i]?.link ?? b.link,
+      image: typeof cards?.[i]?.image === "string" ? cards[i].image : "",
     }));
   }
 
@@ -443,6 +446,74 @@ function EditableText({
 }
 
 /* ========================================================================== *
+ *  Görsel alanı — stüdyoda tıklanınır, canlı sitede salt görsel
+ * ========================================================================== */
+
+/**
+ * Bir bloğun görselini gösterir.
+ *   • Canlı modda: yalnızca görsel.
+ *   • Stüdyo modunda: tıklanınır; boşsa "+ Görsel Ekle", doluysa
+ *     "Değiştir / Kaldır" düğmeleri çıkar.
+ *
+ * @param {string}   value   mevcut görsel yolu
+ * @param {Function} onChange (yeniYol) => void
+ * @param {Function} onPick   medya kütüphanesini açan geri çağrım
+ * @param {string}   label    boşken gösterilen ipucu
+ */
+function ImageField({ value, onChange, onPick, edit, label = "Görsel Ekle", className = "", imgClass = "" }) {
+  if (!edit) {
+    if (!value) return null;
+    return <img src={value} alt="" className={className || imgClass} draggable={false} />;
+  }
+
+  if (!value) {
+    return (
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onPick?.();
+        }}
+        className={`${className} group relative grid place-items-center border-2 border-dashed border-slate-300 bg-slate-50 text-slate-400 hover:border-[#f97316] hover:text-[#f97316] transition`}
+      >
+        <span className="flex flex-col items-center gap-1 text-[11px] font-semibold">
+          <span className="text-lg leading-none">+</span>
+          {label}
+        </span>
+      </button>
+    );
+  }
+
+  return (
+    <div className={`${className} group relative overflow-hidden`}>
+      <img src={value} alt="" className="h-full w-full object-cover" draggable={false} />
+      <div className="absolute inset-0 flex items-center justify-center gap-1.5 bg-slate-900/55 opacity-0 transition group-hover:opacity-100">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onPick?.();
+          }}
+          className="rounded-md bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-orange-50"
+        >
+          Değiştir
+        </button>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onChange("");
+          }}
+          className="rounded-md bg-red-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-red-700"
+        >
+          Kaldır
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ========================================================================== *
  *  Blok render'ları
  * ========================================================================== */
 
@@ -452,21 +523,30 @@ function NavBlock({ block, ctx }) {
   return (
     <nav className="bg-white border-b border-gray-200 py-4 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-            logo
-          </span>
+        <div className="flex items-center">
+          {/* Logo alanı: stüdyoda tıklanınır, canlı sitede sadece görünür. */}
           <div
-            className="w-40 h-10 rounded border border-dashed border-gray-300 bg-gray-50 overflow-hidden flex items-center justify-center"
+            className={
+              edit
+                ? "h-10 rounded border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center px-2 cursor-pointer hover:border-[#f97316]"
+                : "flex items-center"
+            }
             onClick={(e) => {
               if (!edit) return;
               e.stopPropagation();
-              const url = window.prompt("Logo dosya yolu (örn. /logo.png):", block.logo || "/logo.png");
+              const url = window.prompt(
+                "Logo dosya yolu (örn. /logo.png):",
+                block.logo || "/logo.png"
+              );
               if (url) set("logo", url);
             }}
             title={edit ? "Logo yolunu değiştir" : ""}
           >
-            <img src={block.logo || "/logo.png"} alt="GENCO" className="h-10 w-auto object-contain" />
+            <img
+              src={block.logo || "/logo.png"}
+              alt="GENCO"
+              className="h-10 w-auto object-contain"
+            />
           </div>
         </div>
 
@@ -529,7 +609,7 @@ function NavBlock({ block, ctx }) {
 }
 
 function HeroBlock({ block, ctx }) {
-  const { set, edit, lang } = ctx;
+  const { set, edit, lang, pick } = ctx;
   const E = (field, Tag, cls, placeholder) => (
     <EditableText
       as={Tag}
@@ -567,9 +647,31 @@ function HeroBlock({ block, ctx }) {
           </div>
         </div>
 
+        {/* Sağ sütun: stüdyoda görsel eklenebilir. Görsel varsa fotoğraf,
+            yoksa (veya görsel kaldırılmışsa) bilgi kutusu gösterilir. */}
         {block.image ? (
-          <div className="relative overflow-hidden rounded-lg shadow-xl border border-gray-200 bg-gray-100 aspect-[4/3]">
-            <img src={block.image} alt="" className="w-full h-full object-cover" />
+          <div className="relative aspect-[4/3]">
+            <ImageField
+              value={block.image}
+              onChange={(v) => set("image", v)}
+              onPick={() => pick("image")}
+              edit={edit}
+              className="w-full h-full rounded-lg shadow-xl border border-gray-200 overflow-hidden"
+            />
+          </div>
+        ) : edit ? (
+          <div className="relative aspect-[4/3]">
+            <ImageField
+              value=""
+              onChange={(v) => set("image", v)}
+              onPick={() => pick("image")}
+              edit={edit}
+              label="Manşet görseli ekle"
+              className="w-full h-full rounded-lg border-2 border-dashed bg-white"
+            />
+            <p className="mt-2 text-center text-[11px] text-slate-400">
+              Görsel eklemezseniz sağdaki bilgi kutusu kullanılır.
+            </p>
           </div>
         ) : (
           <div className="relative bg-[#0f172a] p-8 rounded-lg text-white shadow-xl overflow-hidden">
@@ -591,7 +693,7 @@ function HeroBlock({ block, ctx }) {
 }
 
 function IndustriesBlock({ block, ctx }) {
-  const { set, edit, lang } = ctx;
+  const { set, edit, lang, pick } = ctx;
 
   return (
     <section className="py-20 bg-white border-b border-gray-100">
@@ -610,11 +712,41 @@ function IndustriesBlock({ block, ctx }) {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
           {(block.items || []).map((item, i) => (
-            <div key={item.id} className="bg-[#fafafa] border border-gray-200 p-6 rounded-lg hover:border-[#f97316] transition">
-              <div className="text-[#f97316] font-bold text-lg mb-1">{String(i + 1).padStart(2, "0")}</div>
-              <EditableText as="h4" editable={edit} value={L(item.title, lang)}
-                onChange={(v) => set("items", block.items.map((x) => (x.id === item.id ? { ...x, title: mergeLang(x.title, lang, v) } : x)))}
-                className="font-bold text-[#0f172a]" placeholder="Sektör adı" />
+            <div
+              key={item.id}
+              className={`bg-[#fafafa] border border-gray-200 rounded-lg hover:border-[#f97316] transition overflow-hidden ${
+                item.image ? "" : "p-6"
+              }`}
+            >
+              {item.image ? (
+                <>
+                  <ImageField
+                    value={item.image}
+                    onChange={(v) =>
+                      set("items", block.items.map((x) => (x.id === item.id ? { ...x, image: v } : x)))
+                    }
+                    onPick={() => pick(`item:${item.id}`)}
+                    edit={edit}
+                    label="Sektör görseli"
+                    className="w-full h-28"
+                  />
+                  <div className="p-4 text-center">
+                    <div className="text-[#f97316] font-bold text-lg mb-1">
+                      {String(i + 1).padStart(2, "0")}
+                    </div>
+                    <EditableText as="h4" editable={edit} value={L(item.title, lang)}
+                      onChange={(v) => set("items", block.items.map((x) => (x.id === item.id ? { ...x, title: mergeLang(x.title, lang, v) } : x)))}
+                      className="font-bold text-[#0f172a]" placeholder="Sektör adı" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-[#f97316] font-bold text-lg mb-1">{String(i + 1).padStart(2, "0")}</div>
+                  <EditableText as="h4" editable={edit} value={L(item.title, lang)}
+                    onChange={(v) => set("items", block.items.map((x) => (x.id === item.id ? { ...x, title: mergeLang(x.title, lang, v) } : x)))}
+                    className="font-bold text-[#0f172a]" placeholder="Sektör adı" />
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -630,7 +762,7 @@ function IndustriesBlock({ block, ctx }) {
 }
 
 function RoutesBlock({ block, ctx }) {
-  const { set, edit, lang } = ctx;
+  const { set, edit, lang, pick } = ctx;
 
   return (
     <section className="py-20 bg-[#fafafa]">
@@ -646,23 +778,45 @@ function RoutesBlock({ block, ctx }) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {(block.cards || []).map((card) => (
-            <div key={card.id} className="bg-white border border-gray-200 p-8 hover:border-[#f97316] hover:shadow-xl transition flex flex-col justify-between rounded-lg">
-              <div>
-                <EditableText as="div" editable={edit} value={L(card.badge, lang)}
-                  onChange={(v) => set("cards", block.cards.map((c) => (c.id === card.id ? { ...c, badge: mergeLang(c.badge, lang, v) } : c)))}
-                  className="text-[#f97316] font-bold text-xs mb-3 uppercase tracking-wider" placeholder="Etiket" />
-                <EditableText as="h3" editable={edit} value={L(card.title, lang)}
-                  onChange={(v) => set("cards", block.cards.map((c) => (c.id === card.id ? { ...c, title: mergeLang(c.title, lang, v) } : c)))}
-                  className="text-xl font-bold text-[#1e293b] mb-3" placeholder="Kart başlığı" />
-                <EditableText as="p" editable={edit} value={L(card.desc, lang)}
-                  onChange={(v) => set("cards", block.cards.map((c) => (c.id === card.id ? { ...c, desc: mergeLang(c.desc, lang, v) } : c)))}
-                  className="text-gray-600 text-sm mb-6 leading-relaxed" placeholder="Kart açıklaması" />
+            <div
+              key={card.id}
+              className="bg-white border border-gray-200 hover:border-[#f97316] hover:shadow-xl transition flex flex-col rounded-lg overflow-hidden"
+            >
+              {edit ? (
+                <ImageField
+                  value={card.image || ""}
+                  onChange={(v) =>
+                    set("cards", block.cards.map((c) => (c.id === card.id ? { ...c, image: v } : c)))
+                  }
+                  onPick={() => pick(`card:${card.id}`)}
+                  edit={edit}
+                  label="Kart görseli"
+                  className="w-full h-40"
+                />
+              ) : (
+                card.image && (
+                  <img src={card.image} alt="" className="w-full h-40 object-cover" draggable={false} />
+                )
+              )}
+
+              <div className="p-8 flex flex-col justify-between flex-1">
+                <div>
+                  <EditableText as="div" editable={edit} value={L(card.badge, lang)}
+                    onChange={(v) => set("cards", block.cards.map((c) => (c.id === card.id ? { ...c, badge: mergeLang(c.badge, lang, v) } : c)))}
+                    className="text-[#f97316] font-bold text-xs mb-3 uppercase tracking-wider" placeholder="Etiket" />
+                  <EditableText as="h3" editable={edit} value={L(card.title, lang)}
+                    onChange={(v) => set("cards", block.cards.map((c) => (c.id === card.id ? { ...c, title: mergeLang(c.title, lang, v) } : c)))}
+                    className="text-xl font-bold text-[#1e293b] mb-3" placeholder="Kart başlığı" />
+                  <EditableText as="p" editable={edit} value={L(card.desc, lang)}
+                    onChange={(v) => set("cards", block.cards.map((c) => (c.id === card.id ? { ...c, desc: mergeLang(c.desc, lang, v) } : c)))}
+                    className="text-gray-600 text-sm mb-6 leading-relaxed" placeholder="Kart açıklaması" />
+                </div>
+                <EditableText as="a" editable={edit} value={L(card.link, lang)}
+                  onChange={(v) => set("cards", block.cards.map((c) => (c.id === card.id ? { ...c, link: mergeLang(c.link, lang, v) } : c)))}
+                  href={edit ? undefined : "/services"}
+                  onClick={(e) => edit && e.preventDefault()}
+                  className="text-[#0f172a] font-bold text-sm hover:text-[#f97316] flex items-center" placeholder="Bağlantı metni" />
               </div>
-              <EditableText as="a" editable={edit} value={L(card.link, lang)}
-                onChange={(v) => set("cards", block.cards.map((c) => (c.id === card.id ? { ...c, link: mergeLang(c.link, lang, v) } : c)))}
-                href={edit ? undefined : "/services"}
-                onClick={(e) => edit && e.preventDefault()}
-                className="text-[#0f172a] font-bold text-sm hover:text-[#f97316] flex items-center" placeholder="Bağlantı metni" />
             </div>
           ))}
         </div>
@@ -672,7 +826,7 @@ function RoutesBlock({ block, ctx }) {
 }
 
 function MethodBlock({ block, ctx }) {
-  const { set, edit, lang } = ctx;
+  const { set, edit, lang, pick } = ctx;
 
   return (
     <section className="py-24 bg-[#0f172a] text-white">
@@ -704,6 +858,29 @@ function MethodBlock({ block, ctx }) {
                 onChange={(v) => set("d2", mergeLang(block.d2, lang, v))} placeholder="Madde 2" />
             </div>
           </div>
+
+          {/* Bölüm görseli — stüdyoda eklenebilir */}
+          {edit ? (
+            <div className="mt-8">
+              <ImageField
+                value={block.image || ""}
+                onChange={(v) => set("image", v)}
+                onPick={() => pick("image")}
+                edit={edit}
+                label="Bölüm görseli ekle"
+                className="w-full h-56 rounded-lg"
+              />
+            </div>
+          ) : (
+            block.image && (
+              <img
+                src={block.image}
+                alt=""
+                className="mt-8 w-full h-56 object-cover rounded-lg"
+                draggable={false}
+              />
+            )
+          )}
         </div>
 
         <div className="bg-gray-800 p-8 border border-gray-700 rounded-lg">
@@ -845,6 +1022,7 @@ export default function GencoBlocks({
   onDelete,
   onMove,
   onDuplicate,
+  onPickImage,
 }) {
   const editable = mode === "edit";
 
@@ -873,6 +1051,8 @@ export default function GencoBlocks({
           onLangChange,
           selected: isSelected,
           id: block.id,
+          // Görsel seçme: (blokId, alan) → medya kütüphanesi
+          pick: (field) => onPickImage?.(block.id, field),
         };
 
         return (

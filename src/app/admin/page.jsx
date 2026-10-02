@@ -31,6 +31,7 @@ import GencoBlocks, {
 } from "../../components/GencoBlocks";
 import HomePage from "../../components/HomePage";
 
+
 const STUDIO_DOC = ["settings", "genco_studio"];
 
 /* Canonical page keys. Kept identical to the previous studio so any content
@@ -223,6 +224,8 @@ export default function GencoStudioAdmin() {
   // Tuvalde düzenlenen dil. Her metin iki dilli olduğu için TR ve EN'yi
   // ayrı ayrı yazabilirsiniz.
   const [editLang, setEditLang] = useState("TR");
+  // Tuvalden "Görsel Ekle" ile açılan hedef: { blockId, field }
+  const [imageTarget, setImageTarget] = useState(null);
 
   const fileInputRef = useRef(null);
   const toastTimer = useRef(null);
@@ -512,6 +515,12 @@ export default function GencoStudioAdmin() {
   };
 
   const assignMedia = (url) => {
+    // Tuvalden "Görsel Ekle" ile açılan hedef varsa önce onu doldur.
+    if (imageTarget) {
+      applyImageToField(imageTarget.blockId, imageTarget.field, url);
+      setImageTarget(null);
+      return;
+    }
     if (!selectedBlock) {
       flash("Önce tuvalden bir blok seçin.", "warn");
       return;
@@ -528,6 +537,43 @@ export default function GencoStudioAdmin() {
       handleChangeField(selectedBlock.id, "image", url);
       flash("Görsel bloğa atandı.");
     }
+  };
+
+  /** Tuvaldeki bir görsel alanına medya kütüphanesinden seçim yapar. */
+  const openImagePicker = (blockId, field) => {
+    setSelectedId(blockId);
+    setLeftTab("media");
+    setImageTarget({ blockId, field });
+    flash("Medya kütüphanesinden bir görsel seçin (ya da yeni yükleyin).", "info");
+  };
+
+  /** Seçilen görseli hedef alana yazar. field: "image" | "item:<id>" | "card:<id>" */
+  const applyImageToField = (blockId, field, url) => {
+    setDraft((prev) => {
+      const list = prev[activePage] || [];
+      return {
+        ...prev,
+        [activePage]: list.map((b) => {
+          if (b.id !== blockId) return b;
+          if (field.startsWith("item:")) {
+            const id = field.slice(5);
+            return {
+              ...b,
+              items: (b.items || []).map((x) => (x.id === id ? { ...x, image: url } : x)),
+            };
+          }
+          if (field.startsWith("card:")) {
+            const id = field.slice(5);
+            return {
+              ...b,
+              cards: (b.cards || []).map((x) => (x.id === id ? { ...x, image: url } : x)),
+            };
+          }
+          return { ...b, [field]: url };
+        }),
+      };
+    });
+    flash("Görsel eklendi.");
   };
 
   const removeMedia = (id) => {
@@ -1186,6 +1232,7 @@ export default function GencoStudioAdmin() {
                   onDelete={deleteBlock}
                   onMove={moveBlock}
                   onDuplicate={duplicateBlock}
+                  onPickImage={openImagePicker}
                 />
               ) : (
                 <div className="bg-[#fafafa] min-h-[600px]">
