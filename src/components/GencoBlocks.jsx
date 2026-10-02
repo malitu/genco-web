@@ -17,6 +17,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 /* ========================================================================== *
  *  Dil yardımcıları
@@ -44,13 +45,21 @@ export function L(value, lang) {
   return typeof en === "string" ? en : "";
 }
 
-/** Alanı yazar, diğer dili korur. */
+/**
+ * Alanı yazar, diğer dili korur.
+ *
+ * Dikkat: lang büyük harfle gelir ("TR"/"EN") ama veri alanları küçük
+ * harfli anahtarlar kullanır (tr/en). Bu yüzden anahtar küçük harfe
+ * çevrilir; aksi halde veri içinde "TR"/"EN" diye ayrı alanlar birikir ve
+ * dil değiştirme bozulur.
+ */
 export function mergeLang(current, lang, next) {
+  const key = typeof lang === "string" ? lang.toLowerCase() : lang;
   if (current && typeof current === "object" && !Array.isArray(current)) {
-    return { ...current, [lang]: next };
+    return { ...current, [key]: next };
   }
-  const other = lang === "en" ? "tr" : "en";
-  return { [lang]: next, [other]: typeof current === "string" ? current : "" };
+  const other = key === "en" ? "tr" : "en";
+  return { [key]: next, [other]: typeof current === "string" ? current : "" };
 }
 
 /* ========================================================================== *
@@ -243,6 +252,10 @@ export const MEDIA_DEFAULTS = {
   type: "media",
   layout: "split",
   align: "left",
+  // captionPosition: "overlay" → yazı görselin üstüne, "below" → altına
+  captionPosition: "overlay",
+  // videoAutoplay: false → video otomatik oynamaz
+  videoAutoplay: true,
   heading: bi("Görsel Başlığı", "Image Title"),
   body: bi(
     "Bu alan metinlerinizi destekleyen bir açıklamadır. Sitenin görünümünü zenginleştirmek için görsel veya video kullanabilirsiniz.",
@@ -266,8 +279,62 @@ function isDirectVideo(url) {
   return typeof url === "string" && /\.(mp4|webm|ogv|mov)(\?.*)?$/i.test(url);
 }
 
+/**
+ * Büyük görsel penceresi (lightbox).
+ * Görsele tıklanınca tam ekranda açılır; Esc veya arka plana tıklayınca
+ * kapanır. Portal ile document.body'ye basıldığı için stüdyo tuvalindeki
+ * kırpma (overflow) ve dönüşümlerden etkilenmez.
+ */
+function Lightbox({ src, caption, onClose }) {
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/90 p-4 backdrop-blur-sm"
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white text-xl hover:bg-white/20"
+        aria-label="Kapat"
+      >
+        ✕
+      </button>
+      <figure
+        onClick={(e) => e.stopPropagation()}
+        className="flex max-h-full max-w-6xl flex-col items-center gap-3"
+      >
+        <img
+          src={src}
+          alt={caption || ""}
+          className="max-h-[82vh] w-auto max-w-full rounded-lg object-contain shadow-2xl"
+        />
+        {caption && (
+          <figcaption className="text-center text-sm text-slate-300">{caption}</figcaption>
+        )}
+      </figure>
+    </div>,
+    document.body
+  );
+}
+
 function MediaItem({ block, item, ctx, index, total }) {
   const { set, edit, lang, pick } = ctx;
+  const [lightbox, setLightbox] = useState(false);
 
   const update = (patch) =>
     set("items", block.items.map((x) => (x.id === item.id ? { ...x, ...patch } : x)));
@@ -282,6 +349,9 @@ function MediaItem({ block, item, ctx, index, total }) {
 
   const embed = toEmbedUrl(item.url);
   const isVideo = item.kind === "video" || !!embed || isDirectVideo(item.url);
+  const caption = L(item.caption, lang);
+  const overlay = block.captionPosition === "overlay" && caption;
+  const autoplay = block.videoAutoplay !== false;
 
   return (
     <div className="relative group">
@@ -379,15 +449,24 @@ function MediaItem({ block, item, ctx, index, total }) {
         <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-slate-900 border border-slate-200">
           {embed ? (
             <iframe
-              src={embed}
-              title={L(item.caption, lang) || "video"}
+              src={autoplay ? `${embed}?autoplay=1&mute=1&loop=1&playlist=${embed.split("/").pop()}` : `${embed}?rel=0`}
+              title={caption || "video"}
               className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               loading="lazy"
             />
           ) : isDirectVideo(item.url) ? (
-            <video src={item.url} controls className="h-full w-full" preload="metadata" />
+            <video
+              src={item.url}
+              className="h-full w-full"
+              controls
+              muted={autoplay}
+              autoPlay={autoplay}
+              loop={autoplay}
+              playsInline
+              preload="metadata"
+            />
           ) : (
             <a
               href={item.url}
@@ -412,13 +491,46 @@ function MediaItem({ block, item, ctx, index, total }) {
           )}
         </div>
       ) : (
-        <div className="relative overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+        <div
+          className="relative overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
+          onClick={(e) => {
+            // Stüdyoda tıklama blok seçimine gider; canlı sitede büyütür.
+            if (edit) return;
+            e.stopPropagation();
+            setLightbox(true);
+          }}
+        >
           <img
             src={item.url}
-            alt={L(item.caption, lang) || ""}
-            className="w-full object-cover"
+            alt={caption || ""}
+            className={`w-full object-cover ${edit ? "" : "cursor-zoom-in"}`}
             draggable={false}
           />
+
+          {/* Görselin üstüne yazı */}
+          {overlay && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-3">
+              {edit ? (
+                <EditableText
+                  as="div"
+                  editable={edit}
+                  value={caption}
+                  onChange={(v) => update({ caption: mergeLang(item.caption, lang, v) })}
+                  className="text-center text-xs font-medium text-white"
+                  placeholder="Görsel üstü yazı"
+                />
+              ) : (
+                <div className="text-center text-xs font-medium text-white">{caption}</div>
+              )}
+            </div>
+          )}
+
+          {!edit && (
+            <span className="pointer-events-none absolute right-2 top-2 rounded-md bg-black/45 px-2 py-1 text-[10px] font-bold text-white opacity-0 transition group-hover:opacity-100">
+              Büyüt
+            </span>
+          )}
+
           {edit && (
             <div className="absolute right-2 top-2 flex gap-1">
               <button
@@ -446,13 +558,18 @@ function MediaItem({ block, item, ctx, index, total }) {
         </div>
       )}
 
-      {/* Alt yazı */}
-      {(edit || L(item.caption, lang)) && (
+      {/* Büyük görsel penceresi (yalnızca canlı sitede) */}
+      {!edit && lightbox && !isVideo && (
+        <Lightbox src={item.url} caption={caption} onClose={() => setLightbox(false)} />
+      )}
+
+      {/* Alt yazı — yalnızca "altında" seçildiyse */}
+      {block.captionPosition !== "overlay" && (edit || caption) && (
         <div className="mt-2">
           <EditableText
             as="div"
             editable={edit}
-            value={L(item.caption, lang)}
+            value={caption}
             onChange={(v) => update({ caption: mergeLang(item.caption, lang, v) })}
             className="text-center text-[11px] text-slate-500"
             placeholder="Görsel alt yazısı (isteğe bağlı)"
@@ -470,29 +587,80 @@ function MediaBlock({ block, ctx }) {
   return (
     <section className="py-16 sm:py-20 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Yerleşim seçici (yalnızca stüdyoda) */}
+        {/* Yerleşim ve davranış ayarları (yalnızca stüdyoda) */}
         {edit && (
-          <div className="mb-8 flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              Yerleşim
-            </span>
-            {MEDIA_LAYOUTS.map((lo) => (
+          <div className="mb-8 space-y-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                Yerleşim
+              </span>
+              {MEDIA_LAYOUTS.map((lo) => (
+                <button
+                  key={lo.id}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    set("layout", lo.id);
+                  }}
+                  className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition ${
+                    block.layout === lo.id
+                      ? "bg-[#f97316] text-white"
+                      : "bg-white text-slate-600 border border-slate-300 hover:bg-slate-100"
+                  }`}
+                >
+                  {lo.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 border-t border-slate-200 pt-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                Altyazı
+              </span>
+              {[
+                { id: "overlay", label: "Görselin üstüne" },
+                { id: "below", label: "Görselin altına" },
+              ].map((o) => (
+                <button
+                  key={o.id}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    set("captionPosition", o.id);
+                  }}
+                  className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition ${
+                    (block.captionPosition || "overlay") === o.id
+                      ? "bg-[#f97316] text-white"
+                      : "bg-white text-slate-600 border border-slate-300 hover:bg-slate-100"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+
+              <span className="ml-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                Video
+              </span>
               <button
-                key={lo.id}
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  set("layout", lo.id);
+                  set("videoAutoplay", block.videoAutoplay === false);
                 }}
                 className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition ${
-                  block.layout === lo.id
-                    ? "bg-[#f97316] text-white"
-                    : "bg-white text-slate-600 border border-slate-300 hover:bg-slate-100"
+                  block.videoAutoplay === false
+                    ? "bg-white text-slate-600 border border-slate-300 hover:bg-slate-100"
+                    : "bg-[#f97316] text-white"
                 }`}
               >
-                {lo.label}
+                {block.videoAutoplay === false ? "Otomatik oynatma: Kapalı" : "Otomatik oynatma: Açık"}
               </button>
-            ))}
+            </div>
+
+            <p className="pt-1 text-[10px] text-slate-500">
+              Görsele tıklanınca büyük ekranda açılır (Esc ile kapanır). Video
+              otomatik oynarsa sessiz başlar; oynatıcıdan sesi açabilirsiniz.
+            </p>
           </div>
         )}
 
@@ -607,6 +775,8 @@ export const DEFAULT_SITE_BLOCKS = [
   METHOD_DEFAULTS,
   FOOTER_DEFAULTS,
 ];
+
+/** Firestore'da hiç blok yoksa devreye giren tam sayfa şablonu. */
 
 /* ========================================================================== *
  *  Blok kütüphanesi
@@ -754,6 +924,8 @@ export function normaliseBlock(raw, index = 0) {
     }));
     if (!merged.items.length) merged.items = [emptyItem()];
     if (!MEDIA_LAYOUTS.some((l) => l.id === merged.layout)) merged.layout = "split";
+    if (merged.captionPosition !== "below") merged.captionPosition = "overlay";
+    if (typeof merged.videoAutoplay !== "boolean") merged.videoAutoplay = true;
   }
 
   if (type === "slider") {
