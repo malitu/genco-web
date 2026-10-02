@@ -867,16 +867,23 @@ export const CONTACT_DEFAULTS = {
   ),
 };
 
-/** Sayaç şeridi. */
+/**
+ * Sayaç şeridi.
+ *
+ * ÖNEMLİ: Sayılar BİLEREK boş bırakıldı. Bu blok şablon olarak eklendiğinde
+ * uydurma rakamlar ("18+ yıl", "1200+ sevkiyat" gibi) siteye yayılabilirdi;
+ * bu tür iddialar ancak doğrulanabilir verilerle kullanılmalı. Panelde gerçek
+ * rakamlar girilene kadar boş kalır ve uyarı gösterilir.
+ */
 export const STATS_BAND_DEFAULTS = {
   id: "seed_stats",
   type: "statsBand",
   heading: bi("", ""),
   items: [
-    { id: "st_1", value: bi("18+", "18+"), label: bi("Yıllık deneyim", "Years of experience") },
-    { id: "st_2", value: bi("40", "40"), label: bi("İhracat yapılan ülke", "Export destinations") },
-    { id: "st_3", value: bi("1200+", "1200+"), label: bi("Tamamlanan sevkiyat", "Completed shipments") },
-    { id: "st_4", value: bi("99%", "99%"), label: bi("Zamanında teslim", "On-time delivery") },
+    { id: "st_1", value: bi("", ""), label: bi("Yıllık deneyim", "Years of experience") },
+    { id: "st_2", value: bi("", ""), label: bi("İhracat yapılan ülke", "Export destinations") },
+    { id: "st_3", value: bi("", ""), label: bi("Tamamlanan sevkiyat", "Completed shipments") },
+    { id: "st_4", value: bi("", ""), label: bi("Zamanında teslim", "On-time delivery") },
   ],
 };
 
@@ -2238,9 +2245,24 @@ function StatsBandBlock({ block, ctx }) {
   const update = (id, patch) =>
     set("items", items.map((x) => (x.id === id ? { ...x, ...patch } : x)));
 
+  // Doğrulanabilir veri olmadan sayı yayınlanmamalı. Boş sayılar stüdyoda
+  // uyarı olarak görünür, canlı sitede ise o satır hiç çizilmez.
+  const dolu = items.filter((it) => L(it.value, lang).trim());
+  const eksik = items.length - dolu.length;
+
+  if (!edit && !dolu.length) return null;
+
   return (
     <section className="py-14 text-white bg-[#0f172a]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {edit && eksik > 0 && (
+          <p className="mb-6 rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-xs text-amber-200">
+            <strong>Dikkat:</strong> {eksik} satırda sayı yok. Sadece gerçekten
+            doğrulayabildiğiniz rakamları yazın — uydurma istatistik güveni
+            sıfırlar ve yanlış beyan sayılabilir. Boş bırakılan satırlar
+            canlı sitede görünmez.
+          </p>
+        )}
         <EditableText
           as="h2"
           editable={edit}
@@ -2250,7 +2272,8 @@ function StatsBandBlock({ block, ctx }) {
           placeholder="Başlık"
         />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-          {items.map((it) => (
+          {items.map((it) =>
+            !edit && !L(it.value, lang).trim() ? null : (
             <div key={it.id} className="relative">
               <div className="text-4xl font-extrabold text-[#f97316]">
                 <EditableText
@@ -2284,7 +2307,8 @@ function StatsBandBlock({ block, ctx }) {
                 </button>
               )}
             </div>
-          ))}
+            )
+          )}
         </div>
       </div>
     </section>
