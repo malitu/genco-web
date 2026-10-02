@@ -1,92 +1,48 @@
 /**
- * GENCO — İletişim formu gönderimi
+ * GENCO — İletişim formu (istemci tarafı)
  * ---------------------------------------------------------------------------
- * Form verisini e-posta olarak info@gencotr.com'a iletir.
+ * Mesajı sunucudaki /api/contact rotasına gönderir. Orada CAPTCHA doğrulanır
+ * ve e-posta info@gencotr.com'a iletilir.
  *
- * Neden doğrudan Firebase ile göndermiyoruz?
- *   Firebase projesi ücretsiz planda (Spark) olduğu için Cloud Functions ve
- *   "Trigger Email" eklentisi kullanılamıyor. Bu yüzden form, Web3Forms
- *   adlı form gönderim servisine post edilir; servis e-postayı bizim
- *   belirlediğimiz adrese iletir.
+ * Neden sunucu üzerinden?
+ *   • CAPTCHA'nın sunucu tarafında doğrulanabilmesi (tarayıcıda doğrulama
+ *     sahte olur).
+ *   • Web3Forms anahtarı istemci paketine gömülmez, yani sızamaz.
  *
- * ACCESS_KEY nasıl alınır?
- *   1. https://web3forms.com adresine ücretsiz kayıt olun.
- *   2. Dashboard'da "Access Key" bölümündeki anahtarı kopyalayın.
- *   3. Aşağıdaki ACCESS_KEY sabitini kendi anahtarınızla değiştirin.
- *   Anahtar boşsa form mailto: yedeğine düşer (kullanıcının mail uygulaması
- *   açılır) — hâlâ mesaj kaybolmaz, ama otomatik gönderim olmaz.
+ * Gönderim başarısız olursa mesaj kaybolmaz: kullanıcının e-posta
+ * uygulaması hazır metinle açılır.
  */
 
-/** info@gencotr.com adresine gönderir. */
-const CONTACT_EMAIL = "info@gencotr.com";
+const API_URL = "/api/contact";
+export const CONTACT_EMAIL = "info@gencotr.com";
 
 /**
- * Web3Forms erişim anahtarı.
- *
- * Sıra: önce NEXT_PUBLIC_WEB3FORMS_KEY ortam değişkeni, yoksa aşağıdaki
- * sabit. Boş bırakılırsa form mailto: yedeğine düşer (kullanıcının mail
- * uygulaması açılır) — mesaj yine kaybolmaz, ama otomatik gönderim olmaz.
- */
-const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY || "";
-
-/** Konu satırı — gelen kutusunda kolay ayırt etmek için. */
-const SUBJECT = "GENCO web sitesi — iletişim formu";
-
-/**
- * Formu Web3Forms'a gönderir.
- *
- * @param {object} data  { name, email, phone, message, botcheck }
- * @returns {Promise<{ok: boolean, message: string}>}
+ * @param {object} data { name, email, phone, message, consent, notRobot, captchaToken, website }
+ * @returns {Promise<{ok: boolean, error?: string}>}
  */
 export async function sendContactMessage(data) {
-  const { name, email, phone, message, botcheck } = data;
-
-  // Tarayıcıda doğrulama (sunucu yok, form kendi kontrolünü yapar)
-  if (!ACCESS_KEY) {
-    return { ok: false, code: "NO_KEY", message: "E-posta anahtarı tanımlı değil." };
-  }
-
   try {
-    const res = await fetch("https://api.web3forms.com/submit", {
+    const res = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        access_key: ACCESS_KEY,
-        subject: SUBJECT,
-        from_name: `GENCO — ${name}`,
-        replyto: email,
-        name,
-        email,
-        phone,
-        message,
-        // Web3Forms spam tuzağı: insan doldurmaz, botlar doldurur.
-        botcheck: botcheck || "",
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
     });
 
     const json = await res.json().catch(() => ({}));
 
-    if (json?.success) {
-      return { ok: true, message: "Mesajınız iletildi." };
-    }
+    if (res.ok && json?.ok) return { ok: true };
+    return { ok: false, error: json?.error || "Mesaj gönderilemedi." };
+  } catch {
     return {
       ok: false,
-      code: json?.message || "UNKNOWN",
-      message: json?.message || "Mesaj gönderilemedi.",
-    };
-  } catch (err) {
-    return {
-      ok: false,
-      code: "NETWORK",
-      message: "Bağlantı kurulamadı.",
+      error: "Bağlantı kurulamadı. Mesajınız e-posta uygulamanızda açıldı.",
     };
   }
 }
 
 /**
  * Yedek yöntem: kullanıcının kendi e-posta uygulamasını açar, mesaj hazır
- * yazılı gelir. Web3Forms anahtarı yoksa veya gönderim başarısız olduğunda
- * çağrılır — böylece mesaj hiçbir koşulda kaybolmaz.
+ * yazılı gelir. Böylece hiçbir koşulda talep kaybolmaz.
  */
 export function openMailFallback({ name, email, phone, message }) {
   const body = [
@@ -101,12 +57,8 @@ export function openMailFallback({ name, email, phone, message }) {
     "Bu mesaj GENCO web sitesindeki iletişim formundan gönderilmiştir.",
   ].join("\n");
 
-  const href =
+  window.location.href =
     `mailto:${CONTACT_EMAIL}` +
-    `?subject=${encodeURIComponent(SUBJECT)}` +
+    `?subject=${encodeURIComponent("GENCO web sitesi — iletişim formu")}` +
     `&body=${encodeURIComponent(body)}`;
-
-  window.location.href = href;
 }
-
-export const contactEmail = CONTACT_EMAIL;

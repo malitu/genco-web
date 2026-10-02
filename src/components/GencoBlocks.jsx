@@ -20,6 +20,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { sendContactMessage, openMailFallback } from "../lib/contact";
+import Turnstile from "./Turnstile";
 
 /* ========================================================================== *
  *  Dil yardımcıları
@@ -871,7 +872,6 @@ export const CONTACT_DEFAULTS = {
   phoneLabel: bi("Telefon Numarası", "Phone Number"),
   messageLabel: bi("Proje Detayları ve Talebiniz", "Project Details & Inquiry"),
   submitLabel: bi("Mesajı Gönder", "Send Message"),
-  notRobot: bi("Ben robot değilim", "I am not a robot"),
   // KVKK aydınlatma metni: form gönderilmeden önce onay zorunludur.
   consent: bi(
     "Kişisel verilerimin, talebimin değerlendirilmesi amacıyla işlenmesini ve tarafıma dönüş yapılmasını kabul ediyorum.",
@@ -2496,6 +2496,7 @@ function ContactBlock({ block, ctx }) {
   // status: null | "sending" | "sent" | "error"
   const [status, setStatus] = useState(null);
   const [errorText, setErrorText] = useState("");
+  const [captchaToken, setCaptchaToken] = useState(null);
 
   const E = (field, Tag, cls, placeholder) => (
     <EditableText
@@ -2524,14 +2525,17 @@ function ContactBlock({ block, ctx }) {
       email: String(fd.get("email") || "").trim(),
       phone: String(fd.get("phone") || "").trim(),
       message: String(fd.get("message") || "").trim(),
+      consent: fd.get("kvkk") === "on",
       // Gizli tuzak: botlar doldurur, insanlar göremez.
-      botcheck: String(fd.get("website") || ""),
+      website: String(fd.get("website") || ""),
+      captchaToken: captchaToken || "",
     };
 
     setStatus("sending");
     setErrorText("");
 
     const result = await sendContactMessage(data);
+    setCaptchaToken(null);
 
     if (result.ok) {
       setStatus("sent");
@@ -2539,14 +2543,13 @@ function ContactBlock({ block, ctx }) {
       return;
     }
 
-    // Anahtar tanımlı değilse ya da servis yanıt vermediyse yedek yöntem.
+    // Gönderilemezse mesajın kaybolmaması için yedek yöntem.
     openMailFallback(data);
     setErrorText(
-      result.code === "NO_KEY"
-        ? L(block.fallbackNote, lang) ||
-          "Mesajınız e-posta uygulamanızda açıldı. Göndermek için oradan onaylayın."
-        : L(block.fallbackNote, lang) ||
-          "Mesajınız e-posta uygulamanızda açıldı. Göndermek için oradan onaylayın."
+      `${result.error || "Mesaj gönderilemedi."} ${
+        L(block.fallbackNote, lang) ||
+        "Mesajınız e-posta uygulamanızda hazır metin olarak açıldı — oradan göndermek için onaylayın."
+      }`
     );
     setStatus("error");
   };
@@ -2559,7 +2562,6 @@ function ContactBlock({ block, ctx }) {
       email: "ornek@sirketiniz.com",
       phone: "Örn. +90 5XX XXX XX XX",
       message: "Talebinizi birkaç cümleyle özetleyin",
-      notRobot: "Ben robot değilim",
       required: "Zorunlu alan",
       sending: "Gönderiliyor…",
       send: L(block.submitLabel, lang),
@@ -2569,7 +2571,6 @@ function ContactBlock({ block, ctx }) {
       email: "you@company.com",
       phone: "e.g. +90 5XX XXX XX XX",
       message: "Briefly describe your request",
-      notRobot: "I am not a robot",
       required: "Required",
       sending: "Sending…",
       send: L(block.submitLabel, lang),
@@ -2643,22 +2644,10 @@ function ContactBlock({ block, ctx }) {
                   />
                 </div>
 
-                {/* ---- Ben robot değilim ---- */}
-                <label className="flex items-center gap-2.5 text-sm text-gray-700">
-                  <input
-                    type="checkbox"
-                    name="notRobot"
-                    required
-                    className="h-4 w-4 shrink-0 accent-[#f97316]"
-                  />
-                  <EditableText
-                    as="span"
-                    editable={edit}
-                    value={L(block.notRobot, lang)}
-                    onChange={(v) => set("notRobot", mergeLang(block.notRobot, lang, v))}
-                    placeholder="Ben robot değilim"
-                  />
-                </label>
+                {/* ---- CAPTCHA (Cloudflare Turnstile) ----
+                     Kullanıcı güvenilirse hiçbir şey görünmez; şüpheli
+                     trafikte Turnstile kendi sorusunu sorar. */}
+                <Turnstile onToken={(t) => setCaptchaToken(t)} disabled={status === "sending"} />
 
                 {/* ---- KVKK onayı: gönderim için zorunlu ---- */}
                 <label className="flex items-start gap-2.5 text-[11px] leading-relaxed text-gray-600">
