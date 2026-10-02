@@ -569,6 +569,15 @@ export default function GencoStudioAdmin() {
               cards: (b.cards || []).map((x) => (x.id === id ? { ...x, image: url } : x)),
             };
           }
+          if (field.startsWith("media:")) {
+            const id = field.slice(6);
+            return {
+              ...b,
+              items: (b.items || []).map((x) =>
+                x.id === id ? { ...x, url, kind: "image" } : x
+              ),
+            };
+          }
           return { ...b, [field]: url };
         }),
       };

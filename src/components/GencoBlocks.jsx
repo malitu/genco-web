@@ -216,6 +216,375 @@ export const METHOD_DEFAULTS = {
   ],
 };
 
+/* --- Görsel ve Video bloğu ------------------------------------------------ *
+ * Sayfayı zenginleştirmek için serbest kullanılır. İçeriğin yerini almaz,
+ * yanına eklenir; bu yüzden sayfa yapısını bozmaz.
+ * Yerleşimler:
+ *   split     → solda metin, sağda tek görsel/video
+ *   row       → ortalanmış başlık + yan yana 2-3 görsel
+ *   spotlight → ortalanmış büyük tek görsel + başlık
+ * -------------------------------------------------------------------------- */
+
+export const MEDIA_LAYOUTS = [
+  { id: "split", label: "Metin + Görsel (yan yana)" },
+  { id: "row", label: "Sıra halinde görseller" },
+  { id: "spotlight", label: "Tek büyük görsel" },
+];
+
+const emptyItem = (kind = "image") => ({
+  id: `mi_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
+  kind,
+  url: "",
+  caption: bi("", ""),
+});
+
+export const MEDIA_DEFAULTS = {
+  id: "seed_media",
+  type: "media",
+  layout: "split",
+  align: "left",
+  heading: bi("Görsel Başlığı", "Image Title"),
+  body: bi(
+    "Bu alan metinlerinizi destekleyen bir açıklamadır. Sitenin görünümünü zenginleştirmek için görsel veya video kullanabilirsiniz.",
+    "This is a supporting description for your text. Use an image or video to enrich the look of your site."
+  ),
+  items: [emptyItem()],
+};
+
+/** YouTube / Vimeo bağlantısını gömülebilir oynatıcı adresine çevirir. */
+export function toEmbedUrl(url) {
+  if (!url || typeof url !== "string") return null;
+  const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
+  return null;
+}
+
+/** Doğrudan video dosyası (.mp4/.webm) mı? */
+function isDirectVideo(url) {
+  return typeof url === "string" && /\.(mp4|webm|ogv|mov)(\?.*)?$/i.test(url);
+}
+
+function MediaItem({ block, item, ctx, index, total }) {
+  const { set, edit, lang, pick } = ctx;
+
+  const update = (patch) =>
+    set("items", block.items.map((x) => (x.id === item.id ? { ...x, ...patch } : x)));
+
+  const addAfter = () => {
+    const copy = [...block.items];
+    copy.splice(index + 1, 0, emptyItem());
+    set("items", copy);
+  };
+
+  const remove = () => set("items", block.items.filter((x) => x.id !== item.id));
+
+  const embed = toEmbedUrl(item.url);
+  const isVideo = item.kind === "video" || !!embed || isDirectVideo(item.url);
+
+  return (
+    <div className="relative group">
+      {edit && (
+        <div className="mb-2 flex items-center gap-1.5">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            {index + 1}/{total}
+          </span>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              update({ kind: "image" });
+            }}
+            className={`rounded px-2 py-0.5 text-[10px] font-bold ${
+              item.kind !== "video"
+                ? "bg-[#f97316] text-white"
+                : "bg-slate-200 text-slate-600 hover:bg-slate-300"
+            }`}
+          >
+            Görsel
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              update({ kind: "video" });
+            }}
+            className={`rounded px-2 py-0.5 text-[10px] font-bold ${
+              item.kind === "video"
+                ? "bg-[#f97316] text-white"
+                : "bg-slate-200 text-slate-600 hover:bg-slate-300"
+            }`}
+          >
+            Video
+          </button>
+          <div className="ml-auto flex gap-1">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                addAfter();
+              }}
+              className="rounded border border-slate-300 bg-white px-1.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50"
+              title="Altına ekle"
+            >
+              +
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                remove();
+              }}
+              className="rounded bg-red-600 px-1.5 text-[10px] font-bold text-white hover:bg-red-700"
+              title="Kaldır"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* --- içerik --- */}
+      {!item.url ? (
+        edit ? (
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (item.kind === "video") {
+                  const url = window.prompt(
+                    "Video bağlantısı (YouTube veya Vimeo):",
+                    item.url
+                  );
+                  if (url) update({ url });
+                } else {
+                  pick(`media:${item.id}`);
+                }
+              }}
+              className="grid w-full place-items-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 py-10 text-[11px] font-semibold text-slate-400 hover:border-[#f97316] hover:text-[#f97316] transition"
+            >
+              <span className="text-lg leading-none">+</span>
+              {item.kind === "video" ? "Video bağlantısı ekle" : "Görsel ekle"}
+            </button>
+            {item.kind === "video" && (
+              <p className="text-[10px] text-slate-400 text-center">
+                YouTube veya Vimeo linkini yapıştırın.
+              </p>
+            )}
+          </div>
+        ) : null
+      ) : isVideo ? (
+        <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-slate-900 border border-slate-200">
+          {embed ? (
+            <iframe
+              src={embed}
+              title={L(item.caption, lang) || "video"}
+              className="h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
+            />
+          ) : isDirectVideo(item.url) ? (
+            <video src={item.url} controls className="h-full w-full" preload="metadata" />
+          ) : (
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noreferrer"
+              className="grid h-full w-full place-items-center text-xs font-bold text-white"
+            >
+              Videoyu aç
+            </a>
+          )}
+          {edit && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                update({ url: "" });
+              }}
+              className="absolute right-2 top-2 rounded-md bg-red-600 px-2 py-1 text-[10px] font-bold text-white"
+            >
+              Kaldır
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="relative overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+          <img
+            src={item.url}
+            alt={L(item.caption, lang) || ""}
+            className="w-full object-cover"
+            draggable={false}
+          />
+          {edit && (
+            <div className="absolute right-2 top-2 flex gap-1">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  pick(`media:${item.id}`);
+                }}
+                className="rounded-md bg-white/90 px-2 py-1 text-[10px] font-bold text-slate-700 hover:bg-white"
+              >
+                Değiştir
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  update({ url: "" });
+                }}
+                className="rounded-md bg-red-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-red-700"
+              >
+                Kaldır
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Alt yazı */}
+      {(edit || L(item.caption, lang)) && (
+        <div className="mt-2">
+          <EditableText
+            as="div"
+            editable={edit}
+            value={L(item.caption, lang)}
+            onChange={(v) => update({ caption: mergeLang(item.caption, lang, v) })}
+            className="text-center text-[11px] text-slate-500"
+            placeholder="Görsel alt yazısı (isteğe bağlı)"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MediaBlock({ block, ctx }) {
+  const { set, edit, lang } = ctx;
+  const items = block.items || [];
+
+  return (
+    <section className="py-16 sm:py-20 bg-white border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Yerleşim seçici (yalnızca stüdyoda) */}
+        {edit && (
+          <div className="mb-8 flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              Yerleşim
+            </span>
+            {MEDIA_LAYOUTS.map((lo) => (
+              <button
+                key={lo.id}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  set("layout", lo.id);
+                }}
+                className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition ${
+                  block.layout === lo.id
+                    ? "bg-[#f97316] text-white"
+                    : "bg-white text-slate-600 border border-slate-300 hover:bg-slate-100"
+                }`}
+              >
+                {lo.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {block.layout === "split" ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+            <div className={block.align === "right" ? "lg:order-2" : ""}>
+              <EditableText as="h2" editable={edit} value={L(block.heading, lang)}
+                onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+                className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-4" placeholder="Başlık" />
+              <span className="block h-1 w-16 rounded mb-5" style={{ background: "#f97316" }} />
+              <EditableText as="p" editable={edit} value={L(block.body, lang)}
+                onChange={(v) => set("body", mergeLang(block.body, lang, v))}
+                className="text-gray-600 leading-relaxed text-sm md:text-base whitespace-pre-wrap" placeholder="Açıklama" />
+            </div>
+            <div className={block.align === "right" ? "lg:order-1" : ""}>
+              {items.map((item, i) => (
+                <MediaItem key={item.id} block={block} item={item} ctx={ctx} index={i} total={items.length} />
+              ))}
+              {edit && items.length === 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    set("items", [emptyItem()]);
+                  }}
+                  className="w-full rounded-lg border-2 border-dashed border-slate-300 py-10 text-xs font-semibold text-slate-400 hover:border-[#f97316]"
+                >
+                  + Görsel ekle
+                </button>
+              )}
+            </div>
+          </div>
+        ) : block.layout === "row" ? (
+          <div>
+            {(edit || L(block.heading, lang)) && (
+              <EditableText as="h2" editable={edit} value={L(block.heading, lang)}
+                onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+                className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-10" placeholder="Başlık" />
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {items.map((item, i) => (
+                <MediaItem key={item.id} block={block} item={item} ctx={ctx} index={i} total={items.length} />
+              ))}
+              {edit && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    set("items", [...items, emptyItem()]);
+                  }}
+                  className="grid place-items-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 py-10 text-[11px] font-semibold text-slate-400 hover:border-[#f97316] hover:text-[#f97316] transition"
+                >
+                  <span className="text-lg leading-none">+</span>Görsel ekle
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          /* spotlight */
+          <div className="mx-auto max-w-4xl">
+            {(edit || L(block.heading, lang)) && (
+              <EditableText as="h2" editable={edit} value={L(block.heading, lang)}
+                onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+                className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-4" placeholder="Başlık" />
+            )}
+            {(edit || L(block.body, lang)) && (
+              <EditableText as="p" editable={edit} value={L(block.body, lang)}
+                onChange={(v) => set("body", mergeLang(block.body, lang, v))}
+                className="text-gray-600 text-center max-w-2xl mx-auto mb-10 leading-relaxed" placeholder="Açıklama" />
+            )}
+            {items.map((item, i) => (
+              <MediaItem key={item.id} block={block} item={item} ctx={ctx} index={i} total={items.length} />
+            ))}
+            {edit && items.length === 0 && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  set("items", [emptyItem()]);
+                }}
+                className="w-full rounded-lg border-2 border-dashed border-slate-300 py-12 text-xs font-semibold text-slate-400 hover:border-[#f97316]"
+              >
+                + Görsel ekle
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 export const FOOTER_DEFAULTS = {
   id: "seed_footer",
   type: "footer",
@@ -266,6 +635,7 @@ export const BLOCK_LIBRARY = [
   { type: "industries", label: "Sektörler", hint: "6'lı sektör ızgarası.", accent: "#0ea5e9", create: () => ({ ...INDUSTRIES_DEFAULTS, id: uid() }) },
   { type: "routes", label: "Ticari Hedef Kartları", hint: "Başlık + 3 hedef kartı.", accent: "#22c55e", create: () => ({ ...ROUTES_DEFAULTS, id: uid() }) },
   { type: "method", label: "Farkımız / Method", hint: "Koyu bölüm: iki sütunlu fark anlatımı ve method listesi.", accent: "#8b5cf6", create: () => ({ ...METHOD_DEFAULTS, id: uid() }) },
+  { type: "media", label: "Görsel ve Video", hint: "Metinlerin yanına görsel/video; 3 yerleşim seçeneği.", accent: "#14b8a6", create: () => ({ ...MEDIA_DEFAULTS, id: uid(), items: [emptyItem()] }) },
   { type: "nav", label: "Menü (Navigasyon)", hint: "Logo ve menü linkleri.", accent: "#0f172a", create: () => ({ ...NAV_DEFAULTS, id: uid() }) },
   { type: "footer", label: "Alt Bilgi (Footer)", hint: "Telif ve adres satırı.", accent: "#64748b", create: () => ({ ...FOOTER_DEFAULTS, id: uid() }) },
   { type: "textBlock", label: "Özel Metin / İçerik", hint: "Serbest başlık ve açıklama bloğu.", accent: "#64748b", create: () => ({ ...TEXT_DEFAULTS, id: uid() }) },
@@ -281,6 +651,7 @@ const DEFAULTS_BY_TYPE = {
   routes: ROUTES_DEFAULTS,
   method: METHOD_DEFAULTS,
   footer: FOOTER_DEFAULTS,
+  media: MEDIA_DEFAULTS,
   textBlock: TEXT_DEFAULTS,
   slider: SLIDER_DEFAULTS,
 };
@@ -371,6 +742,18 @@ export function normaliseBlock(raw, index = 0) {
       name: items?.[i]?.name ?? b.name,
       sub: items?.[i]?.sub ?? b.sub,
     }));
+  }
+
+  if (type === "media") {
+    const items = Array.isArray(raw?.items) ? raw.items : base.items;
+    merged.items = items.map((it, i) => ({
+      id: it?.id || `mi_${i}`,
+      kind: it?.kind === "video" ? "video" : "image",
+      url: typeof it?.url === "string" ? it.url : "",
+      caption: it?.caption ?? bi("", ""),
+    }));
+    if (!merged.items.length) merged.items = [emptyItem()];
+    if (!MEDIA_LAYOUTS.some((l) => l.id === merged.layout)) merged.layout = "split";
   }
 
   if (type === "slider") {
@@ -647,36 +1030,12 @@ function HeroBlock({ block, ctx }) {
           </div>
         </div>
 
-        {/* Sağ sütun: stüdyoda görsel eklenebilir. Görsel varsa fotoğraf,
-            yoksa (veya görsel kaldırılmışsa) bilgi kutusu gösterilir. */}
-        {block.image ? (
-          <div className="relative aspect-[4/3]">
-            <ImageField
-              value={block.image}
-              onChange={(v) => set("image", v)}
-              onPick={() => pick("image")}
-              edit={edit}
-              className="w-full h-full rounded-lg shadow-xl border border-gray-200 overflow-hidden"
-            />
-          </div>
-        ) : edit ? (
-          <div className="relative aspect-[4/3]">
-            <ImageField
-              value=""
-              onChange={(v) => set("image", v)}
-              onPick={() => pick("image")}
-              edit={edit}
-              label="Manşet görseli ekle"
-              className="w-full h-full rounded-lg border-2 border-dashed bg-white"
-            />
-            <p className="mt-2 text-center text-[11px] text-slate-400">
-              Görsel eklemezseniz sağdaki bilgi kutusu kullanılır.
-            </p>
-          </div>
-        ) : (
-          <div className="relative bg-[#0f172a] p-8 rounded-lg text-white shadow-xl overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#f97316] opacity-10 rounded-full blur-2xl" />
-            {E("boxBadge", "div", "text-[#f97316] font-bold text-sm uppercase tracking-widest mb-2", "Kutu etiketi")}
+        {/* Sağ sütun: operasyon bilgi kutusu. Sayfaya görsel eklemek için
+            "Görsel ve Video" bloğunu kullanın; bu alan metin kutusu olarak
+            kalır ve yerleşimi bozmaz. */}
+        <div className="relative bg-[#0f172a] p-8 rounded-lg text-white shadow-xl overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#f97316] opacity-10 rounded-full blur-2xl" />
+          {E("boxBadge", "div", "text-[#f97316] font-bold text-sm uppercase tracking-widest mb-2", "Kutu etiketi")}
             {E("boxTitle", "h3", "text-2xl font-bold mb-4", "Kutu başlığı")}
             {E("boxDesc", "p", "text-gray-300 text-sm leading-relaxed mb-6", "Kutu açıklaması")}
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-800 text-xs text-gray-400">
@@ -686,7 +1045,6 @@ function HeroBlock({ block, ctx }) {
               {E("check4", "div", "", "Kontrol 4")}
             </div>
           </div>
-        )}
       </div>
     </header>
   );
@@ -996,6 +1354,7 @@ const RENDERERS = {
   textBlock: TextBlockView,
   slider: SliderBlock,
   footer: FooterBlock,
+  media: MediaBlock,
 };
 
 /* ========================================================================== *
