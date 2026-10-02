@@ -166,7 +166,17 @@ export async function POST(request) {
   try {
     const res = await fetch(WEB3FORMS_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        // Web3Forms önündeki Cloudflare, tarayıcı olmayan istekleri
+        // (sunucu fonksiyonları dâhil) bot sanıp engelleyebiliyor. Tarayıcı
+        // imzasına yakın başlıklar göndererek şansı artırıyoruz.
+        "User-Agent":
+          "Mozilla/5.0 (compatible; GENCOSite/1.0; +https://genco-web.vercel.app)",
+        "Origin": "https://genco-web.vercel.app",
+        "Referer": "https://genco-web.vercel.app/contact",
+      },
       body: JSON.stringify({
         access_key: accessKey,
         subject: "GENCO web sitesi — iletişim formu",
