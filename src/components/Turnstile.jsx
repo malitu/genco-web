@@ -7,9 +7,11 @@
  * güvenilir olduğunda kutuyu hiç göstermez; şüpheli trafikte soru sorar.
  * Google reCAPTCHA'nın görsel bulmaca sorularını içermez, ücretsizdir.
  *
- * Betik `next/script` ile yüklenir; elle <script> eklemek yerine bunu
- * kullanıyoruz çünkü yükleme sırası ve tekrar çağırma Next.js tarafından
- * güvenli yönetiliyor.
+ * Neden elle yükleniyor?
+ *   next/script ile denendi; /contact sayfasında hydration'ı bozduğu için
+ *   sayfa etkileşimsiz kaldı (menü ve form çalışmıyordu). Bu yüzden betik
+ *   doğrudan <head>'e ekleniyor ve window.turnstile hazır olana kadar yoklanıyor
+ *   (CDN gecikmelerinde widget'ın hiç çizilmemesini önler).
  *
  * Site Key zaten tasarım olarak herkese açıktır (sayfa HTML'inde görünür),
  * bu yüzden değeri burada tutmak güvenlik riski oluşturmaz.
@@ -19,13 +21,18 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import Script from "next/script";
 
 const SITE_KEY =
   process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAFMYYY_DdHhEpuSH";
 
 const SCRIPT_SRC =
   "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
+/** Geçici kapatma anahtarı: "0" değerine alınınca CAPTCHA hiç yüklenmez. */
+const ENABLED = process.env.NEXT_PUBLIC_TURNSTILE !== "0";
+
+/** Betik yüklenirken widget'ın çizilmesini bekleme süresi (ms). */
+const RENDER_TIMEOUT = 12000;
 
 /**
  * @param {Function} onToken  CAPTCHA geçilince token'ı verir (null = sıfırla)
@@ -34,32 +41,40 @@ const SCRIPT_SRC =
 export default function Turnstile({ onToken, disabled = false }) {
   const boxRef = useRef(null);
   const widgetRef = useRef(null);
-  const timerRef = useRef(null);
   const onTokenRef = useRef(onToken);
-  const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
 
   onTokenRef.current = onToken;
 
-  // Betik hazır olduğunda widget'ı çiz
   useEffect(() => {
-    if (!ready || widgetRef.current) return;
+    if (!ENABLED || !SITE_KEY) return;
 
     let cancelled = false;
-    let tries = 0;
+    let timer = null;
+    const startedAt = Date.now();
+
+    /** Betiği <head>'e ekler (bir kez). */
+    const injectScript = () => {
+      if (document.querySelector(`script[src^="${SCRIPT_SRC}"]`)) return;
+      const el = document.createElement("script");
+      el.src = SCRIPT_SRC;
+      el.async = true;
+      el.defer = true;
+      document.head.appendChild(el);
+    };
 
     /**
-     * Betik etiketi yüklenmiş görünse de `window.turnstile` hemen hazır
-     * olmayabiliyor (yavaş ağ, CDN gecikmesi). Bu yüzden kısa aralıklarla
-     * yoklayıp hazır olduğunda çiziyoruz.
+     * Betik etiketi eklendi ama `window.turnstile` hemen hazır olmayabiliyor
+     * (yavaş ağ, CDN gecikmesi). Bu yüzden hazır olana kadar kısa aralıklarla
+     * yoklayıp widget'ı çiziyoruz.
      */
     const tryRender = () => {
       if (cancelled || widgetRef.current) return;
-      const turnstile = window.turnstile;
 
+      const turnstile = window.turnstile;
       if (!turnstile || typeof turnstile.render !== "function") {
-        if (tries++ < 40) {
-          timerRef.current = setTimeout(tryRender, 250);
+        if (Date.now() - startedAt < RENDER_TIMEOUT) {
+          timer = setTimeout(tryRender, 250);
         } else {
           console.warn(
             "CAPTCHA betiği zamanında yüklenmedi; form korumasız gönderilecek."
@@ -90,16 +105,18 @@ export default function Turnstile({ onToken, disabled = false }) {
       }
     };
 
-    if (!boxRef.current) return;
-    tryRender();
+    injectScript();
+    if (boxRef.current) tryRender();
 
     return () => {
       cancelled = true;
-      clearTimeout(timerRef.current);
+      clearTimeout(timer);
     };
-  }, [ready]);
+  }, []);
 
+  // Bileşen kalıcı olarak kapanmıyor; sadece çizim iptal ediliyor.
   useEffect(() => {
+    if (!ENABLED) return;
     return () => {
       if (widgetRef.current && window.turnstile) {
         try {
@@ -123,20 +140,7 @@ export default function Turnstile({ onToken, disabled = false }) {
     }
   }, [disabled]);
 
-  if (!SITE_KEY || failed) return null;
+  if (!ENABLED || !SITE_KEY || failed) return null;
 
-  return (
-    <>
-      <Script
-        src={SCRIPT_SRC}
-        strategy="afterInteractive"
-        onLoad={() => setReady(true)}
-        onError={() => {
-          console.warn("CAPTCHA betiği yüklenemedi; form yine de çalışır.");
-          setFailed(true);
-        }}
-      />
-      <div ref={boxRef} className="min-h-[1px]" />
-    </>
-  );
+  return <div ref={boxRef} className="min-h-[1px]" />;
 }
