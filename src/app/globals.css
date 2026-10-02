@@ -14,6 +14,23 @@
 }
 
 /* -------------------------------------------------------------------------- */
+/*  Giriş butonu — Tailwind sınıflarından bağımsız, her durumda turuncu       */
+/*  !important kullanılır; geçici CSS önbelleği butonu beyaz gösterse bile  */
+/*  görünür kalmasını garanti eder.                                           */
+/* -------------------------------------------------------------------------- */
+.genco-login-btn {
+  background-color: #f97316 !important;
+  color: #ffffff !important;
+}
+.genco-login-btn:hover {
+  background-color: #ea580c !important;
+}
+.genco-login-btn:disabled {
+  background-color: #fdba74 !important;
+  color: #7c2d12 !important;
+}
+
+/* -------------------------------------------------------------------------- */
 /*  Studio inline düzenleme (contentEditable) stilleri                         */
 /* -------------------------------------------------------------------------- */
 .genco-editable {

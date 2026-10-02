@@ -221,43 +221,26 @@ export default function GencoStudioAdmin() {
 
   useEffect(() => () => clearTimeout(toastTimer.current), []);
 
-  /* --- Firebase Auth: her girişte şifre sorulsun ------------------------- */
+  /* --- Firebase Auth ------------------------------------------------------ */
   useEffect(() => {
-    let cancelled = false;
-
     // Firebase varsayılan olarak oturumu tarayıcıda saklar; bu durumda
     // kullanıcı sonraki açılışlarda şifre girmeden panele girerdi.
-    // "Her seferinde şifre sor" açık olduğu için önce mevcut oturumu
-    // kapatıyor, ardından giriş ekranını gösteriyoruz.
-    const requirePasswordEachTime = true;
+    // Her açılışta şifre sorulsun diye sayfa yüklenir yüklenmez mevcut
+    // oturum kapatılır.
+    if (auth.currentUser) {
+      signOut(auth).catch((e) => console.error("Oturum kapatılamadı:", e));
+    }
+  }, []);
 
-    (async () => {
-      try {
-        if (requirePasswordEachTime && auth.currentUser) {
-          await signOut(auth);
-        }
-      } catch (e) {
-        console.error("Oturum kapatılamadı:", e);
-      } finally {
-        if (!cancelled) setUser(null);
-      }
-    })();
-
+  useEffect(() => {
+    // onAuthStateChanged hem sayfa yüklenirken hem de giriş/çıkışta çalışır.
+    // setUser her zaman güncel kullanıcıyı yazmalıdır; aksi halde başarılı
+    // giriş sonrasında panel hiç açılmaz.
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (cancelled) return;
-      if (requirePasswordEachTime) {
-        // Oturum bizim açılışta kapattığımızdan eski oturumları da yok say.
-        if (!currentUser) setUser(null);
-      } else {
-        setUser(currentUser);
-      }
+      setUser(currentUser);
       setReady(true);
     });
-
-    return () => {
-      cancelled = true;
-      unsubscribe();
-    };
+    return () => unsubscribe();
   }, []);
 
   /* --- initial load ----------------------------------------------------- */
@@ -588,7 +571,10 @@ export default function GencoStudioAdmin() {
           className="bg-white max-w-md w-full rounded-2xl p-8 shadow-2xl border border-gray-100"
         >
           <div className="text-center mb-8">
-            <span className="bg-genco-flame text-white font-bold text-xs px-3 py-1 rounded-full">
+            <span
+              className="text-white font-bold text-xs px-3 py-1 rounded-full"
+              style={{ backgroundColor: "#f97316" }}
+            >
               GÜVENLİ ERİŞİM
             </span>
             <h1 className="text-2xl font-bold text-genco-ink mt-3">
@@ -635,7 +621,8 @@ export default function GencoStudioAdmin() {
           <button
             type="submit"
             disabled={loggingIn}
-            className="w-full mt-4 bg-genco-flame hover:bg-orange-600 disabled:opacity-60 text-white p-3.5 font-bold rounded-xl transition shadow-md text-sm"
+            className="genco-login-btn w-full mt-4 text-white p-3.5 font-bold rounded-xl transition shadow-md text-sm"
+            style={{ backgroundColor: "#f97316" }}
           >
             {loggingIn ? "Giriş yapılıyor…" : "Stüdyoya Giriş Yap"}
           </button>
