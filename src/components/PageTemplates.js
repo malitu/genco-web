@@ -357,8 +357,8 @@ const industries = [
         eyebrow: bi("02 / SEKTÖR", "02 / SECTOR"),
         title: bi("Yatçılık & Marine Ekipman", "Yachting & Marine Equipment"),
         desc: bi(
-          "Yatçılık ve marine ekipmanı üzerinden ithalat-ihracat. Taşımacılık değil; aksesuar ve güvenlik ekipmanları, CE ve tescil uyumu, sevkiyat süreçleri.",
-          "Import and export in yachting and marine equipment. Not shipping — accessories and safety equipment, CE and registration compliance, shipment processes."
+          "Yatçılık ve marine ekipmanı üzerinden ithalat-ihracat. Aksesuar ve güvenlik ekipmanları, CE ve tescil uyumu, sevkiyat süreçleri.",
+          "Import and export in yachting and marine equipment. Accessories and safety equipment, CE and registration compliance, shipment processes."
         ),
         note: bi("✓ Aksesuar & Güvenlik Ekipmanları", "✓ Accessories & Safety Equipment"),
         image: "",
@@ -479,8 +479,8 @@ const caseStudies = [
       en: "Yacht and Marine Equipment Import-Export",
     },
     {
-      tr: "Yatçılık ve marine ekipmanı alanında taşımacılık değil, aksesuar ve güvenlik ekipmanları üzerinden ithalat-ihracat yapıyoruz. CE ve tescil dokümantasyonu, ürün uygunluğu ve sevkiyat süreçleri birlikte yönetilir.",
-      en: "In the yachting and marine equipment field we trade in accessories and safety equipment, not shipping. CE and registration documentation, product compliance and shipment processes are managed together.",
+      tr: "Yatçılık ve marine ekipmanı alanında aksesuar ve güvenlik ekipmanları üzerinden ithalat-ihracat yapıyoruz. CE ve tescil dokümantasyonu, ürün uygunluğu ve sevkiyat süreçleri birlikte yönetilir.",
+      en: "In the yachting and marine equipment field we run import and export in accessories and safety equipment. CE and registration documentation, product compliance and shipment processes are managed together.",
     },
     [
       { tr: "Yatçılık", en: "Yachting" },
