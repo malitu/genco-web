@@ -502,7 +502,11 @@ function MediaItem({ block, item, ctx, index, total }) {
           <img
             src={item.url}
             alt={caption || ""}
-            className={`w-full object-cover ${edit ? "" : "cursor-zoom-in"}`}
+            className={`w-full object-cover ${
+              // Sıra halinde dizilince tüm görseller aynı yükseklikte
+              // dursun; aksi halde farklı en-boy oranları hizayı bozar.
+              block.layout === "row" ? "aspect-[3/2]" : ""
+            } ${edit ? "" : "cursor-zoom-in"}`}
             draggable={false}
           />
 
@@ -699,7 +703,17 @@ function MediaBlock({ block, ctx }) {
                 onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
                 className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-10" placeholder="Başlık" />
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              className={`grid grid-cols-1 gap-6 ${
+                // Sütun sayısı görsel adedine göre: 2 fotoğraf için 2 sütun
+                // kullanılır, yoksa üçüncü sütun boş kalır.
+                items.length <= 1
+                  ? ""
+                  : items.length === 2
+                    ? "md:grid-cols-2"
+                    : "md:grid-cols-2 lg:grid-cols-3"
+              }`}
+            >
               {items.map((item, i) => (
                 <MediaItem key={item.id} block={block} item={item} ctx={ctx} index={i} total={items.length} />
               ))}
