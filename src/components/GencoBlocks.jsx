@@ -170,7 +170,7 @@ export const ROUTES_DEFAULTS = {
         "Şirket içi ihracat departmanı kurma maliyetine katlanmadan, dışarıdan uluslararası satış ekibiniz olarak küresel alıcılara ulaşıyoruz.",
         "Without building an internal export department, we act as your outsourced international sales team reaching global buyers."
       ),
-      link: bi("İhracat Modelini İncele →", "View Export Model →"), href: "/services", image: "",
+      link: bi("İhracat Modelini İncele →", "View Export Model →"), href: "/services", image: "/img/route-export.svg",
     },
     {
       id: "card_2",
@@ -180,7 +180,7 @@ export const ROUTES_DEFAULTS = {
         "Doğru üreticiyi bulma, kapasite denetimi, fiyat teklifi koordinasyonu ve uluslararası standartlara uygunluk süreçlerini yönetiyoruz.",
         "We handle manufacturer discovery, capacity audits, quotation coordination, and international standards compliance."
       ),
-      link: bi("Tedarik Süreçlerimiz →", "See Our Sourcing Process →"), href: "/services", image: "",
+      link: bi("Tedarik Süreçlerimiz →", "See Our Sourcing Process →"), href: "/services", image: "/img/route-sourcing.svg",
     },
     {
       id: "card_3",
@@ -190,7 +190,7 @@ export const ROUTES_DEFAULTS = {
         "Türkiye pazarını analiz etmek, yerel regülasyonlara uyum sağlamak ve güçlü bir distribütör veya bayi ağı kurarak ticari operasyon başlatmak.",
         "Analyzing the Turkish market, ensuring local regulatory compliance, and establishing strong distributor or dealer networks."
       ),
-      link: bi("Pazara Giriş Stratejisi →", "Market Entry Strategy →"), href: "/contact", image: "",
+      link: bi("Pazara Giriş Stratejisi →", "Market Entry Strategy →"), href: "/contact", image: "/img/route-entry.svg",
     },
   ],
 };

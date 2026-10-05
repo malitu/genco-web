@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" role="img" aria-label="İhracat">
+  <defs>
+    <linearGradient id="expBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2f7"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#expBg)"/>
+
+  <!-- dünya küresi -->
+  <g transform="translate(200 128)">
+    <circle r="76" fill="#ffffff" stroke="#0f172a" stroke-width="3"/>
+    <g fill="none" stroke="#0f172a" stroke-width="1.6" opacity=".28">
+      <ellipse rx="76" ry="28"/>
+      <ellipse rx="76" ry="52"/>
+      <ellipse rx="30" ry="76"/>
+      <ellipse rx="56" ry="76"/>
+      <path d="M-76 0h152"/>
+    </g>
+    <!-- dış ticaret noktaları -->
+    <g fill="#f97316">
+      <circle cx="-34" cy="-26" r="6"/>
+      <circle cx="26" cy="-40" r="6"/>
+      <circle cx="46" cy="18" r="6"/>
+      <circle cx="-10" cy="42" r="6"/>
+    </g>
+    <!-- çıkış yayları -->
+    <g fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" opacity=".8">
+      <path d="M-34-26c-14-16-16-34-6-46"/>
+      <path d="M26-40c14-12 22-6 30 2"/>
+      <path d="M46 18c16 6 20 18 16 30"/>
+    </g>
+  </g>
+
+  <!-- yükselen yay -->
+  <g transform="translate(58 208)">
+    <rect width="284" height="34" rx="17" fill="#0f172a"/>
+    <path d="M24 22h44l12-14 12 24 10-16 8 6h26" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M226 22l14-11v22z" fill="#f97316"/>
+  </g>
+</svg>
