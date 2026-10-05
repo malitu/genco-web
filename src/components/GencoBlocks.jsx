@@ -1581,7 +1581,7 @@ function IndustriesBlock({ block, ctx }) {
                     onPick={() => pick(`item:${item.id}`)}
                     edit={edit}
                     label="Sektör görseli"
-                    className="w-full h-28"
+                    className="w-full h-36"
                   />
                   <div className="p-4 text-center">
                     <div className="text-[#f97316] font-bold text-lg mb-1">
