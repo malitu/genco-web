@@ -940,20 +940,35 @@ const privacy = [
         ),
       },
       {
-        id: "tpl_priv_3",
+        id: "tpl_priv_w3f",
         eyebrow: bi("03", "03"),
+        category: bi("VERİ İŞLEYEN VE TEKNİK ALTYAPI", "DATA PROCESSOR AND TECHNICAL INFRASTRUCTURE"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi(
+          "Verileriniz hangi teknik sağlayıcı üzerinden iletilir?",
+          "Through which technical provider is your data transmitted?"
+        ),
+        body: bi(
+          "İletişim formu aracılığıyla iletilen veriler, teknik olarak zorunlu olduğu ölçüde e-posta hizmeti sağlayıcısı Web3Forms üzerinden iletilir. Veriler, talebiniz sonuçlandırıldıktan sonra bu sağlayıcının sistemlerinden silinir.",
+          "Data submitted through the contact form is transmitted, only to the extent technically necessary, via the email service provider Web3Forms. Once your request has been concluded, the data is deleted from that provider's systems."
+        ),
+      },
+      {
+        id: "tpl_priv_3",
+        eyebrow: bi("04", "04"),
         category: bi("AMAÇ VE HUKUKİ SEBEP", "PURPOSE AND LEGAL BASIS"),
         date: bi("", ""),
         author: bi("", ""),
         title: bi("Neden ve hangi sebeple işliyoruz?", "Why and on what legal basis?"),
         body: bi(
-          "İletilen bilgiler yalnızca talebinizin değerlendirilmesi, size dönüş yapılması ve iş ilişkisi kapsamında yürütülecek hizmetlerin planlanması amacıyla işlenir.\n\nİşleme faaliyeti KVKK 5. maddesi uyarınca açık rızanız veya sözleşmenin kurulması veya ifasıyla doğrudan ilgili olması, kanuni yükümlülüklerimizin yerine getirilmesi ve meşru menfaat hukuki sebeplerine dayanır. Bu amaç dışında kullanılmayacak ve üçüncü taraflara satış veya paylaşım yapılmayacaktır.",
-          "The submitted information is processed solely to evaluate your request, to respond to you, and to plan services within the scope of a potential business relationship.\n\nProcessing is carried out under Article 5 of KVKK on the basis of your explicit consent, the necessity of processing for the conclusion or performance of a contract, the fulfilment of our legal obligations, and our legitimate interests. Your data will not be used for any other purpose, nor sold or shared with third parties."
+          "İletilen bilgiler yalnızca talebinizin değerlendirilmesi, size dönüş yapılması ve iş ilişkisi kapsamında yürütülecek hizmetlerin planlanması amacıyla işlenir.\n\nİşleme faaliyeti KVKK 5. maddesi uyarınca açık rızanız veya sözleşmenin kurulması veya ifasıyla doğrudan ilgili olması, kanuni yükümlülüklerimizin yerine getirilmesi ve meşru menfaat hukuki sebeplerine dayanır. Bu amaç dışında kullanılmayacak ve üçüncü taraflara satış veya paylaşım yapılmayacaktır. Yukarıdaki bölümde belirtilen teknik olarak zorunlu e-posta iletimi dışında verileriniz herhangi bir üçüncü kişiyle paylaşılmayacaktır.",
+          "The submitted information is processed solely to evaluate your request, to respond to you, and to plan services within the scope of a potential business relationship.\n\nProcessing is carried out under Article 5 of KVKK on the basis of your explicit consent, the necessity of processing for the conclusion or performance of a contract, the fulfilment of our legal obligations, and our legitimate interests. Your data will not be used for any other purpose, nor sold or shared with third parties. Apart from the technically necessary email transmission described in the section above, your data will not be shared with any third party."
         ),
       },
       {
         id: "tpl_priv_4",
-        eyebrow: bi("04", "04"),
+        eyebrow: bi("05", "05"),
         category: bi("SAKLANMA SÜRESİ", "RETENTION PERIOD"),
         date: bi("", ""),
         author: bi("", ""),
@@ -965,7 +980,7 @@ const privacy = [
       },
       {
         id: "tpl_priv_5",
-        eyebrow: bi("05", "05"),
+        eyebrow: bi("06", "06"),
         category: bi("HAKLARINIZ", "YOUR RIGHTS"),
         date: bi("", ""),
         author: bi("", ""),
@@ -977,7 +992,7 @@ const privacy = [
       },
       {
         id: "tpl_priv_6",
-        eyebrow: bi("06", "06"),
+        eyebrow: bi("07", "07"),
         category: bi("GÜNCELLEME", "UPDATES"),
         date: bi("", ""),
         author: bi("", ""),
