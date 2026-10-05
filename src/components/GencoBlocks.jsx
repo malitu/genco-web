@@ -929,8 +929,8 @@ export const FOOTER_DEFAULTS = {
   id: "seed_footer",
   type: "footer",
   rights: bi(
-    "© 2026 GENCO Imports & Exports LTD. Tüm hakları saklıdır.",
-    "© 2026 GENCO Imports & Exports LTD. All rights reserved."
+    "© 2026 Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. Tüm hakları saklıdır.",
+    "© 2026 Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. All rights reserved."
   ),
   address: bi(
     "Meriç Mah. 5746/5 SK. No: 3 İç Kapı No: Z1 Bornova/İzmir - TÜRKİYE | Tel: +90 232 462 16 49 | info@gencotr.com",
@@ -1402,7 +1402,7 @@ function NavBlock({ block, ctx }) {
             >
               <img
                 src={block.logo || "/logo.png"}
-                alt="GENCO Imports & Exports"
+                alt="Genco İthalat İhracat"
                 className="h-12 sm:h-14 w-auto object-contain"
               />
             </a>

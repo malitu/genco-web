@@ -197,6 +197,66 @@ const services = [
     { tr: "Projenizi Görüşelim", en: "Discuss Your Project" }
   ),
 
+  /* ---- Anahtar Teslim İthalat ------------------------------------------------
+     Eski sitedeki "Kullan-at ithalat" hizmetinin güncel adı ve içeriği.
+     Panelden adı ve metinleri değiştirilebilir. ---------------------------- */
+  {
+    ...CARD_GRID_DEFAULTS,
+    id: "tpl_svc_turnkey",
+    columns: 2,
+    heading: bi("Anahtar Teslim İthalat", "Turnkey Import"),
+    sub: bi(
+      "Firmanızın kendi bünyesinde takip edemeyeceği ithalat süreçlerini biz üstleniyoruz. Ürün kaynağından gümrükleme ve depoya ulaşmaya kadar tüm zincir tek elden yönetilir.",
+      "We take over the import processes your company cannot manage in-house. From product sourcing through customs clearance and delivery to your warehouse, the entire chain is handled by us."
+    ),
+    cards: [
+      {
+        id: "tpl_svc_tt1",
+        eyebrow: bi("ÖN ARAŞTIRMA", "FEASIBILITY"),
+        title: bi("Ön araştırma ve fizibilite", "Pre-research and feasibility"),
+        desc: bi(
+          "Sektörünüzün ve ithal etmek istediğiniz ürünün özgün yönlerini analiz ediyor, potansiyel tedarikçi ülkelerin ekonomik ve lojistik koşullarını değerlendiriyor, gümrük uyumluluk gereksinimlerini ve taşıma modlarını ortaya koyuyoruz. Sonuç: ithalatınızın fizibilitesi, riskleri ve faydaları hakkında bilinçli karar verebileceğiniz bir ön rapor.",
+          "We analyse the specifics of your sector and the product you intend to import, evaluate the economic and logistics conditions of potential supplier countries, and lay out customs compliance requirements and shipping options. The result is a pre-research report so you can make an informed decision on feasibility, risk and benefit."
+        ),
+        note: bi("", ""),
+        image: "",
+      },
+      {
+        id: "tpl_svc_tt2",
+        eyebrow: bi("TEKLİF", "SOURCING"),
+        title: bi("Tedarikçi seçimi ve fiyat", "Supplier selection and pricing"),
+        desc: bi(
+          "Yurt içinde fiyat, kalite veya tasarım avantajı sunabilecek ürünler için farklı ülke ve üreticilerden teklif topluyor, ihracatçı firmalarla pazarlıkları yürütüyor, en uygun GTİP numaralarını tespit ediyor ve taşıma masraflarını raporluyoruz.",
+          "For products that offer price, quality or design advantages, we collect quotations from multiple countries and manufacturers, negotiate with exporters, identify the most suitable HS codes, and report freight costs."
+        ),
+        note: bi("", ""),
+        image: "",
+      },
+      {
+        id: "tpl_svc_tt3",
+        eyebrow: bi("OPERASYON", "EXECUTION"),
+        title: bi("Doküman, taşıma ve gümrükleme", "Documentation, freight and customs"),
+        desc: bi(
+          "Aynı ithalatı birden fazla ülkeden denemek zorunda kalmayın. Akreditif yazımı ve açılışından sevkiyat takibine, uluslararası taşıma ve sigortaya, denetim ve kalite uyum testlerinden gümrükleme ile yurt içi taşımacılığa kadar tüm adımları biz yürütüyoruz.",
+          "You no longer have to try the same import from multiple countries. From letter-of-credit issuance and shipment tracking to international freight and insurance, quality compliance testing, customs clearance and domestic delivery, we execute every step."
+        ),
+        note: bi("", ""),
+        image: "",
+      },
+      {
+        id: "tpl_svc_tt4",
+        eyebrow: bi("SONUÇ", "OUTCOME"),
+        title: bi("Depoya ulaşan ürün", "Product delivered to your door"),
+        desc: bi(
+          "Her aşamayı sıfır risk ilkesiyle yönetiyor, ürünün eksiksiz ve hatasız biçimde deponuza ulaşmasını sağlıyoruz. Böylece bürokratik karmaşalarla ve uzun prosedürlerle uğraşmadan ana işinize odaklanıyorsunuz.",
+          "We manage every step on a zero-risk principle and ensure your goods arrive at your warehouse complete and correct — so you stay focused on your core business instead of bureaucracy."
+        ),
+        note: bi("", ""),
+        image: "",
+      },
+    ],
+  },
+
   /* ---- Nasıl çalışıyoruz: süreç, koşul değil ---- */
   {
     ...ARTICLE_LIST_DEFAULTS,
@@ -694,8 +754,8 @@ const about = [
       en: "Analysis guides. Execution grows trade.",
     },
     {
-      tr: "GENCO Imports & Exports olarak şirketlere dışarıdan rapor sunan pasif bir danışmanlık kurumu değiliz; küresel ticaret ağlarında sizin adınıza masaya oturan ve sahada operasyon yürüten bir iş ortağıyız.",
-      en: "As GENCO Imports & Exports, we are not a passive consultancy handing over outside reports; we are a business partner who sits at the table on your behalf and runs operations on the ground.",
+      tr: "Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. olarak şirketlere dışarıdan rapor sunan pasif bir danışmanlık kurumu değiliz; küresel ticaret ağlarında sizin adınıza masaya oturan ve sahada operasyon yürüten bir iş ortağıyız.",
+      en: "As Genco Import Export Medical Products Industry and Trading Co. Ltd., we are not a passive consultancy handing over outside reports; we are a business partner who sits at the table on your behalf and runs operations on the ground.",
     }
   ),
 
@@ -863,8 +923,8 @@ const privacy = [
         author: bi("", ""),
         title: bi("Veri sorumlusu kimdir?", "Who is the data controller?"),
         body: bi(
-          "Veri sorumlusu, GENCO Imports & Exports Ltd. Şti.'dir.\n\nAdres: Meriç Mah. 5746/5 SK. No: 3 İç Kapı No: Z1 Bornova / İzmir – TÜRKİYE\nTelefon: +90 232 462 16 49\nE-posta: info@gencotr.com",
-          "The data controller is GENCO Imports & Exports Ltd.\n\nAddress: Meriç Mah. 5746/5 SK. No: 3 Inner Door No: Z1 Bornova / Izmir – TURKEY\nPhone: +90 232 462 16 49\nEmail: info@gencotr.com"
+          "Veri sorumlusu, Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti.'dir.\n\nAdres: Meriç Mah. 5746/5 SK. No: 3 İç Kapı No: Z1 Bornova / İzmir – TÜRKİYE\nTelefon: +90 232 462 16 49\nE-posta: info@gencotr.com",
+          "The data controller is Genco Import Export Medical Products Industry and Trading Co. Ltd.\n\nAddress: Meriç Mah. 5746/5 SK. No: 3 Inner Door No: Z1 Bornova / Izmir – TURKEY\nPhone: +90 232 462 16 49\nEmail: info@gencotr.com"
         ),
       },
       {
