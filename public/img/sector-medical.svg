@@ -9,38 +9,46 @@
 
   <!-- steril paket -->
   <g>
-    <rect x="46" y="52" width="150" height="96" rx="8" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
-    <path d="M46 84h150" stroke="#0f172a" stroke-width="1.4" opacity=".35"/>
-    <g stroke="#0f172a" stroke-width="1" opacity=".3">
-      <path d="M60 92v40M72 92v40M84 92v40M96 92v40M108 92v40M120 92v40M132 92v40M144 92v40M156 92v40M168 92v40M180 92v40"/>
+    <rect x="52" y="46" width="164" height="104" rx="9" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+    <path d="M52 82h164" stroke="#0f172a" stroke-width="1.4" opacity=".35"/>
+    <g stroke="#0f172a" stroke-width="1" opacity=".28">
+      <path d="M68 92v44M82 92v44M96 92v44M110 92v44M124 92v44M138 92v44M152 92v44M166 92v44M180 92v44M194 92v44"/>
     </g>
-    <!-- köşe kıvrımları (paket açma) -->
-    <path d="M46 132l16-16M46 52l16 16" stroke="#f97316" stroke-width="2" fill="none"/>
+    <path d="M52 138l18-18M52 46l18 18" stroke="#f97316" stroke-width="2.5" fill="none"/>
   </g>
 
   <!-- tıbbi haç -->
-  <g transform="translate(112 40)">
-    <circle r="17" fill="#0f172a"/>
-    <path d="M-9 0h18M0-9v18" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+  <g transform="translate(134 34)">
+    <circle r="16" fill="#0f172a"/>
+    <path d="M-8 0h16M0-8v16" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
   </g>
 
-  <!-- cerrahi alet (klempen) -->
-  <g transform="rotate(-16 288 116)">
-    <path d="M288 74c-10 0-15 8-15 16 0 9 6 14 6 22s-6 13-6 22c0 9 6 16 15 16"
-          fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
-    <path d="M288 150c10 0 15-8 15-16 0-9-6-14-6-22s6-13 6-22c0-9-6-16-15-16"
-          fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="288" cy="130" r="6" fill="#ffffff" stroke="#0f97316" stroke-width="0"/>
-    <circle cx="288" cy="130" r="6" fill="#ffffff" stroke="#f97316" stroke-width="3"/>
-    <g stroke="#0f172a" stroke-width="2" stroke-linecap="round" opacity=".5">
-      <path d="M276 88h-14M276 104h-12M276 156h-14M276 140h-12"/>
+  <!-- enjektör -->
+  <g transform="translate(300 104) rotate(-32)">
+    <g fill="#ffffff" stroke="#0f172a" stroke-width="3" stroke-linejoin="round">
+      <rect x="-58" y="-9" width="16" height="18" rx="4"/>
+      <path d="M-42-11h56v22h-56z"/>
+      <path d="M-42-11l12-13h32l12 13z"/>
+      <rect x="14" y="-15" width="14" height="30" rx="3"/>
+      <path d="M28-4h12v8H28z"/>
+    </g>
+    <path d="M40 0h22" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+    <path d="M40 0h22" stroke="#f97316" stroke-width="3" stroke-linecap="round" transform="translate(0 6)"/>
+    <g stroke="#f97316" stroke-width="3" stroke-linecap="round">
+      <path d="M-32-11v22M-16-11v22M0-11v22"/>
+    </g>
+    <g stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" opacity=".45">
+      <path d="M-30 14h8M-14 14h8M2 14h8"/>
     </g>
   </g>
 
-  <!-- nabız -->
-  <g transform="translate(46 186)">
-    <rect width="308" height="46" rx="23" fill="#0f172a"/>
-    <path d="M24 23h58l14-13 12 26 10-19 8 6h30" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="278" y="28" font-family="ui-monospace,monospace" font-size="11" fill="#ffffff" text-anchor="end" font-weight="700">CE</text>
+  <!-- nabız şeridi -->
+  <g transform="translate(52 190)">
+    <rect width="296" height="46" rx="23" fill="#0f172a"/>
+    <path d="M28 23h54l13-13 12 26 11-19 8 6h28" fill="none" stroke="#f97316" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(268 23)">
+      <circle r="13" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+      <path d="M0-7v7l5 4" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
   </g>
 </svg>

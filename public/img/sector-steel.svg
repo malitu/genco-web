@@ -7,44 +7,39 @@
   </defs>
   <rect width="400" height="260" fill="url(#steelBg)"/>
 
-  <!-- ölçü cetveli -->
-  <g stroke="#cbd5e1" stroke-width="1">
-    <path d="M40 40h34M40 47h22M40 54h34M40 61h22M40 68h34M40 75h22M40 82h34M40 89h22"/>
-  </g>
-
-  <!-- çubuk kesitleri (yığılmış demir) -->
+  <!-- ana çubuk kesiti -->
   <g>
-    <circle cx="150" cy="120" r="52" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
-    <circle cx="150" cy="120" r="38" fill="none" stroke="#0f172a" stroke-width="1.6" opacity=".45"/>
-    <circle cx="150" cy="120" r="24" fill="#0f172a" opacity=".08"/>
-    <circle cx="150" cy="120" r="9" fill="#ffffff" stroke="#0f172a" stroke-width="2"/>
-    <!-- eş merkez çizgileri -->
-    <g stroke="#0f172a" stroke-width="1" opacity=".3">
-      <path d="M98 120h104M150 68v104"/>
+    <circle cx="176" cy="126" r="62" fill="#ffffff" stroke="#0f172a" stroke-width="3"/>
+    <circle cx="176" cy="126" r="46" fill="none" stroke="#0f172a" stroke-width="1.8" opacity=".4"/>
+    <circle cx="176" cy="126" r="29" fill="#0f172a" opacity=".08"/>
+    <circle cx="176" cy="126" r="11" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+    <g stroke="#0f172a" stroke-width="1.2" opacity=".28">
+      <path d="M114 126h124M176 64v124"/>
     </g>
   </g>
 
-  <g>
-    <circle cx="262" cy="96" r="34" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
-    <circle cx="262" cy="96" r="22" fill="none" stroke="#0f172a" stroke-width="1.4" opacity=".4"/>
-    <circle cx="262" cy="96" r="7" fill="#0f172a" opacity=".1"/>
-  </g>
+  <!-- yan kesitler -->
+  <circle cx="308" cy="86" r="32" fill="#ffffff" stroke="#0f172a" stroke-width="3"/>
+  <circle cx="308" cy="86" r="20" fill="none" stroke="#0f172a" stroke-width="1.5" opacity=".38"/>
+  <circle cx="308" cy="86" r="6" fill="#0f172a" opacity=".12"/>
 
-  <g>
-    <circle cx="300" cy="184" r="28" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
-    <circle cx="300" cy="184" r="17" fill="none" stroke="#0f172a" stroke-width="1.4" opacity=".4"/>
-  </g>
+  <circle cx="322" cy="192" r="26" fill="#ffffff" stroke="#0f172a" stroke-width="3"/>
+  <circle cx="322" cy="192" r="15" fill="none" stroke="#0f172a" stroke-width="1.5" opacity=".38"/>
 
   <!-- boyut oku -->
-  <g stroke="#f97316" stroke-width="2" stroke-linecap="round">
-    <path d="M228 200h44"/>
-    <path d="M228 200l9-6v12zM272 200l-9-6v12z" fill="#f97316" stroke="none"/>
+  <g stroke="#f97316" stroke-width="3" stroke-linecap="round" fill="none">
+    <path d="M60 200h50"/>
   </g>
-  <text x="250" y="222" font-family="ui-monospace,monospace" font-size="13" fill="#f97316" text-anchor="middle" font-weight="700">±0,05</text>
+  <path d="M60 200l10-7v14zM110 200l-10-7v14z" fill="#f97316"/>
 
-  <!-- alaşım rozeti -->
-  <g>
-    <rect x="40" y="120" width="72" height="30" rx="15" fill="#0f172a"/>
-    <text x="76" y="140" font-family="ui-monospace,monospace" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="700">EN / ASTM</text>
+  <!-- kalibre işareti (üst çentik) -->
+  <g stroke="#cbd5e1" stroke-width="2" stroke-linecap="round">
+    <path d="M56 40h44M56 52h26M56 64h44M56 76h26"/>
+  </g>
+
+  <!-- denetim onayı -->
+  <g transform="translate(56 214)">
+    <circle r="17" fill="#0f172a"/>
+    <path d="M-7 0l5 6 10-12" fill="none" stroke="#f97316" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 </svg>
