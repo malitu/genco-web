@@ -1644,11 +1644,11 @@ function RoutesBlock({ block, ctx }) {
                   onPick={() => pick(`card:${card.id}`)}
                   edit={edit}
                   label="Kart görseli"
-                  className="w-full h-40"
+                  className="w-full aspect-[3/2]"
                 />
               ) : (
                 card.image && (
-                  <img src={card.image} alt="" className="w-full h-40 object-cover" draggable={false} />
+                  <img src={card.image} alt="" className="w-full aspect-[3/2] object-cover" draggable={false} />
                 )
               )}
 
