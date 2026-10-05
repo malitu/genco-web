@@ -105,6 +105,7 @@ export const HERO_DEFAULTS = {
     "Uluslararası İş Geliştirme Ortağınız",
     "Your International Business Development Partner"
   ),
+  tagline: bi("Rotanızı dünyaya çevirin, biz pusulanız olalım.", "Take your business around the world — we'll be your compass."),
   title: bi(
     "Türkiye'deki Uluslararası Ticaret Ekibiniz",
     "Your International Trade Team in Turkey"
@@ -1504,6 +1505,11 @@ function HeroBlock({ block, ctx }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="flex flex-col items-start text-left">
           {E("badge", "span", "text-[#f97316] font-bold tracking-wider text-sm mb-4 uppercase", "Üst etiket")}
+          {block.tagline && (
+            <p className="text-lg md:text-xl font-semibold italic text-[#1e293b] border-l-4 border-[#f97316] pl-4 mb-5 max-w-xl leading-snug">
+              “{L(block.tagline, lang)}”
+            </p>
+          )}
           {E("title", "h1", "text-4xl md:text-5xl font-bold text-[#0f172a] leading-tight mb-6", "Ana başlık")}
           {E("subtitle", "p", "text-lg text-gray-600 mb-8 leading-relaxed", "Açıklama")}
 
