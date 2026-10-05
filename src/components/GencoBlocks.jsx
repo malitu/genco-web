@@ -140,12 +140,12 @@ export const INDUSTRIES_DEFAULTS = {
     "In these sectors we hold proprietary technical knowledge and established buyer networks. For any other sector we apply the same methodology: market research and operational management."
   ),
   items: [
-    { id: "ind_1", title: bi("Vasıflı Çelik", "Engineering Steel"), image: "" },
-    { id: "ind_2", title: bi("Yatçılık & Marine", "Yachting & Marine"), image: "" },
-    { id: "ind_3", title: bi("Tohumculuk", "Seed Trade"), image: "" },
-    { id: "ind_4", title: bi("Medikal", "Medical"), image: "" },
-    { id: "ind_5", title: bi("Otomotiv", "Automotive"), image: "" },
-    { id: "ind_6", title: bi("Femtech", "Femtech"), image: "" },
+    { id: "ind_1", title: bi("Vasıflı Çelik", "Engineering Steel"), image: "/img/sector-steel.svg" },
+    { id: "ind_2", title: bi("Yatçılık & Marine", "Yachting & Marine"), image: "/img/sector-marine.svg" },
+    { id: "ind_3", title: bi("Tohumculuk", "Seed Trade"), image: "/img/sector-seeds.svg" },
+    { id: "ind_4", title: bi("Medikal", "Medical"), image: "/img/sector-medical.svg" },
+    { id: "ind_5", title: bi("Otomotiv", "Automotive"), image: "/img/sector-automotive.svg" },
+    { id: "ind_6", title: bi("Femtech", "Femtech"), image: "/img/sector-healthtech.svg" },
   ],
   note: bi(
     "* Uzmanlık alanlarımız haricinde, talebe göre her sektörde özel pazar araştırması ve operasyon yönetimi sağlanmaktadır.",

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" role="img" aria-label="Tohumculuk">
+  <defs>
+    <linearGradient id="seedBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2f7"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#seedBg)"/>
+
+  <!-- küre (pazar) -->
+  <g stroke="#0f172a" stroke-width="2.5" fill="none">
+    <circle cx="200" cy="130" r="88" opacity=".22"/>
+    <ellipse cx="200" cy="130" rx="36" ry="88" opacity=".22"/>
+    <path d="M112 130h176M126 92h148M126 168h148" opacity=".22" stroke-width="1.8"/>
+  </g>
+
+  <!-- filiz -->
+  <g>
+    <path d="M200 196v-58" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+    <path d="M200 156c-24 0-38-14-38-34 22-2 38 12 38 34z" fill="#ffffff" stroke="#0f172a" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M200 142c24-2 40-16 40-36-24 0-40 14-40 36z" fill="#ffffff" stroke="#0f172a" stroke-width="2.5" stroke-linejoin="round"/>
+    <!-- ana kök -->
+    <path d="M200 196c-14 0-22 8-22 18" stroke="#f97316" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M200 196c14 0 22 8 22 18" stroke="#f97316" stroke-width="3" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- tohumlar -->
+  <g>
+    <ellipse cx="96" cy="86" rx="17" ry="11" transform="rotate(-24 96 86)" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+    <path d="M88 84c4-4 10-5 15-2" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="308" cy="196" rx="17" ry="11" transform="rotate(18 308 196)" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+    <path d="M300 198c4-5 10-6 15-3" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="320" cy="70" rx="14" ry="9" transform="rotate(-12 320 70)" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+    <path d="M313 69c4-4 9-4 13-1" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- izin / analiz rozeti -->
+  <g>
+    <rect x="42" y="164" width="86" height="30" rx="15" fill="#0f172a"/>
+    <path d="M60 179l6 6 12-13" stroke="#f97316" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="106" y="184" font-family="ui-monospace,monospace" font-size="11" fill="#ffffff" text-anchor="middle" font-weight="700">İZİN</text>
+  </g>
+</svg>

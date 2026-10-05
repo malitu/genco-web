@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" role="img" aria-label="Medikal ve cerrahi sarf">
+  <defs>
+    <linearGradient id="medBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2f7"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#medBg)"/>
+
+  <!-- steril paket -->
+  <g>
+    <rect x="46" y="52" width="150" height="96" rx="8" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+    <path d="M46 84h150" stroke="#0f172a" stroke-width="1.4" opacity=".35"/>
+    <g stroke="#0f172a" stroke-width="1" opacity=".3">
+      <path d="M60 92v40M72 92v40M84 92v40M96 92v40M108 92v40M120 92v40M132 92v40M144 92v40M156 92v40M168 92v40M180 92v40"/>
+    </g>
+    <!-- köşe kıvrımları (paket açma) -->
+    <path d="M46 132l16-16M46 52l16 16" stroke="#f97316" stroke-width="2" fill="none"/>
+  </g>
+
+  <!-- tıbbi haç -->
+  <g transform="translate(112 40)">
+    <circle r="17" fill="#0f172a"/>
+    <path d="M-9 0h18M0-9v18" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- cerrahi alet (klempen) -->
+  <g transform="rotate(-16 288 116)">
+    <path d="M288 74c-10 0-15 8-15 16 0 9 6 14 6 22s-6 13-6 22c0 9 6 16 15 16"
+          fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+    <path d="M288 150c10 0 15-8 15-16 0-9-6-14-6-22s6-13 6-22c0-9-6-16-15-16"
+          fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="288" cy="130" r="6" fill="#ffffff" stroke="#0f97316" stroke-width="0"/>
+    <circle cx="288" cy="130" r="6" fill="#ffffff" stroke="#f97316" stroke-width="3"/>
+    <g stroke="#0f172a" stroke-width="2" stroke-linecap="round" opacity=".5">
+      <path d="M276 88h-14M276 104h-12M276 156h-14M276 140h-12"/>
+    </g>
+  </g>
+
+  <!-- nabız -->
+  <g transform="translate(46 186)">
+    <rect width="308" height="46" rx="23" fill="#0f172a"/>
+    <path d="M24 23h58l14-13 12 26 10-19 8 6h30" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="278" y="28" font-family="ui-monospace,monospace" font-size="11" fill="#ffffff" text-anchor="end" font-weight="700">CE</text>
+  </g>
+</svg>

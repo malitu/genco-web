@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" role="img" aria-label="Otomotiv ve yan sanayi">
+  <defs>
+    <linearGradient id="autoBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2f7"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#autoBg)"/>
+
+  <!-- dişli -->
+  <g transform="translate(146 118)">
+    <g fill="#ffffff" stroke="#0f172a" stroke-width="2.5" stroke-linejoin="round">
+      <path d="M-14-72h28l6 20h16l-4 20 4 20-16 0-6 20h-28l-6-20h-16l4-20-4-20 16 0z"/>
+    </g>
+    <circle r="44" fill="none" stroke="#0f172a" stroke-width="1.4" opacity=".4"/>
+    <circle r="26" fill="none" stroke="#0f172a" stroke-width="1.4" opacity=".4"/>
+    <circle r="13" fill="#0f172a" opacity=".1"/>
+    <circle r="13" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+    <!-- dönüş yönü -->
+    <path d="M58 0a58 58 0 0 1-14 40" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M40 34l5 7-9 2z" fill="#f97316"/>
+  </g>
+
+  <!-- piston + biyel -->
+  <g transform="translate(238 118)">
+    <g stroke="#0f172a" stroke-width="2.5" fill="#ffffff" stroke-linejoin="round">
+      <rect x="-30" y="-56" width="60" height="52" rx="6"/>
+      <rect x="-24" y="-64" width="48" height="10" rx="4" fill="#0f1730"/>
+      <path d="M0-4v44" fill="none" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="0" cy="52" r="18"/>
+      <circle cx="0" cy="52" r="8" fill="#0f1730"/>
+    </g>
+    <g stroke="#0f97316" stroke-width="0" fill="none"/>
+    <path d="M-14-44h28M-14-30h28" stroke="#f97316" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+  </g>
+
+  <!-- altıgen somun -->
+  <g transform="translate(320 200)">
+    <path d="M0-26 22-13v26L0 26-22 13v-26z" fill="#ffffff" stroke="#0f172a" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle r="11" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+  </g>
+
+  <!-- tolerans rozeti -->
+  <g transform="translate(52 200)">
+    <rect width="92" height="30" rx="15" fill="#0f172a"/>
+    <text x="46" y="20" font-family="ui-monospace,monospace" font-size="11" fill="#ffffff" text-anchor="middle" font-weight="700">IZOD / IATF</text>
+  </g>
+</svg>

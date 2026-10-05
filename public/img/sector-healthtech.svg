@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" role="img" aria-label="Femtech ve sağlık teknolojileri">
+  <defs>
+    <linearGradient id="ftBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2f7"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#ftBg)"/>
+
+  <!-- dış halka + nabız -->
+  <g transform="translate(132 118)">
+    <circle r="74" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+    <circle r="74" fill="none" stroke="#f97316" stroke-width="2.5"
+            stroke-dasharray="18 344" stroke-linecap="round" transform="rotate(-90)"/>
+    <path d="M-46 0h30l12-26 16 52 12-34 8 8h24" fill="none"
+          stroke="#0f172a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- molekül -->
+  <g stroke="#0f172a" stroke-width="2.5" fill="#ffffff">
+    <path d="M288 66l40 23M328 89v46M328 135l-40 23M248 158l-40-23M208 135V89M248 66l40 23"
+          fill="none"/>
+    <circle cx="288" cy="66" r="16"/>
+    <circle cx="328" cy="112" r="16"/>
+    <circle cx="288" cy="158" r="16"/>
+    <circle cx="208" cy="112" r="16"/>
+  </g>
+  <circle cx="288" cy="112" r="21" fill="#f97316"/>
+  <circle cx="288" cy="112" r="8" fill="#ffffff"/>
+
+  <!-- analiz rozeti -->
+  <g transform="translate(44 196)">
+    <rect width="118" height="30" rx="15" fill="#0f172a"/>
+    <path d="M20 15l5 5 10-11" stroke="#f97316" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="86" y="20" font-family="ui-monospace,monospace" font-size="11" fill="#ffffff" text-anchor="middle" font-weight="700">CLINICAL</text>
+  </g>
+
+  <!-- uyum çizgileri -->
+  <g stroke="#cbd5e1" stroke-width="1">
+    <path d="M30 42h26M30 49h18M344 212h26M356 219h14"/>
+  </g>
+</svg>
