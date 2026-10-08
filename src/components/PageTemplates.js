@@ -694,8 +694,8 @@ const insights = [
       en: "Sector Insights: Notes from the Field",
     },
     {
-      tr: "Demir çelik toleranslarından medikal tedarik zincirlerine, denizcilik regülasyonlarından niş pazar dinamiklerine kadar uluslararası ticarette kendi deneyimimizden çıkardığımız stratejik notları paylaşıyoruz.",
-      en: "We share strategic notes drawn from our own experience in international trade, ranging from steel tolerances to medical supply chains, marine regulations to niche market dynamics.",
+      tr: "Demir çelik toleranslarından medikal tedarik zincirlerine, denizcilik uyumundan tohum izinlerine, ambalajda baskı öncesi kontrolden kadın sağlığı ürünlerinin Avrupa'ya girişine kadar, uluslararası ticarette kendi deneyimimizden çıkardığımız stratejik notları paylaşıyoruz.",
+      en: "We share strategic notes drawn from our own experience in international trade — from steel tolerances and medical supply chains, through marine compliance and seed permits, to pre-press control in packaging and market access for women's health products in Europe.",
     }
   ),
   {
@@ -735,6 +735,72 @@ const insights = [
         body: bi(
           "Medikal ve cerrahi sarf malzemeleri ticaretinde hata payı sıfırdır. Standart bobin ürünler yerine belirli uzunluklarda boyutlandırılmış ve uçları sertleştirilmiş cerrahi iplikler gibi kritik ürünlerde üreticinin kapasitesi hayati önem taşır.\n\nGENCO, alıcı adına yerel üretim tesislerini bizzat yerinde denetler; sterilizasyon koşullarından hammadde izlenebilirliğine kadar tüm aşamaları sahada yöneterek operasyonel riskleri ortadan kaldırır.",
           "In the medical and surgical consumables trade the margin for error is zero. For critical products—such as surgical sutures cut to specific lengths with hardened ends—rather than standard spool products, the manufacturer's capacity is vital.\n\nGENCO audits local manufacturing facilities on-site on behalf of the buyer; from sterilization conditions to raw material traceability, every stage is managed in the field to eliminate operational risks."
+        ),
+      },
+      {
+        id: "tpl_ins_3",
+        eyebrow: bi("03 / YATÇILIK & MARINE", "03 / YACHTING & MARINE"),
+        category: bi("REGÜLASYON & UYUM", "REGULATION & COMPLIANCE"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi(
+          "Denizcilik Ekipmanında CE ve Tescil Uyumunun Doğru Okunması",
+          "Reading CE Marking and Type Approval Correctly in Marine Equipment"
+        ),
+        body: bi(
+          "Denizcilik ekipmanı ticaretinde en sık yaşanan hata, CE işaretini bir kalite veya menşe işareti sanmaktır. CE yalnızca ilgili yönetmeliğe uyum beyanıdır; tek başına ürünün üretim kalitesini göstermez. Can kurtarma ve emniyet ekipmanlarında ise ek olarak tip onayı ve gemi adına tescil süreçleri devreye girer.\n\nGENCO olarak sevkiyat öncesi bu belge setini tek tek kontrol ediyoruz: uygunluk beyanı, teknik dosya, tip onayı numarası ve tescil uyumu. Eksik olan tek bir belge, gümrükte ciddi gecikme ve depoda mal tutulması anlamına geliyor.",
+          "The most common mistake in the marine equipment trade is treating the CE mark as a sign of quality or origin. CE is only a declaration of conformity with the relevant directive; it does not by itself indicate manufacturing quality. For life-saving and safety equipment, type approval and vessel registration processes also apply.\n\nBefore shipment we verify this document set one by one: the declaration of conformity, the technical file, the type approval number and registration compliance. A single missing document means serious customs delays and stock being held at the warehouse."
+        ),
+      },
+      {
+        id: "tpl_ins_4",
+        eyebrow: bi("04 / TOHUMCULUK", "04 / SEED TRADE"),
+        category: bi("İZİN & BELGELENDİRME", "PERMITS & CERTIFICATION"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi(
+          "Tohum İthalatında İzin Zinciri: Analiz Sertifikasından Bitki Sağlığı Belgesine",
+          "The Permit Chain in Seed Imports: From Analysis Certificate to Phytosanitary Certificate"
+        ),
+        body: bi(
+          "Tohum, ithalatı en çok belgeye bağlı ürün gruplarından biridir. Doğru bir operasyon yalnızca tek bir izinle değil, birbirini izleyen bir zincirle ilerler: ithalat izni, laboratuvar analiz raporları, bitki sağlığı belgesi ve hedef ülkede çeşit tescili. Analiz sonuçları temizlenmiş tohumlarda olduğu gibi işlenmiş tohumlarda da geçerlidir ve belge üzerinde bu ayrım açıkça yazılır.\n\nGENCO olarak belge takibini operasyon başında planlıyor, her aşamanın sorumlusunu ve terminini netleştiriyoruz. Bir sonraki adımın önünü açmayan evrakı sevkiyat öncesi tamamlamak, gümrükte demirbaş beklemekten tek seçenektir.",
+          "Seed is one of the most document-dependent import product groups. A correct operation runs on a chain of consecutive steps, not on a single permit: the import permit, laboratory analysis reports, the phytosanitary certificate, and variety registration in the destination country. Analysis results are valid both for cleaned and for treated seed, and this distinction is stated explicitly on the document.\n\nAt GENCO we plan the document trail from the start and fix the owner and the deadline of each step. Completing paperwork before it blocks the next step is the only alternative to waiting at customs with capital tied up."
+        ),
+      },
+      {
+        id: "tpl_ins_5",
+        eyebrow: bi("05 / AMBALAJ", "05 / PACKAGING"),
+        category: bi(
+          "ÜRETİM & ÖNCESİ KONTROL",
+          "PRODUCTION & PRE-PRESS"
+        ),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi(
+          "Baskı Öncesi Kontrol: Rengi ve Ölçüyü Baskıda Kaybetmemek",
+          "Pre-Press Control: Not Losing Colour and Dimensions on Press"
+        ),
+        body: bi(
+          "Ambalajda en pahalı hata, tasarımın onaylanmış olup baskıda hatalı çıkmasıdır. Sebebi çoğu zaman çizgi veya metin detaylarının baskı çözünürlüğünün altında kalması, taşma payının (bleed) eksik tanımlanması ve ince detayların renkler arasında birbirine girmesidir. Ekran rengi ile basılı rengin aynı olmadığı unutulduğunda ise onay müşteride geçerken üretimde şaşar.\n\nGENCO olarak tasarım dosyasını makineye verilmeden önce kontrol ediyoruz: çözünürlük, taşma, renk profili, dieline toleransı ve prova çıktısı. Bu kontrol basamağı, baskı sonrası düzeltme maliyetinin çok altında bir sigortadır.",
+          "The most expensive defect in packaging is a design that was approved but comes off press wrong. The cause is usually that a line or text detail falls below print resolution, that bleed is under-specified, or that fine elements collide across colours. It also happens when nobody remembers that on-screen colour and printed colour are not the same — the proof looks right at the customer and surprises in production.\n\nAt GENCO we check the design file before it goes to press: resolution, bleed, colour profile, dieline tolerance and the proof output. This step is insurance at a fraction of the cost of correcting after printing."
+        ),
+      },
+      {
+        id: "tpl_ins_6",
+        eyebrow: bi("06 / FEMTECH & SAĞLIK", "06 / FEMTECH & HEALTH"),
+        category: bi(
+          "PAZAR GİRİŞİ & REGÜLASYON",
+          "MARKET ACCESS & REGULATION"
+        ),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi(
+          "Kadın Sağlığı Ürünlerinde Avrupa'ya Giriş: MDR Kapsamı ve Teknik Dosya",
+          "Entering Europe with Women's Health Products: MDR Scope and the Technical File"
+        ),
+        body: bi(
+          "Kadın sağlığı alanındaki ürünlerin Avrupa'ya girişi, tıbbi cihaz olup olmamalarına göre tamamen farklı iki yol izler. Tıbbi cihaz kapsamındaki ürünlerde sınıflandırma doğru yapılmazsa ruhsat ve belgeler baştan hatalı kurulur. Cihaz olmayan ürünlerde ise asgari teknik dosya, izlenebilirlik ve pazarlama iddialarının sınırları devreye girer.\n\nGENCO olarak sınıflandırmayı ürünün klinik işlevi ve kullanım amacı üzerinden birlikte değerlendiriyor, ardından gerekli uygunluk değerlendirmesini, teknik dosyayı ve etiket ile kullanım talimatı setini tek akışta hazırlıyoruz. Böylece ürün, hedef pazarda hangi kanalda satılacaksa o kanalın gerektirdiği belgelerle birlikte gitmiş oluyor.",
+          "Women's health products entering Europe follow two entirely different routes depending on whether they are medical devices. For products within the device scope, an incorrect classification means the approval and documentation are built on a wrong foundation from the start. For products outside the scope, minimum technical documentation, traceability and the limits on marketing claims come into play.\n\nAt GENCO we assess classification together against the product's clinical function and intended use, then prepare the required conformity assessment, the technical file and the label and instructions for use set in a single flow. That way the product reaches whichever sales channel it will use in the target market already carrying the documentation that channel requires."
         ),
       },
     ],
