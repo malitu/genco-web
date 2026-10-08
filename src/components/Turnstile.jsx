@@ -87,8 +87,14 @@ export default function Turnstile({ onToken, disabled = false }) {
       try {
         widgetRef.current = turnstile.render(boxRef.current, {
           sitekey: SITE_KEY,
-          // Kullanıcı güvenilirse Turnstile hiçbir şey göstermez.
-          appearance: "interaction-only",
+          // "interaction-only": ziyaretçi güvenilirse hiçbir şey çizilmez,
+          //   token sessizce üretilir. Ziyaretçi "CAPTCHA yok" diye
+          //   güvenmediğinde kullanışlı ama algılanamaz.
+          // "always": kutu her zaman görünür. Ziyaretçi formun korunduğunu
+          //   görür, botlara açık bir sinyal verir.
+          // Sunucu tarafı yine token'ı zorunlu tuttuğu için güvenlik
+          //   yalnızca bu görsel tercihe bağlıdır.
+          appearance: "always",
           theme: "light",
           callback: (token) => onTokenRef.current?.(token),
           "expired-callback": () => onTokenRef.current?.(null),

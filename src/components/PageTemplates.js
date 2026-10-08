@@ -492,19 +492,19 @@ const industries = [
 const caseStudies = [
   nav(),
   header(
-    { tr: "Sahadaki İcraatlarımız", en: "Our Field Execution" },
+    { tr: "Vaka Analizleri — Sahadaki İcraatlarımız", en: "Case Studies — Our Field Execution" },
     {
-      tr: "Uzmanlaştığımız sektörlerden operasyon örnekleri",
-      en: "Operations Across Our Core Industries",
+      tr: "Yaptığımız işler: sektör, pazar ve kapsam",
+      en: "What we have done: sector, market and scope",
     },
     {
-      tr: "Uzmanlaştığımız altı sektörde ithalat ve ihracat operasyonları yürütüyoruz. Müşteri ve hacim bilgileri gizlilik nedeniyle paylaşılmamaktadır; her vakada sektör, pazar ve kapsam belirtilmiştir.",
-      en: "We run import and export operations across the six sectors we specialise in. Client and volume figures are withheld for confidentiality; each case states its sector, market and scope.",
+      tr: "Bu sayfa **yürüttüğümüz somut operasyonları** gösterir: hangi sektörde, hangi pazarda, ne kapsamda çalıştık. Müşteri ve hacim bilgileri gizlilik nedeniyle paylaşılmamaktadır.\n\nSektörün kendisiyle ilgili teknik ve düzenleyici tartışmaları için Sektör Analizleri sayfasına bakın.",
+      en: "This page shows the concrete operations we have run: in which sector, in which market, and with what scope. Client and volume figures are withheld for confidentiality.\n\nFor technical and regulatory discussion of the sectors themselves, see the Sector Insights page.",
     }
   ),
   feature(
     "tpl_cs_1",
-    { tr: "SEKTÖREL VAKA / 01", en: "SECTORAL CASE / 01" },
+    { tr: "VAKA / 01", en: "CASE / 01" },
     {
       tr: "Vasıflı Çelik Çubuk İthalat ve İhracatı",
       en: "Engineering Steel Bar Import and Export",
@@ -533,7 +533,7 @@ const caseStudies = [
   ),
   feature(
     "tpl_cs_2",
-    { tr: "SEKTÖREL VAKA / 02", en: "SECTORAL CASE / 02" },
+    { tr: "VAKA / 02", en: "CASE / 02" },
     {
       tr: "Yat ve Marine Ekipman İthalat-İhracatı",
       en: "Yacht and Marine Equipment Import-Export",
@@ -559,7 +559,7 @@ const caseStudies = [
   ),
   feature(
     "tpl_cs_3",
-    { tr: "SEKTÖREL VAKA / 03", en: "SECTORAL CASE / 03" },
+    { tr: "VAKA / 03", en: "CASE / 03" },
     {
       tr: "Tohum İthalat-İhracatı ve İzin Süreçleri",
       en: "Seed Import-Export and Permit Processes",
@@ -585,7 +585,7 @@ const caseStudies = [
   ),
   feature(
     "tpl_cs_4",
-    { tr: "SEKTÖREL VAKA / 04", en: "SECTORAL CASE / 04" },
+    { tr: "VAKA / 04", en: "CASE / 04" },
     {
       tr: "Cerrahi Sarf Ürünleri İthalat-İhracatı",
       en: "Surgical Consumables Import-Export",
@@ -611,7 +611,7 @@ const caseStudies = [
   ),
   feature(
     "tpl_cs_5",
-    { tr: "SEKTÖREL VAKA / 05", en: "SECTORAL CASE / 05" },
+    { tr: "VAKA / 05", en: "CASE / 05" },
     {
       tr: "Ambalaj Tasarımından Baskılı Ürüne Uçtan Uca Hizmet",
       en: "End-to-End Service from Packaging Design to Printed Product",
@@ -638,7 +638,7 @@ const caseStudies = [
   ),
   feature(
     "tpl_cs_6",
-    { tr: "SEKTÖREL VAKA / 06", en: "SECTORAL CASE / 06" },
+    { tr: "VAKA / 06", en: "CASE / 06" },
     {
       tr: "Femtech ve Sağlık Ürünleri İhracatı",
       en: "Femtech and Health Product Exports",
@@ -686,16 +686,16 @@ const insights = [
   nav(),
   header(
     {
-      tr: "Sektörel Analiz & İçgörüler",
-      en: "Sectoral Analysis & Insights",
+      tr: "Sektör Analizleri — Sektörün Kuralları",
+      en: "Sector Insights — How the Sector Works",
     },
     {
-      tr: "Sektörel Analizler: Sahadan Notlar",
+      tr: "Sektör Analizleri: Sahadan Notlar",
       en: "Sector Insights: Notes from the Field",
     },
     {
-      tr: "Demir çelik toleranslarından medikal tedarik zincirlerine, denizcilik uyumundan tohum izinlerine, ambalajda baskı öncesi kontrolden kadın sağlığı ürünlerinin Avrupa'ya girişine kadar, uluslararası ticarette kendi deneyimimizden çıkardığımız stratejik notları paylaşıyoruz.",
-      en: "We share strategic notes drawn from our own experience in international trade — from steel tolerances and medical supply chains, through marine compliance and seed permits, to pre-press control in packaging and market access for women's health products in Europe.",
+      tr: "Bu sayfa **yaptığımız işleri değil, sektörün kendi kurallarını** anlatır: hangi standart, hangi izin, hangi tuzak. Uluslararası ticarette kendi deneyimimizden çıkardığımız stratejik notları burada paylaşıyoruz.\n\nYürüttüğümüz somut operasyonlar için Vaka Analizleri sayfasına bakın.",
+      en: "This page is not about what we have done, but about how the sector itself works: which standard, which permit, which trap. Here we share the strategic notes drawn from our own experience in international trade.\n\nFor the concrete operations we have run, see the Case Studies page.",
     }
   ),
   {
@@ -705,7 +705,7 @@ const insights = [
     articles: [
       {
         id: "tpl_ins_1",
-        eyebrow: bi("01 / DEMİR ÇELİK & METALLER", "01 / STEEL & METALS"),
+        eyebrow: bi("ANALİZ 01 / DEMİR ÇELİK & METALLER", "ANALYSIS 01 / STEEL & METALS"),
         category: bi(
           "TEKNİK & STRATEJİK ANALİZ",
           "TECHNICAL & STRATEGIC ANALYSIS"
@@ -724,7 +724,7 @@ const insights = [
       },
       {
         id: "tpl_ins_2",
-        eyebrow: bi("02 / MEDİKAL & SAĞLIK", "02 / MEDICAL & HEALTH"),
+        eyebrow: bi("ANALİZ 02 / MEDİKAL & SAĞLIK", "ANALYSIS 02 / MEDICAL & HEALTH"),
         category: bi("TEDARİK ZİNCİRİ & DENETİM", "SUPPLY CHAIN & AUDITING"),
         date: bi("", ""),
         author: bi("", ""),
@@ -739,7 +739,7 @@ const insights = [
       },
       {
         id: "tpl_ins_3",
-        eyebrow: bi("03 / YATÇILIK & MARINE", "03 / YACHTING & MARINE"),
+        eyebrow: bi("ANALİZ 03 / YATÇILIK & MARINE", "ANALYSIS 03 / YACHTING & MARINE"),
         category: bi("REGÜLASYON & UYUM", "REGULATION & COMPLIANCE"),
         date: bi("", ""),
         author: bi("", ""),
@@ -754,7 +754,7 @@ const insights = [
       },
       {
         id: "tpl_ins_4",
-        eyebrow: bi("04 / TOHUMCULUK", "04 / SEED TRADE"),
+        eyebrow: bi("ANALİZ 04 / TOHUMCULUK", "ANALYSIS 04 / SEED TRADE"),
         category: bi("İZİN & BELGELENDİRME", "PERMITS & CERTIFICATION"),
         date: bi("", ""),
         author: bi("", ""),
@@ -769,7 +769,7 @@ const insights = [
       },
       {
         id: "tpl_ins_5",
-        eyebrow: bi("05 / AMBALAJ", "05 / PACKAGING"),
+        eyebrow: bi("ANALİZ 05 / AMBALAJ", "ANALYSIS 05 / PACKAGING"),
         category: bi(
           "ÜRETİM & ÖNCESİ KONTROL",
           "PRODUCTION & PRE-PRESS"
@@ -787,7 +787,7 @@ const insights = [
       },
       {
         id: "tpl_ins_6",
-        eyebrow: bi("06 / FEMTECH & SAĞLIK", "06 / FEMTECH & HEALTH"),
+        eyebrow: bi("ANALİZ 06 / FEMTECH & SAĞLIK", "ANALYSIS 06 / FEMTECH & HEALTH"),
         category: bi(
           "PAZAR GİRİŞİ & REGÜLASYON",
           "MARKET ACCESS & REGULATION"
