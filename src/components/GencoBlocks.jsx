@@ -943,6 +943,25 @@ export const STATS_BAND_DEFAULTS = {
 export const FOOTER_DEFAULTS = {
   id: "seed_footer",
   type: "footer",
+  /* --- 1. sütun: marka --- */
+  brandTitle: bi("GENCO", "GENCO"),
+  brandText: bi(
+    "İthalat ve ihracat operasyonlarınızı uçtan uca yürütüyoruz: ürün kaynağından gümrükleme ve teslimata kadar tüm zincir bizim sorumluluğumuzda.",
+    "We run your import and export operations end to end: from product sourcing through customs clearance to delivery, the entire chain is our responsibility."
+  ),
+  brandCtaLabel: bi("Görüşelim", "Let's Talk"),
+  brandCtaHref: "/contact",
+  /* --- 2. sütun: iletişim --- */
+  contactTitle: bi("İletişim", "Contact"),
+  footerPhone: bi("+90 505 926 12 51", "+90 505 926 12 51"),
+  footerEmail: bi("info@gencotr.com", "info@gencotr.com"),
+  hoursLabel: bi("Çalışma saatleri", "Working hours"),
+  hoursVal: bi("Pazartesi – Cuma  09:00 – 18:00", "Monday – Friday  09:00 – 18:00"),
+  /* --- 3. sütun: bağlantılar --- */
+  linksTitle: bi("Bağlantılar", "Links"),
+  /* --- arka plan görseli (boş bırakılırsa düz koyu zemin) --- */
+  bgImage: "",
+  /* --- alt şerit --- */
   rights: bi(
     "© 2026 Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. Tüm hakları saklıdır.",
     "© 2026 Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. All rights reserved."
@@ -952,7 +971,14 @@ export const FOOTER_DEFAULTS = {
     "Meriç Mah. 5746/5 SK. No: 3 Inner Door No: Z1 Bornova/İzmir - TURKEY | Phone: +90 505 926 12 51 | info@gencotr.com"
   ),
   // Yasal ve yardımcı bağlantılar (menüde değil, alt bilgide görünür).
-  links: [{ id: "fl_privacy", label: bi("Gizlilik Politikası", "Privacy Policy"), href: "/gizlilik" }],
+  // Gizlilik Politikası listede her zaman yer alır.
+  links: [
+    { id: "fl_home", label: bi("Ana Sayfa", "Home"), href: "/" },
+    { id: "fl_services", label: bi("Hizmetler", "Services"), href: "/services" },
+    { id: "fl_industries", label: bi("Sektörler", "Industries"), href: "/industries" },
+    { id: "fl_contact", label: bi("İletişim", "Contact"), href: "/contact" },
+    { id: "fl_privacy", label: bi("Gizlilik Politikası", "Privacy Policy"), href: "/gizlilik" },
+  ],
 };
 
 /**
@@ -1845,59 +1871,192 @@ function SliderBlock({ block, ctx }) {
   );
 }
 
+/** Alt bilgide kullanılan küçük satır içi ikonlar (harici paket bağımlılığı yok). */
+function FootIcon({ name, className = "w-4 h-4" }) {
+  const p = {
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+  };
+  const map = {
+    phone: (
+      <path
+        d="M4.5 3.5h3l1.5 3.5-2 1.2a11 11 0 0 0 5.3 5.3l1.2-2 3.5 1.5v3a1.5 1.5 0 0 1-1.7 1.5C8.6 17 3 11.4 2.5 4.2A1.5 1.5 0 0 1 4 2.5Z"
+        {...p}
+      />
+    ),
+    mail: (
+      <>
+        <rect x="2.5" y="4.5" width="15" height="11" rx="1.5" {...p} />
+        <path d="m3 6 7 5 7-5" {...p} />
+      </>
+    ),
+    clock: (
+      <>
+        <circle cx="10" cy="10" r="7.5" {...p} />
+        <path d="M10 6v4.2l2.6 1.6" {...p} />
+      </>
+    ),
+    pin: (
+      <>
+        <path d="M10 18s6-5.2 6-9.5A6 6 0 0 0 4 8.5C4 12.8 10 18 10 18Z" {...p} />
+        <circle cx="10" cy="8.5" r="2.2" {...p} />
+      </>
+    ),
+    arrow: <path d="M4 10h12m-4.5-4.5L16 10l-4.5 4.5" {...p} />,
+  };
+  return (
+    <svg viewBox="0 0 20 20" className={className} aria-hidden="true">
+      {map[name] || null}
+    </svg>
+  );
+}
+
 function FooterBlock({ block, ctx }) {
   const { set, edit, lang } = ctx;
   const links = Array.isArray(block.links) ? block.links : [];
+  const tel = L(block.footerPhone, lang).replace(/[^\d+]/g, "");
+  const mail = L(block.footerEmail, lang);
 
   return (
-    <footer className="bg-white py-12 border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-gray-500">
-        <EditableText as="div" editable={edit} value={L(block.rights, lang)}
-          onChange={(v) => set("rights", mergeLang(block.rights, lang, v))} placeholder="Telif" />
-        <div className="text-center md:text-right">
-          <EditableText as="div" editable={edit} value={L(block.address, lang)}
-            onChange={(v) => set("address", mergeLang(block.address, lang, v))}
-            placeholder="Adres" />
+    <footer className="relative bg-[#0b1520] text-white overflow-hidden">
+      {/* Arka plan görseli: stüdyoda yol girilirse görünür, aksi halde düz
+          koyu zemin. Metin okunabilirliği için üzeri karartılır. */}
+      {block.bgImage ? (
+        <img
+          src={block.bgImage}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-[0.22]"
+          draggable={false}
+        />
+      ) : null}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0b1520] via-[#0b1520]/94 to-[#0b1520]/70" />
 
-          {/* Yasal / yardımcı bağlantılar (Gizlilik Politikası vb.). */}
-          {(edit || links.length > 0) && (
-            <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+          {/* ---------- 1. sutun: marka ---------- */}
+          <div>
+            <EditableText as="h3" editable={edit} value={L(block.brandTitle, lang)}
+              onChange={(v) => set("brandTitle", mergeLang(block.brandTitle, lang, v))}
+              className="text-xl font-extrabold tracking-tight text-white mb-4"
+              placeholder="Marka adi" />
+
+            <EditableText as="p" editable={edit} value={L(block.brandText, lang)}
+              onChange={(v) => set("brandText", mergeLang(block.brandText, lang, v))}
+              className="text-sm text-white/70 leading-relaxed max-w-sm"
+              placeholder="Kisa tanitim" />
+
+            <div className="mt-6">
+              <a
+                href={edit ? undefined : block.brandCtaHref || "/contact"}
+                onClick={(e) => edit && e.preventDefault()}
+                className="inline-flex items-center gap-2 text-[#f97316] font-bold text-sm hover:text-orange-400 transition"
+              >
+                {L(block.brandCtaLabel, lang)} <FootIcon name="arrow" />
+              </a>
+            </div>
+          </div>
+
+          {/* ---------- 2. sutun: iletisim ---------- */}
+          <div>
+            <EditableText as="h3" editable={edit} value={L(block.contactTitle, lang)}
+              onChange={(v) => set("contactTitle", mergeLang(block.contactTitle, lang, v))}
+              className="text-lg font-bold text-white mb-5"
+              placeholder="Iletisim" />
+
+            <ul className="space-y-4 text-sm text-white/80">
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 text-[#f97316]"><FootIcon name="phone" /></span>
+                <a href={edit ? undefined : `tel:${tel}`} onClick={(e) => edit && e.preventDefault()}
+                  className="hover:text-white transition">
+                  <EditableText as="span" editable={edit} value={L(block.footerPhone, lang)}
+                    onChange={(v) => set("footerPhone", mergeLang(block.footerPhone, lang, v))}
+                    placeholder="Telefon" />
+                </a>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 text-[#f97316]"><FootIcon name="mail" /></span>
+                <a href={edit ? undefined : `mailto:${mail}`} onClick={(e) => edit && e.preventDefault()}
+                  className="hover:text-white transition break-all">
+                  <EditableText as="span" editable={edit} value={L(block.footerEmail, lang)}
+                    onChange={(v) => set("footerEmail", mergeLang(block.footerEmail, lang, v))}
+                    placeholder="E-posta" />
+                </a>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 text-[#f97316]"><FootIcon name="clock" /></span>
+                <span>
+                  <EditableText as="span" editable={edit} value={L(block.hoursLabel, lang)}
+                    onChange={(v) => set("hoursLabel", mergeLang(block.hoursLabel, lang, v))}
+                    className="block text-white/50 text-xs mb-0.5" placeholder="Saatler basligi" />
+                  <EditableText as="span" editable={edit} value={L(block.hoursVal, lang)}
+                    onChange={(v) => set("hoursVal", mergeLang(block.hoursVal, lang, v))}
+                    placeholder="Calisma saatleri" />
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 text-[#f97316]"><FootIcon name="pin" /></span>
+                <EditableText as="span" editable={edit} value={L(block.address, lang)}
+                  onChange={(v) => set("address", mergeLang(block.address, lang, v))}
+                  className="leading-relaxed" placeholder="Adres" />
+              </li>
+            </ul>
+          </div>
+
+          {/* ---------- 3. sutun: baglantilar ---------- */}
+          <div>
+            <EditableText as="h3" editable={edit} value={L(block.linksTitle, lang)}
+              onChange={(v) => set("linksTitle", mergeLang(block.linksTitle, lang, v))}
+              className="text-lg font-bold text-white mb-5"
+              placeholder="Baglantilar" />
+
+            <ul className="space-y-3 text-sm">
               {links.map((l) => (
-                <EditableText
-                  key={l.id}
-                  as="a"
-                  editable={edit}
-                  value={L(l.label, lang)}
-                  onChange={(v) =>
-                    set("links", links.map((x) => (x.id === l.id ? { ...x, label: mergeLang(x.label, lang, v) } : x)))
-                  }
-                  href={edit ? undefined : l.href || "#"}
-                  onClick={(e) => edit && e.preventDefault()}
-                  className="text-[12px] hover:text-[#f97316] transition"
-                  placeholder="Bağlantı adı"
-                />
+                <li key={l.id}>
+                  <EditableText
+                    as="a"
+                    editable={edit}
+                    value={L(l.label, lang)}
+                    onChange={(v) =>
+                      set("links", links.map((x) => (x.id === l.id ? { ...x, label: mergeLang(x.label, lang, v) } : x)))}
+                    href={edit ? undefined : l.href || "#"}
+                    onClick={(e) => edit && e.preventDefault()}
+                    className="text-white/75 hover:text-[#f97316] transition"
+                    placeholder="Baglanti adi"
+                  />
+                </li>
               ))}
               {edit && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    set("links", [
-                      ...links,
-                      {
-                        id: `fl_${Math.random().toString(36).slice(2, 7)}`,
-                        label: bi("Yeni bağlantı", "New link"),
-                        href: "/",
-                      },
-                    ]);
-                  }}
-                  className="text-[11px] font-bold text-slate-400 hover:text-[#f97316]"
-                >
-                  + bağlantı ekle
-                </button>
+                <li>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      set("links", [
+                        ...links,
+                        {
+                          id: `fl_${Math.random().toString(36).slice(2, 7)}`,
+                          label: bi("Yeni baglanti", "New link"),
+                          href: "/",
+                        },
+                      ]);
+                    }}
+                    className="text-[11px] font-bold text-white/40 hover:text-[#f97316]"
+                  >
+                    + baglanti ekle
+                  </button>
+                </li>
               )}
-            </div>
-          )}
+            </ul>
+          </div>
+        </div>
+
+        {/* ---------- alt serit ---------- */}
+        <div className="mt-14 pt-6 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs text-white/45">
+          <EditableText as="div" editable={edit} value={L(block.rights, lang)}
+            onChange={(v) => set("rights", mergeLang(block.rights, lang, v))} placeholder="Telif" />
         </div>
       </div>
     </footer>
