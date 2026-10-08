@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="none" role="img" aria-labelledby="title"><title id="title">Ambalaj</title><defs><linearGradient id="pack-metal" x1="0" y1="0" x2="1" y2=".6"><stop stop-color="#f8fafc"/><stop offset=".4" stop-color="#e0e6ec"/><stop offset="1" stop-color="#a1b0c0"/></linearGradient><linearGradient id="pack-glass"><stop stop-color="#c5d1dc"/><stop offset=".3" stop-color="#f3f6f8"/><stop offset=".7" stop-color="#dce4eb"/><stop offset="1" stop-color="#9dafbf"/></linearGradient></defs><g stroke="#314659" stroke-width=".95" stroke-linecap="round" stroke-linejoin="round">
+<ellipse cx="122" cy="143" rx="83" ry="4" fill="#e7ebef" stroke="none"/>
+<!-- Folding carton -->
+<path d="m36 44 43-17 39 17-43 19Z" fill="#e8edf2"/>
+<path d="m36 44 39 19v68l-39-19Z" fill="#acbac8"/>
+<path d="m75 63 43-19v68l-43 19Z" fill="url(#pack-metal)"/>
+<path d="m44 41 39 18 26-11" stroke="#a1b2c0" stroke-width=".6"/>
+<path d="m83 75 27-12v33l-27 12Z" fill="#f1f5f8" stroke="#c1cdd7" stroke-width=".5"/>
+<path d="m88 82 16-7m-16 12 16-7m-16 12 10-4" stroke="#8da0b1" stroke-width=".6"/>
+<path d="m83 115 27-12" stroke="#cf6c32" stroke-width="1.7"/>
+<path d="m44 65 21 10m-21-5 21 10" stroke="#7e92a4" stroke-width=".6"/>
+<!-- Flexible standing pouch -->
+<path d="m153 49 38-4 8 82-9 12-45-3-5-9Z" fill="#9fb0c0"/>
+<path d="m151 49 35-4-1 15 8 67-9 9-42-4 7-64Z" fill="url(#pack-metal)"/>
+<path d="m151 55 34-4m-33 8 32-4" stroke="#8094a6" stroke-width=".6"/>
+<path d="m149 71 31-3 4 41-38 3Z" fill="#eaf0f5" stroke="#c1cdd7" stroke-width=".5"/>
+<path d="m152 80 22-2m-22 7 22-2m-22 7 14-1" stroke="#8da0b1" stroke-width=".6"/>
+<path d="m148 105 34-3" stroke="#cf6c32" stroke-width="1.5"/>
+<path d="m142 132 11-6 31 2 9-1m-44-59-5 55m40-63 6 61" stroke="#9badbd" stroke-width=".6"/>
+<!-- Bottle -->
+<path d="M115 44v15c0 6-15 12-15 22v50c0 10 41 10 41 0V81c0-10-15-16-15-22V44Z" fill="url(#pack-glass)"/>
+<ellipse cx="120.5" cy="44" rx="5.5" ry="2" fill="#c5d1dc"/>
+<path d="M113 36v10c0 3 15 3 15 0V36" fill="#8195a7"/>
+<ellipse cx="120.5" cy="36" rx="7.5" ry="2.4" fill="#d6e0e8"/>
+<path d="M117 38v8m3-8v9m3-9v9m3-9v8" stroke="#b7c5d1" stroke-width=".5"/>
+<path d="M101 91q19 6 39 0v30q-20 6-39 0Z" fill="#edf2f6" stroke="#b3c2cf" stroke-width=".6"/>
+<path d="M109 102q11 2 23 0m-23 5q11 2 23 0m-23 5q7 1 14 1" stroke="#8da0b1" stroke-width=".6"/>
+<path d="M102 118q18 5 37 0" stroke="#cf6c32" stroke-width="1.5"/>
+<path d="M107 82v7m0 38v5" stroke="#fff" stroke-width="1.2"/>
+</g></svg>

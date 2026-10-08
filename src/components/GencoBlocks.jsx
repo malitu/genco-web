@@ -145,7 +145,7 @@ export const INDUSTRIES_DEFAULTS = {
     { id: "ind_2", title: bi("Yatçılık & Marine", "Yachting & Marine"), image: "/img/sector-marine.svg" },
     { id: "ind_3", title: bi("Tohumculuk", "Seed Trade"), image: "/img/sector-seeds.svg" },
     { id: "ind_4", title: bi("Medikal", "Medical"), image: "/img/sector-medical.svg" },
-    { id: "ind_5", title: bi("Otomotiv", "Automotive"), image: "/img/sector-automotive.svg" },
+    { id: "ind_5", title: bi("Ambalaj", "Packaging"), image: "/img/sector-packaging.svg" },
     { id: "ind_6", title: bi("Femtech", "Femtech"), image: "/img/sector-healthtech.svg" },
   ],
   note: bi(
@@ -211,8 +211,8 @@ export const METHOD_DEFAULTS = {
     "Expertise in tolerance and alloy standards for steel and industrial metals."
   ),
   d2: bi(
-    "Medikal, Femtech, Tohumculuk, Denizcilik ve Otomotiv sektörlerinde tecrübe.",
-    "Extensive experience across Medical, Femtech, Agriculture, Marine, and Automotive sectors."
+    "Medikal, Femtech, Tohumculuk, Denizcilik ve Ambalaj sektörlerinde tecrübe.",
+    "Extensive experience across Medical, Femtech, Agriculture, Marine, and Packaging sectors."
   ),
   methodTitle: bi("The GENCO Method", "The GENCO Method"),
   image: "",
