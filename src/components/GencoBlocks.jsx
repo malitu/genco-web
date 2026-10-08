@@ -1347,7 +1347,7 @@ function EditableText({
  * @param {Function} onPick   medya kütüphanesini açan geri çağrım
  * @param {string}   label    boşken gösterilen ipucu
  */
-function ImageField({ value, onChange, onPick, edit, label = "Görsel Ekle", className = "", imgClass = "", fit = "cover" }) {
+function ImageField({ value, onChange, onPick, edit, label = "Görsel Ekle", className = "", imgClass = "", fit = "cover", alt = "" }) {
   // "contain" görseli kutuya sığdırır (kırpma yok). Farklı en-boy oranına
   // sahip çizimlerde kart yüksekliklerinin eşit kalmasını sağlar.
   const fitClass = fit === "contain" ? "object-contain" : "object-cover";
@@ -1355,7 +1355,7 @@ function ImageField({ value, onChange, onPick, edit, label = "Görsel Ekle", cla
   if (!edit) {
     if (!value) return null;
     const cls = className || imgClass;
-    return <img src={value} alt="" className={`${cls} ${fitClass}`} draggable={false} />;
+    return <img src={value} alt={alt} className={`${cls} ${fitClass}`} draggable={false} />;
   }
 
   if (!value) {
@@ -1378,7 +1378,7 @@ function ImageField({ value, onChange, onPick, edit, label = "Görsel Ekle", cla
 
   return (
     <div className={`${className} group relative overflow-hidden`}>
-      <img src={value} alt="" className={`h-full w-full ${fitClass}`} draggable={false} />
+      <img src={value} alt={alt} className={`h-full w-full ${fitClass}`} draggable={false} />
       <div className="absolute inset-0 flex items-center justify-center gap-1.5 bg-slate-900/55 opacity-0 transition group-hover:opacity-100">
         <button
           type="button"
@@ -1634,6 +1634,7 @@ function IndustriesBlock({ block, ctx }) {
                     label="Sektör görseli"
                     className="w-full h-36"
                     fit="contain"
+                    alt={`${L(item.title, lang)} — GENCO sektör görseli`}
                   />
                   <div className="p-4 text-center">
                     <div className="text-[#f97316] font-bold text-lg mb-1">
@@ -1697,10 +1698,11 @@ function RoutesBlock({ block, ctx }) {
                   edit={edit}
                   label="Kart görseli"
                   className="w-full aspect-[3/2]"
+                  alt={L(card.title, lang)}
                 />
               ) : (
                 card.image && (
-                  <img src={card.image} alt="" className="w-full aspect-[3/2] object-cover" draggable={false} />
+                  <img src={card.image} alt={L(card.title, lang)} className="w-full aspect-[3/2] object-cover" draggable={false} />
                 )
               )}
 
@@ -2980,6 +2982,37 @@ function FaqBlock({ block, ctx }) {
 
   return (
     <section className="py-16 sm:py-20 bg-white border-b border-gray-100">
+      {/* Soru-cevap içeriğini arama motorları ve AI asistanları için
+          yapısal veri olarak da yayımlıyoruz. Şema doğrudan blok içeriğinden
+          üretildiği için metinle asla ayrışamaz. */}
+      {(() => {
+        const faqItems = items
+          .map((it) => ({
+            q: L(it.question, lang),
+            a: L(it.answer, lang),
+          }))
+          .filter((x) => x.q && x.a);
+
+        if (!faqItems.length) return null;
+
+        const graph = {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqItems.map((x) => ({
+            "@type": "Question",
+            name: x.q,
+            acceptedAnswer: { "@type": "Answer", text: x.a },
+          })),
+        };
+
+        return (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
+          />
+        );
+      })()}
+
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <EditableText
           as="h2"

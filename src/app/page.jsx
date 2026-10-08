@@ -1,61 +1,40 @@
-"use client";
-
 /**
- * GENCO — Ana Sayfa (canlı)
+ * GENCO — Ana Sayfa (canlı) · sunucu bileşeni.
  * ---------------------------------------------------------------------------
- * Bu dosya yalnızca veriyi çeker ve ortak <HomePage /> bileşenini besler.
- * Tasarımın tamamı src/components/HomePage.jsx içindedir; stüdyo tuvali de
- * aynı bileşeni kullandığı için önizleme ile canlı site birebir aynıdır.
- *
- * Veri kaynağı:
- *   settings/general      -> heroTitle / heroSub (opsiyonel)
- *   settings/genco_studio  -> pagesContent.home (stüdyoda yayınlanan bloklar)
+ * Sayfaya özel title / description burada tanımlanır (Next.js'in metadata
+ * export'unu yalnızca sunucu bileşenleri verebilir). Veri çekme ve tasarım
+ * src/components/HomeClient.jsx içinde; tasarım src/components/HomePage.jsx.
  *
  * Stüdyoda hiç blok yayınlanmamışsa eski statik tasarım olduğu gibi korunur.
  */
 
-import { useEffect, useState } from "react";
-import { db } from "../lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
-import HomePage from "../components/HomePage";
+import HomeClient from "../components/HomeClient";
+import JsonLd, { schemaPage } from "../components/JsonLd";
+import { PAGES, pageUrl } from "../lib/seo";
+
+export const metadata = {
+  title: PAGES.home.title,
+  description: PAGES.home.description,
+  alternates: {
+    canonical: "/",
+    languages: {
+      "tr-TR": "/",
+      "en": "/?lang=en",
+      "x-default": "/",
+    },
+  },
+  openGraph: {
+    title: PAGES.home.title,
+    description: PAGES.home.description,
+    url: pageUrl("/"),
+  },
+};
 
 export default function Home() {
-  const [blocks, setBlocks] = useState([]);
-  const [siteData, setSiteData] = useState({});
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchSite = async () => {
-      try {
-        const snap = await getDoc(doc(db, "settings", "general"));
-        if (!cancelled && snap.exists() && snap.data()?.heroTitle) {
-          setSiteData((prev) => ({ ...prev, ...snap.data() }));
-        }
-      } catch (e) {
-        console.log("Genel ayarlar bekleniyor.", e);
-      }
-    };
-
-    const fetchBlocks = async () => {
-      try {
-        const snap = await getDoc(doc(db, "settings", "genco_studio"));
-        if (!cancelled && snap.exists()) {
-          const home = snap.data()?.pagesContent?.home;
-          if (Array.isArray(home) && home.length) setBlocks(home);
-        }
-      } catch (e) {
-        console.log("Stüdyo blokları bekleniyor.", e);
-      }
-    };
-
-    fetchSite();
-    fetchBlocks();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return <HomePage blocks={blocks} mode="live" siteData={siteData} />;
+  return (
+    <>
+      <JsonLd data={schemaPage("home", "/")} />
+      <HomeClient />
+    </>
+  );
 }
