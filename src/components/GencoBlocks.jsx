@@ -1347,10 +1347,15 @@ function EditableText({
  * @param {Function} onPick   medya kütüphanesini açan geri çağrım
  * @param {string}   label    boşken gösterilen ipucu
  */
-function ImageField({ value, onChange, onPick, edit, label = "Görsel Ekle", className = "", imgClass = "" }) {
+function ImageField({ value, onChange, onPick, edit, label = "Görsel Ekle", className = "", imgClass = "", fit = "cover" }) {
+  // "contain" görseli kutuya sığdırır (kırpma yok). Farklı en-boy oranına
+  // sahip çizimlerde kart yüksekliklerinin eşit kalmasını sağlar.
+  const fitClass = fit === "contain" ? "object-contain" : "object-cover";
+
   if (!edit) {
     if (!value) return null;
-    return <img src={value} alt="" className={className || imgClass} draggable={false} />;
+    const cls = className || imgClass;
+    return <img src={value} alt="" className={`${cls} ${fitClass}`} draggable={false} />;
   }
 
   if (!value) {
@@ -1373,7 +1378,7 @@ function ImageField({ value, onChange, onPick, edit, label = "Görsel Ekle", cla
 
   return (
     <div className={`${className} group relative overflow-hidden`}>
-      <img src={value} alt="" className="h-full w-full object-cover" draggable={false} />
+      <img src={value} alt="" className={`h-full w-full ${fitClass}`} draggable={false} />
       <div className="absolute inset-0 flex items-center justify-center gap-1.5 bg-slate-900/55 opacity-0 transition group-hover:opacity-100">
         <button
           type="button"
@@ -1628,6 +1633,7 @@ function IndustriesBlock({ block, ctx }) {
                     edit={edit}
                     label="Sektör görseli"
                     className="w-full h-36"
+                    fit="contain"
                   />
                   <div className="p-4 text-center">
                     <div className="text-[#f97316] font-bold text-lg mb-1">
