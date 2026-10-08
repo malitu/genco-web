@@ -94,7 +94,7 @@ export const NAV_DEFAULTS = {
   id: "seed_nav",
   type: "nav",
   logo: "/logo.png",
-  phone: "+90 232 462 16 49",
+  phone: "+90 505 926 12 51",
   links: NAV_LINKS,
 };
 
@@ -911,7 +911,7 @@ export const CONTACT_DEFAULTS = {
     "Meriç Mah. 5746/5 SK. No: 3 İç Kapı No: Z1 Bornova/İzmir - TÜRKİYE",
     "Meriç Mah. 5746/5 SK. No: 3 Inner Door No: Z1 Bornova/İzmir - TURKEY"
   ),
-  phoneVal: bi("+90 232 462 16 49", "+90 232 462 16 49"),
+  phoneVal: bi("+90 505 926 12 51", "+90 505 926 12 51"),
   emailVal: bi("info@gencotr.com", "info@gencotr.com"),
   targetEmail: "info@gencotr.com",
   mapUrl: bi(
@@ -948,8 +948,8 @@ export const FOOTER_DEFAULTS = {
     "© 2026 Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. All rights reserved."
   ),
   address: bi(
-    "Meriç Mah. 5746/5 SK. No: 3 İç Kapı No: Z1 Bornova/İzmir - TÜRKİYE | Tel: +90 232 462 16 49 | info@gencotr.com",
-    "Meriç Mah. 5746/5 SK. No: 3 Inner Door No: Z1 Bornova/İzmir - TURKEY | Phone: +90 232 462 16 49 | info@gencotr.com"
+    "Meriç Mah. 5746/5 SK. No: 3 İç Kapı No: Z1 Bornova/İzmir - TÜRKİYE | Tel: +90 505 926 12 51 | info@gencotr.com",
+    "Meriç Mah. 5746/5 SK. No: 3 Inner Door No: Z1 Bornova/İzmir - TURKEY | Phone: +90 505 926 12 51 | info@gencotr.com"
   ),
   // Yasal ve yardımcı bağlantılar (menüde değil, alt bilgide görünür).
   links: [{ id: "fl_privacy", label: bi("Gizlilik Politikası", "Privacy Policy"), href: "/gizlilik" }],

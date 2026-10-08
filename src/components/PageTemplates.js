@@ -990,8 +990,8 @@ const privacy = [
         author: bi("", ""),
         title: bi("Veri sorumlusu kimdir?", "Who is the data controller?"),
         body: bi(
-          "Veri sorumlusu, Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti.'dir.\n\nAdres: Meriç Mah. 5746/5 SK. No: 3 İç Kapı No: Z1 Bornova / İzmir – TÜRKİYE\nTelefon: +90 232 462 16 49\nE-posta: info@gencotr.com",
-          "The data controller is Genco Import Export Medical Products Industry and Trading Co. Ltd.\n\nAddress: Meriç Mah. 5746/5 SK. No: 3 Inner Door No: Z1 Bornova / Izmir – TURKEY\nPhone: +90 232 462 16 49\nEmail: info@gencotr.com"
+          "Veri sorumlusu, Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti.'dir.\n\nAdres: Meriç Mah. 5746/5 SK. No: 3 İç Kapı No: Z1 Bornova / İzmir – TÜRKİYE\nTelefon: +90 505 926 12 51\nE-posta: info@gencotr.com",
+          "The data controller is Genco Import Export Medical Products Industry and Trading Co. Ltd.\n\nAddress: Meriç Mah. 5746/5 SK. No: 3 Inner Door No: Z1 Bornova / Izmir – TURKEY\nPhone: +90 505 926 12 51\nEmail: info@gencotr.com"
         ),
       },
       {
