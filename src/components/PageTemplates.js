@@ -353,8 +353,8 @@ const services = [
           "Which sectors do you work in?"
         ),
         answer: bi(
-          "Demir çelik, medikal, denizcilik, tohumculuk, otomotiv ve femtech başta olmak üzere altı ana sektörde özel uzmanlığımız var. Bunların dışındaki sektörler için de aynı metodolojiyle çalışabiliyoruz.",
-          "We have dedicated expertise in six core sectors, led by steel, medical, marine, agriculture, automotive and femtech. We also apply the same methodology in sectors outside these core domains."
+          "Demir çelik, medikal, denizcilik, tohumculuk, ambalaj ve femtech başta olmak üzere altı ana sektörde özel uzmanlığımız var. Bunların dışındaki sektörler için de aynı metodolojiyle çalışabiliyoruz.",
+          "We have dedicated expertise in six core sectors, led by steel, medical, marine, agriculture, packaging and femtech. We also apply the same methodology in sectors outside these core domains."
         ),
       },
       {
@@ -448,12 +448,12 @@ const industries = [
       {
         id: "tpl_ind_5",
         eyebrow: bi("05 / SEKTÖR", "05 / SECTOR"),
-        title: bi("Otomotiv & Yan Sanayi", "Automotive & Supply Chain"),
+        title: bi("Ambalaj", "Packaging"),
         desc: bi(
-          "Otomotiv yan sanayi ürünlerinde ithalat-ihracat. Ürün grubuna uygun tedarikçi ve alıcı tespiti, kalite koordinasyonu ve düzenli sevkiyat akışı.",
-          "Import and export of automotive supply chain products. Identifying the right suppliers and buyers, coordinating quality, and managing a regular shipment flow."
+          "Ambalaj tasarımı, baskı öncesi hazırlık ve baskı hizmetleri. Fikirden baskılı ürüne kadar tüm zincir tek elden yürütülür: tasarım, prepress kontrol, kalıp ve plaka, baskı ve sonrası işlemler.",
+          "Packaging design, pre-press preparation and printing. The entire chain is handled end to end, from the initial idea to the printed product: design, prepress checks, tooling and plates, printing and post-press finishing."
         ),
-        note: bi("✓ Yan Sanayi & Yedek Parça", "✓ Supply Chain & Spare Parts"),
+        note: bi("✓ Tasarım · Prepress · Baskı", "✓ Design · Prepress · Printing"),
         image: "",
       },
       {
@@ -613,26 +613,27 @@ const caseStudies = [
     "tpl_cs_5",
     { tr: "SEKTÖREL VAKA / 05", en: "SECTORAL CASE / 05" },
     {
-      tr: "Otomotiv Yan Sanayi İthalat-İhracatı",
-      en: "Automotive Supply Chain Import-Export",
+      tr: "Ambalaj Tasarımından Baskılı Ürüne Uçtan Uca Hizmet",
+      en: "End-to-End Service from Packaging Design to Printed Product",
     },
     {
-      tr: "Otomotiv yan sanayi ürünlerinde ithalat ve ihracat operasyonları yürütüyoruz. Ürün grubuna uygun tedarikçi ve alıcı tespiti, kalite koordinasyonu ve düzenli sevkiyat akışının yönetilmesi bize aittir.",
-      en: "We run import and export operations for automotive supply chain products. Identifying the right suppliers and buyers, coordinating quality, and managing a regular shipment flow are all ours to handle.",
+      tr: "Ambalaj ihtiyacınızı sıfırdan çalışarak yürütüyoruz. Ürününüzün fiziksel özelliklerine, raf ömrüne, taşıma koşullarına ve satış kanalına göre tasarım; ardından baskı öncesi kontrol, renk ve ölçü doğrulaması ile prova; sonra kalıp, plaka ve baskı üretimi. Aynı ekip dosyanın oluşturulmasından makineye verilmesine kadar süreci bırakmaz.",
+      en: "We run your packaging requirement from scratch. Design is shaped around your product's physical properties, shelf life, transport conditions and sales channel; followed by pre-press checks, colour and dimension verification and proofs; then tooling, plates and print production. The same team carries the file from creation to the press.",
     },
     [
-      { tr: "Otomotiv", en: "Automotive" },
-      { tr: "Yan Sanayi", en: "Supply Chain" },
-      { tr: "İthalat & İhracat", en: "Import & Export" },
+      { tr: "Ambalaj", en: "Packaging" },
+      { tr: "Tasarım", en: "Design" },
+      { tr: "Baskı Öncesi", en: "Pre-Press" },
+      { tr: "Baskı", en: "Printing" },
     ],
-    { tr: "Yedek Parça ve Yan Sanayi", en: "Spare Parts and Supply Chain" },
+    { tr: "Tek ekip, tüm zincir", en: "One team, the entire chain" },
     {
-      tr: "Otomotiv sektörünün katı kalite ve teslimat zamanlaması kriterlerine uygun operasyon akışı kurulur.",
-      en: "An operational flow meeting the automotive sector's strict quality and delivery-scheduling criteria is established.",
+      tr: "Tasarım dosyasından baskılı ürüne kadar hiçbir aşamada aktarım kaybı yaşanmaz; renk ve ölçü tutarlılığı üretim boyunca korunur.",
+      en: "No loss of fidelity at any stage between the design file and the printed product; colour and dimension consistency are preserved throughout production.",
     },
     {
-      tr: "Otomotiv yan sanayi tedarikçileri ve alıcıları · uluslararası pazarlar · ithalat-ihracat",
-      en: "Automotive supply chain suppliers and buyers · international markets · import and export",
+      tr: "Ambalaj tasarımı ve baskı · uçtan uca hizmet · üretim öncesi kontrol",
+      en: "Packaging design and printing · end-to-end service · pre-production control",
     }
   ),
   feature(
@@ -780,8 +781,8 @@ const about = [
       en: "Why We Exist",
     },
     {
-      tr: "İzmir Bornova merkezli kurulan GENCO; demir çelikten medikal malzemelere, denizcilikten tarım ve tohumculuğa, otomotivden yenilikçi femtech teknolojilerine kadar geniş bir dikey yelpazede tescilli teknik bilgiye ve yerleşik alıcı ağlarına sahiptir.\n\nBu bilgi ve ağları müşterimiz adına sahada kullanıyoruz: doğrudan karar vericiye ulaşmak, teknik şartname uyumunu yerinde doğrulamak ve sevkiyat kapanışına kadar süreci yönetmek.",
-      en: "Founded in Izmir Bornova, GENCO holds proprietary technical knowledge and established buyer networks across a wide vertical spectrum: from steel and metals to medical supplies, marine, agriculture, automotive, and innovative femtech technologies.\n\nWe put that knowledge and those networks to work on the ground on our clients' behalf: reaching decision-makers directly, verifying technical specification compliance on site, and managing the process through to shipment closure.",
+      tr: "İzmir Bornova merkezli kurulan GENCO; demir çelikten medikal malzemelere, denizcilikten tarım ve tohumculuğa, ambalajdan yenilikçi femtech teknolojilerine kadar geniş bir dikey yelpazede tescilli teknik bilgiye ve yerleşik alıcı ağlarına sahiptir.\n\nBu bilgi ve ağları müşterimiz adına sahada kullanıyoruz: doğrudan karar vericiye ulaşmak, teknik şartname uyumunu yerinde doğrulamak ve sevkiyat kapanışına kadar süreci yönetmek.",
+      en: "Founded in Izmir Bornova, GENCO holds proprietary technical knowledge and established buyer networks across a wide vertical spectrum: from steel and metals to medical supplies, marine, agriculture, packaging, and innovative femtech technologies.\n\nWe put that knowledge and those networks to work on the ground on our clients' behalf: reaching decision-makers directly, verifying technical specification compliance on site, and managing the process through to shipment closure.",
     },
     [],
     { tr: "Ölçütümüz", en: "Our Standard" },
