@@ -998,12 +998,79 @@ const GENCO_STATS = {
 };
 
 /** Firestore'da hiç blok yoksa devreye giren tam sayfa şablonu. */
+/**
+ * Ana sayfa SSS bloğu.
+ * ---------------------------------------------------------------------------
+ * AI aramaları (ChatGPT Search, Perplexity, Google AI Overviews) bir soruya
+ * cevap ararken önce soru-cevap metni arar. Bu blok hem ziyaretçiye netlik
+ * verir hem de arama motorlarına konuyu özetlenebilir biçimde sunar.
+ *
+ * Yanıtlar bilerek abartılmadan yazıldı: vaat yerine süreç anlatılır.
+ * Panelden düzenlenebilir ve yayınlanabilir.
+ */
+const GENCO_FAQ = {
+  id: "seed_faq_home",
+  type: "faq",
+  heading: bi("Sıkça Sorulan Sorular", "Frequently Asked Questions"),
+  sub: bi(
+    "En çok merak edilen dört soruyu özetledik. Yanıtınızı bulamazsanız iletişim formundan yazabilirsiniz.",
+    "We have summarised the four questions we are asked most. If your answer is not here, write to us through the contact form."
+  ),
+  items: [
+    {
+      id: "fq_home_1",
+      question: bi(
+        "GENCO hangi sektörlerde ithalat ve ihracat yapıyor?",
+        "In which sectors does GENCO carry out import and export?"
+      ),
+      answer: bi(
+        "Altı ana sektörde çalışıyoruz: vasıflı çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal ve cerrahi sarf, ambalaj ile femtech ve sağlık teknolojileri. Bu alanlarda tescilli teknik bilgiye ve yerleşik alıcı ağlarına sahibiz; dışındaki sektörler için de aynı metodolojiyle çalışabiliyoruz.",
+        "We work across six core sectors: engineering steel, yachting and marine equipment, seed trade, medical and surgical consumables, packaging, and femtech and health technologies. We hold proprietary technical knowledge and established buyer networks in these areas, and we apply the same methodology in sectors outside them."
+      ),
+    },
+    {
+      id: "fq_home_2",
+      question: bi(
+        "Anahtar teslim ithalat neleri kapsıyor?",
+        "What does turnkey import include?"
+      ),
+      answer: bi(
+        "Firmanızın kendi bünyesinde takip edemeyeceği ithalat süreçlerini üstleniyoruz: ön araştırma ve fizibilite, farklı ülkelerden tedarikçi seçimi ve GTİP tespiti, akreditif ve dokümantasyon, uluslararası taşıma ve sigorta, kalite uyum testleri, gümrükleme ve yurt içi teslimat. Zincirin tamamı tek elden yürütülür.",
+        "We take over the import processes your company cannot manage in-house: pre-research and feasibility, supplier selection across countries and HS code determination, letter of credit and documentation, international freight and insurance, quality compliance testing, customs clearance and domestic delivery. The entire chain is handled end to end."
+      ),
+    },
+    {
+      id: "fq_home_3",
+      question: bi(
+        "Teknik şartname ve standart uyumu nasıl yürütülüyor?",
+        "How do you handle technical specifications and standards compliance?"
+      ),
+      answer: bi(
+        "Uyumu masa başında değil, sahada doğruluyoruz. Üretim tesislerini yerinde denetliyor; ölçü ve tolerans dönüşümlerini laboratuvar seviyesinde koordine ediyor, ısıl işlem ve yüzey kalitesi gibi metalurjik özellikleri teknik dosyayla alıcıya sunuyoruz. EN, ASTM ve GTİP uyumsuzluğu gümrükte sevkiyatı durdurabildiği için bu kontrolü masaba bırakmıyoruz.",
+        "We verify compliance in the field, not at the desk. We audit production facilities on site, coordinate inch and millimetre tolerance conversions at laboratory level, and present critical metallurgical properties such as heat treatment and surface quality to the buyer with the technical documentation. Because a mismatch against EN, ASTM or HS codes can hold a shipment at customs, we do not leave this control to the desk."
+      ),
+    },
+    {
+      id: "fq_home_4",
+      question: bi(
+        "Ambalaj hizmetiniz kapsamında ne yapıyorsunuz?",
+        "What does your packaging service cover?"
+      ),
+      answer: bi(
+        "Fikirden baskılı ürüne kadar uçtan uca çalışıyoruz: ürünün özellikleri, raf ömrü, taşıma koşulları ve satış kanalına göre tasarım; baskı öncesi kontrol, renk ve ölçü doğrulaması ile prova; ardından kalıp, plaka ve baskı üretimi. Aynı ekip dosyanın oluşturulmasından makineye verilmesine kadar süreci bırakmıyor.",
+        "We work end to end from idea to printed product: design shaped around your product's properties, shelf life, transport conditions and sales channel; pre-press checks, colour and dimension verification and proofs; then tooling, plates and print production. The same team carries the file from creation to the press."
+      ),
+    },
+  ],
+};
+
 export const DEFAULT_SITE_BLOCKS = [
   NAV_DEFAULTS,
   HERO_DEFAULTS,
   INDUSTRIES_DEFAULTS,
   ROUTES_DEFAULTS,
   METHOD_DEFAULTS,
+  GENCO_FAQ,
   GENCO_STATS,
   FOOTER_DEFAULTS,
 ];
