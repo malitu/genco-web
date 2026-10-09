@@ -12,7 +12,6 @@ export const metadata = {
     canonical: "/case-studies",
     languages: {
       "tr-TR": "/case-studies",
-      "en": "/case-studies?lang=en",
       "x-default": "/case-studies",
     },
   },

@@ -10,7 +10,7 @@ export const metadata = {
   description: PAGES.about.description,
   alternates: {
     canonical: "/about",
-    languages: { "tr-TR": "/about", "en": "/about?lang=en", "x-default": "/about" },
+    languages: { "tr-TR": "/about", "x-default": "/about" },
   },
   openGraph: {
     title: PAGES.about.title,

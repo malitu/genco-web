@@ -15,7 +15,6 @@ export const metadata = {
     canonical: "/industries",
     languages: {
       "tr-TR": "/industries",
-      "en": "/industries?lang=en",
       "x-default": "/industries",
     },
   },

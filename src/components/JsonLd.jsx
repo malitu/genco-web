@@ -51,7 +51,7 @@ export function schemaOrganization() {
         address: postalAddress,
         contactPoint: [contactPoint],
         areaServed: ORG.areasServed,
-        knowsLanguage: ["tr", "en"],
+        knowsLanguage: ["tr"],
         sameAs: ORG.sameAs,
       },
       {
@@ -104,7 +104,10 @@ export function schemaWebSite() {
     name: ORG.shortName,
     legalName: ORG.legalName,
     description: ORG.description,
-    inLanguage: ["tr-TR", "en"],
+    // Yalnızca taranabilir diller. İngilizce içerik şu anda istemci tarafında
+    // (localStorage) sunuluyor; ayrı bir adresi olmadığı için burada
+    // ilan edilmez — aksi halde bot olmayan bir EN sayfası vaat edilmiş olur.
+    inLanguage: "tr-TR",
     publisher: { "@id": `${ORG.url}/#organization` },
   };
 }

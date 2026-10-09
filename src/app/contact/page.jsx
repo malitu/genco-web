@@ -12,7 +12,6 @@ export const metadata = {
     canonical: "/contact",
     languages: {
       "tr-TR": "/contact",
-      "en": "/contact?lang=en",
       "x-default": "/contact",
     },
   },

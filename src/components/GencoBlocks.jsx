@@ -2146,14 +2146,17 @@ function CardGridBlock({ block, ctx }) {
   return (
     <section className="py-16 sm:py-20 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <EditableText
-          as="h2"
-          editable={edit}
-          value={L(block.heading, lang)}
-          onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
-          className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-4"
-          placeholder="Bölüm başlığı"
-        />
+        {/* Başlık boşsa render edilmez; boş <h2> hiyerarşiyi bozar. */}
+        {(edit || L(block.heading, lang).trim()) && (
+          <EditableText
+            as="h2"
+            editable={edit}
+            value={L(block.heading, lang)}
+            onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+            className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-4"
+            placeholder="Bölüm başlığı"
+          />
+        )}
         <EditableText
           as="p"
           editable={edit}
@@ -2426,14 +2429,17 @@ function ArticleListBlock({ block, ctx }) {
   return (
     <section className="py-16 sm:py-20 bg-white border-b border-gray-100">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <EditableText
-          as="h2"
-          editable={edit}
-          value={L(block.heading, lang)}
-          onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
-          className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-10"
-          placeholder="Bölüm başlığı"
-        />
+        {/* Başlık boşsa render edilmez; boş <h2> hiyerarşiyi bozar. */}
+        {(edit || L(block.heading, lang).trim()) && (
+          <EditableText
+            as="h2"
+            editable={edit}
+            value={L(block.heading, lang)}
+            onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+            className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-10"
+            placeholder="Bölüm başlığı"
+          />
+        )}
         <div className="space-y-8">
           {articles.map((a) => (
             <article
@@ -2622,15 +2628,18 @@ function StatsBandBlock({ block, ctx }) {
             canlı sitede görünmez.
           </p>
         )}
-        <EditableText
-          as="h2"
-          editable={edit}
-          value={L(block.heading, lang)}
-          onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
-          className="text-2xl font-bold text-center mb-10"
-          placeholder="Başlık"
-        />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+        {/* Başlık boşsa hiç render edilmez; aksi halde boş <h2></h2> oluşur. */}
+        {(edit || L(block.heading, lang).trim()) && (
+          <EditableText
+            as="h2"
+            editable={edit}
+            value={L(block.heading, lang)}
+            onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+            className="text-2xl font-bold text-center mb-10"
+            placeholder="Başlık"
+          />
+        )}
+        <div className={`grid grid-cols-2 lg:grid-cols-4 gap-8 text-center ${L(block.heading, lang).trim() ? "" : "mt-10"}`}>
           {items.map((it) =>
             !edit && !L(it.value, lang).trim() ? null : (
             <div key={it.id} className="relative">
@@ -3015,14 +3024,17 @@ function FaqBlock({ block, ctx }) {
       })()}
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
-        <EditableText
-          as="h2"
-          editable={edit}
-          value={L(block.heading, lang)}
-          onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
-          className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-4"
-          placeholder="Bölüm başlığı"
-        />
+        {/* Başlık boşsa render edilmez; boş <h2> hiyerarşiyi bozar. */}
+        {(edit || L(block.heading, lang).trim()) && (
+          <EditableText
+            as="h2"
+            editable={edit}
+            value={L(block.heading, lang)}
+            onChange={(v) => set("heading", mergeLang(block.heading, lang, v))}
+            className="text-2xl md:text-3xl font-bold text-[#0f172a] text-center mb-4"
+            placeholder="Bölüm başlığı"
+          />
+        )}
         <EditableText
           as="p"
           editable={edit}

@@ -12,7 +12,6 @@ export const metadata = {
     canonical: "/gizlilik",
     languages: {
       "tr-TR": "/gizlilik",
-      "en": "/gizlilik?lang=en",
       "x-default": "/gizlilik",
     },
   },

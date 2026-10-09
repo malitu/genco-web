@@ -12,7 +12,6 @@ export const metadata = {
     canonical: "/insights",
     languages: {
       "tr-TR": "/insights",
-      "en": "/insights?lang=en",
       "x-default": "/insights",
     },
   },
