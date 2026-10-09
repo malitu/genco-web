@@ -2204,6 +2204,7 @@ function CardGridBlock({ block, ctx }) {
                 onPick={() => pick(`card:${card.id}`)}
                 label="Kart görseli"
                 className="w-full h-40"
+                alt={`${L(card.title, lang)} — ${L(card.eyebrow, lang) || "GENCO"}`}
               />
               <div className="p-8 flex-1">
                 <EditableText

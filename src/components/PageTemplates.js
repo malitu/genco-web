@@ -21,6 +21,7 @@ import {
   CONTACT_DEFAULTS,
   FAQ_DEFAULTS,
   STATS_BAND_DEFAULTS,
+  MEDIA_DEFAULTS,
 } from "./GencoBlocks";
 
 const bi = (tr, en) => ({ tr, en });
@@ -60,6 +61,28 @@ const cta = (id, badge, heading, sub, buttonLabel) => ({
   sub: bi(sub.tr, sub.en),
   buttonLabel: bi(buttonLabel.tr, buttonLabel.en),
   buttonHref: "/contact",
+});
+
+/**
+ * Fotoğraf bandı / görsel bloğu.
+ * @param {string} id
+ * @param {"row"|"spotlight"|"split"} layout
+ * @param {Array<{url, tr, en}>} items  görsel + altyazı (iki dilli)
+ * @param {{tr,en}} heading  boş bırakılabilir
+ */
+const media = (id, layout, items, heading = null, body = null) => ({
+  ...MEDIA_DEFAULTS,
+  id,
+  layout,
+  captionPosition: layout === "row" ? "below" : "below",
+  heading: heading ? bi(heading.tr, heading.en) : bi("", ""),
+  body: body ? bi(body.tr, body.en) : bi("", ""),
+  items: items.map((it, i) => ({
+    id: `${id}_m${i + 1}`,
+    kind: "image",
+    url: it.url,
+    caption: bi(it.tr, it.en),
+  })),
 });
 
 /* ========================================================================== *
@@ -257,6 +280,30 @@ const services = [
     ],
   },
 
+  /* ---- Fotoğraf bandı: operasyon sahada yürüyor ---- */
+  media(
+    "tpl_svc_band",
+    "row",
+    [
+      {
+        url: "/img/services-band-warehouse.webp",
+        tr: "Konteyner yükleme anında operasyon: sevkiyat planlamasından istif ve teslimata kadar zincir birlikte yürür.",
+        en: "Operations at the moment of container loading: from shipment planning to stacking and delivery, the chain moves together.",
+      },
+      {
+        url: "/img/services-card-trade-review.webp",
+        tr: "Dış ticaret ekibiyle masada: hedef pazar, alıcı profili ve sevkiyat takvimi birlikte netleştirilir.",
+        en: "At the desk with the trade team: target market, buyer profile and shipment schedule are clarified together.",
+      },
+      {
+        url: "/img/services-card-audit.webp",
+        tr: "Üretim hattında yerinde denetim: kapasite, kalite ve teknik şartname uyumu sahada doğrulanır.",
+        en: "On-site audit on the production line: capacity, quality and technical specification compliance are verified in the field.",
+      },
+    ],
+    { tr: "Söz değil, operasyon", en: "Not promises, operations" }
+  ),
+
   /* ---- Nasıl çalışıyoruz: süreç, koşul değil ---- */
   {
     ...ARTICLE_LIST_DEFAULTS,
@@ -410,7 +457,7 @@ const industries = [
           "Import and export of engineering steel bar groups. EN and ASTM compliance, precision dimension and tolerance management, and supplier–buyer coordination."
         ),
         note: bi("✓ Vasıflı Çelik İthalat & İhracat", "✓ Engineering Steel Import & Export"),
-        image: "",
+        image: "/img/sector-photo-steel.webp",
       },
       {
         id: "tpl_ind_2",
@@ -421,7 +468,7 @@ const industries = [
           "Import and export in yachting and marine equipment. Accessories and safety equipment, CE and registration compliance, shipment processes."
         ),
         note: bi("✓ Aksesuar & Güvenlik Ekipmanları", "✓ Accessories & Safety Equipment"),
-        image: "",
+        image: "/img/sector-photo-marine.webp",
       },
       {
         id: "tpl_ind_3",
@@ -432,7 +479,7 @@ const industries = [
           "Seed import and export. Securing product permits, managing analysis processes, tracking phytosanitary and certification requirements."
         ),
         note: bi("✓ İzin & Analiz Süreçleri", "✓ Permit & Analysis Processes"),
-        image: "",
+        image: "/img/sector-photo-seeds.webp",
       },
       {
         id: "tpl_ind_4",
@@ -443,7 +490,7 @@ const industries = [
           "Import and export of medical supplies and surgical consumables. Supplier, buyer and shipment coordination shaped by each product group's regulatory requirements."
         ),
         note: bi("✓ Cerrahi Sarf & Medikal Ürünleri", "✓ Surgical & Medical Products"),
-        image: "",
+        image: "/img/sector-photo-medical.webp",
       },
       {
         id: "tpl_ind_5",
@@ -454,7 +501,7 @@ const industries = [
           "Packaging design, pre-press preparation and printing. The entire chain is handled end to end, from the initial idea to the printed product: design, prepress checks, tooling and plates, printing and post-press finishing."
         ),
         note: bi("✓ Tasarım · Prepress · Baskı", "✓ Design · Prepress · Printing"),
-        image: "",
+        image: "/img/sector-photo-packaging.webp",
       },
       {
         id: "tpl_ind_6",
@@ -468,7 +515,7 @@ const industries = [
           "Exports in women's health and innovative health technologies. Market analysis, buyer identification, tracking regulatory requirements and shipment coordination."
         ),
         note: bi("✓ Sağlık Ürünleri İhracatı", "✓ Health Product Exports"),
-        image: "",
+        image: "/img/sector-photo-femtech.webp",
       },
     ],
   },
@@ -501,6 +548,18 @@ const caseStudies = [
       tr: "Bu sayfa **yürüttüğümüz somut operasyonları** gösterir: hangi sektörde, hangi pazarda, ne kapsamda çalıştık. Müşteri ve hacim bilgileri gizlilik nedeniyle paylaşılmamaktadır.\n\nSektörün kendisiyle ilgili teknik ve düzenleyici tartışmaları için Sektör Analizleri sayfasına bakın.",
       en: "This page shows the concrete operations we have run: in which sector, in which market, and with what scope. Client and volume figures are withheld for confidentiality.\n\nFor technical and regulatory discussion of the sectors themselves, see the Sector Insights page.",
     }
+  ),
+  media(
+    "tpl_cs_band",
+    "row",
+    [
+      {
+        url: "/img/cases-band-ship.webp",
+        tr: "Her vaka bir sektör, bir pazar ve bir kapsam taşır. Sayılar gizlidir; kapsamı paylaşırız.",
+        en: "Each case carries a sector, a market and a scope. The figures are confidential; we share the scope.",
+      },
+    ],
+    null
   ),
   feature(
     "tpl_cs_1",
@@ -698,6 +757,18 @@ const insights = [
       en: "This page is not about what we have done, but about how the sector itself works: which standard, which permit, which trap. Here we share the strategic notes drawn from our own experience in international trade.\n\nFor the concrete operations we have run, see the Case Studies page.",
     }
   ),
+  media(
+    "tpl_ins_band",
+    "row",
+    [
+      {
+        url: "/img/insights-band-steelmill.webp",
+        tr: "Sektörün kurallarını sahada öğreniyoruz: tolerans, sertifikasyon, izin ve teslim süreleri gerçek üretimde belirlenir.",
+        en: "We learn how a sector works in the field: tolerances, certification, permits and lead times are determined in real production.",
+      },
+    ],
+    null
+  ),
   {
     ...ARTICLE_LIST_DEFAULTS,
     id: "tpl_ins_articles",
@@ -826,6 +897,20 @@ const about = [
     }
   ),
 
+  /* ---- Operasyon merkezi bandı ---- */
+  media(
+    "tpl_about_band",
+    "row",
+    [
+      {
+        url: "/img/about-band-operations.webp",
+        tr: "İzmir Bornova'daki operasyon merkezimiz: ofis ve depo aynı çatı altında, sevkiyat planlaması sahadan başlar.",
+        en: "Our operations centre in Bornova, Izmir: office and warehouse under one roof, with shipment planning starting on site.",
+      },
+    ],
+    null
+  ),
+
   /* ---- Kurum bilgileri: sayılar doğrulanana kadar boş kalır ---- */
   {
     ...STATS_BAND_DEFAULTS,
@@ -857,6 +942,26 @@ const about = [
       en: "Success in global trade is not about wasting time on generic lists; it is knowing the right technical standards, reaching decision-makers directly, and being on the ground at every stage of the operation.",
     }
   ),
+
+  /* ---- Çalışma biçimimiz: malzeme seçimi ve teknik inceleme ---- */
+  media(
+    "tpl_about_details",
+    "row",
+    [
+      {
+        url: "/img/about-detail-samples.webp",
+        tr: "Ürün ve malzeme seçimi: müşterinin hedef pazarı ve raf ömrü beklentisine göre numune ve teknik dosya birlikte belirlenir.",
+        en: "Product and material selection: samples and technical documentation are defined together against the buyer's target market and shelf-life expectations.",
+      },
+      {
+        url: "/img/about-detail-engineering.webp",
+        tr: "Mühendislik incelemesi: çizim, ölçü ve malzeme uyumu masa başında değil, numune üzerinde doğrulanır.",
+        en: "Engineering review: drawing, dimension and material compatibility are verified on the sample, not at the desk.",
+      },
+    ],
+    null
+  ),
+
   {
     ...CARD_GRID_DEFAULTS,
     id: "tpl_about_steps",
