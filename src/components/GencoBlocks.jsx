@@ -991,12 +991,22 @@ export const FOOTER_DEFAULTS = {
   // Boş bırakılabilir. Panelden eklenip çıkarılabilir; sosyal medya hesapları
   // şirket kimliğini güçlendirir (arama motorları ve AI asistanları bunları
   // sameAs üzerinden de doğrular).
+  //
+  // DİKKAT: Ana sayfa yayınlanmış alt bilgiyi Firestore'dan okur, alt sayfalar
+  // ise buradaki varsayılanı kullanır. Yeni bir sosyal hesap eklendiğinde
+  // BURAYA da eklenmelidir; aksi halde alt sayfalarda görünmez.
   socials: [
     {
       id: "soc_linkedin",
       label: bi("LinkedIn", "LinkedIn"),
       url: "https://tr.linkedin.com/company/genco-ithalat-ihracat",
       icon: "linkedin",
+    },
+    {
+      id: "soc_instagram",
+      label: bi("Instagram", "Instagram"),
+      url: "https://www.instagram.com/gencoithalat/",
+      icon: "instagram",
     },
   ],
   /* --- alt şerit --- */
@@ -2182,7 +2192,7 @@ function FootIcon({ name, className = "w-4 h-4" }) {
     ),
     arrow: <path d="M4 10h12m-4.5-4.5L16 10l-4.5 4.5" {...p} />,
     // LinkedIn'in resmî marka kutusu (kullanıcıdan gelen linkedin.svg).
-    // viewBox 24x24 -> 20x20 ölçeği; renkler markanın kendi mavisi.
+    // viewBox 24x24 -> 20x20 ölçeği; renkler markanın kendi mavisidir.
     linkedin: (
       <g transform="scale(0.8333)">
         <rect width="24" height="24" rx="2" fill="#0A66C2" />
@@ -2191,6 +2201,29 @@ function FootIcon({ name, className = "w-4 h-4" }) {
           d="M4 8.4h2.8V20H4Zm5 0h2.7V10c.7-1.2 1.8-1.9 3.5-1.9 3.1 0 4.8 1.8 4.8 5.4V20h-2.8v-6.1c0-2-.7-3.1-2.3-3.1-1.7 0-3.1 1.1-3.1 3.3V20H9Z"
           fill="#fff"
         />
+      </g>
+    ),
+
+    // Instagram'ın resmî gradyanlı ikonu (kullanıcıdan gelen instagram.svg).
+    // Dikkat: gradient id'si sayfada benzersiz olmalıdır. Alt bilgi bir kez
+    // render edildiği için çakışma görsel olarak fark yaratmaz; yine de
+    // önceden tanımlı iki rozet bulunmaması durumunda id'yi özel üretiyoruz.
+    instagram: (
+      <g transform="scale(0.8333)">
+        <defs>
+          <linearGradient id="genco-ig-gradient" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#FEDA75" />
+            <stop offset=".25" stopColor="#FA7E1E" />
+            <stop offset=".5" stopColor="#D62976" />
+            <stop offset=".75" stopColor="#962FBF" />
+            <stop offset="1" stopColor="#4F5BD5" />
+          </linearGradient>
+        </defs>
+        <g stroke="url(#genco-ig-gradient)" strokeWidth="2">
+          <rect x="3" y="3" width="18" height="18" rx="5.2" />
+          <circle cx="12" cy="12" r="4.2" />
+        </g>
+        <circle cx="17.5" cy="6.5" r="1.2" fill="url(#genco-ig-gradient)" />
       </g>
     ),
   };

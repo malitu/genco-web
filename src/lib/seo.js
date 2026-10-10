@@ -37,7 +37,10 @@ export const ORG = {
   // adreslerden doğrular. LinkedIn şirket profili kullanıcı tarafından
   // teyit edilmiştir (dikkat: linkedin.com/company/genco BAŞKA bir
   // firmadır — FedEx bağlantılı ABD lojistik şirketi).
-  sameAs: ["https://tr.linkedin.com/company/genco-ithalat-ihracat"],
+  sameAs: [
+    "https://tr.linkedin.com/company/genco-ithalat-ihracat",
+    "https://www.instagram.com/gencoithalat/",
+  ],
   description:
     "İzmir merkezli ithalat ve ihracat operasyon firması. Vasıflı çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal, ambalaj ve femtech sektörlerinde ürün kaynağından gümrükleme ve teslimata kadar uçtan uca operasyon yönetimi.",
   descriptionEn:
