@@ -1993,16 +1993,17 @@ function FootIcon({ name, className = "w-4 h-4" }) {
       </>
     ),
     arrow: <path d="M4 10h12m-4.5-4.5L16 10l-4.5 4.5" {...p} />,
+    // LinkedIn'in resmî marka kutusu (kullanıcıdan gelen linkedin.svg).
+    // viewBox 24x24 -> 20x20 ölçeği; renkler markanın kendi mavisi.
     linkedin: (
-      <>
-        {/* Dolu kare logo: LinkedIn'in kendi marka kutusu. Küçük boyutta çizgi
-    ikon okunmuyordu; "in" harfleri ayrı kolonlara ayrıldı. */}
-        <rect x="0" y="0" width="20" height="20" rx="3" fill="currentColor" stroke="none" />
-        <circle cx="5.2" cy="5" r="1.35" fill="#0b1520" stroke="none" />
-        <path d="M5.2 9.2v7.3" stroke="#0b1520" strokeWidth="2" strokeLinecap="round" />
-        <path d="M9.8 16.5V9.2" stroke="#0b1520" strokeWidth="2" strokeLinecap="round" />
-        <path d="M9.8 11.4c.5-1.4 1.8-2.3 3.3-2.3 1.9 0 3.1 1.2 3.1 3.1v4.3" stroke="#0b1520" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </>
+      <g transform="scale(0.8333)">
+        <rect width="24" height="24" rx="2" fill="#0A66C2" />
+        <circle cx="5.4" cy="5.4" r="1.65" fill="#fff" />
+        <path
+          d="M4 8.4h2.8V20H4Zm5 0h2.7V10c.7-1.2 1.8-1.9 3.5-1.9 3.1 0 4.8 1.8 4.8 5.4V20h-2.8v-6.1c0-2-.7-3.1-2.3-3.1-1.7 0-3.1 1.1-3.1 3.3V20H9Z"
+          fill="#fff"
+        />
+      </g>
     ),
   };
   return (
@@ -2169,7 +2170,7 @@ function FooterBlock({ block, ctx }) {
                   rel="noopener noreferrer me"
                   title={L(s.label, lang)}
                   aria-label={L(s.label, lang)}
-                  className="inline-flex items-center gap-2.5 h-11 pl-2.5 pr-4 rounded-lg bg-white/10 border border-white/25 text-white shadow-sm hover:bg-[#f97316] hover:border-[#f97316] hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200"
+                  className="inline-flex items-center gap-2.5 h-11 pl-2 pr-4 rounded-lg border border-white/20 text-white/90 hover:text-white hover:border-[#0A66C2] hover:bg-[#0A66C2]/15 transition-all duration-200"
                 >
                   <FootIcon name={s.icon || "arrow"} className="w-[22px] h-[22px] shrink-0" />
                   <span className="text-sm font-bold leading-none">{L(s.label, lang)}</span>
