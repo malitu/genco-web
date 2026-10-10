@@ -747,7 +747,7 @@ const insights = [
       {
         id: "tpl_ins_f2",
         eyebrow: bi("NOT 02", "NOTE 02"),
-        category: bi("URETICI SECIMI", "MANUFACTURER SELECTION"),
+        category: bi("ÜRETİCİ SEÇİMİ", "MANUFACTURER SELECTION"),
         date: bi("", ""),
         author: bi("", ""),
         title: bi("Üretici Seçiminde Fiyatın Yanında Neye Bakılmalı?", "What to Look At Beyond Price When Choosing a Manufacturer"),
@@ -768,7 +768,7 @@ const insights = [
         href: "/insights/distributor-listesinden-is-ortagi-secimine",
         linkLabel: bi("", ""),
         body: bi(
-          "Bir ulkedeki distributorlerin listesini cikarmak arastirmanin baslangicidir. Asil karar, hangi firmanin urununuzu dogru musteri grubuna ulastirabilecegidir.",
+          "Bir ülkedeki distribütörlerin listesini çıkarmak araştırmanın başlangıcıdır. Asıl karar, hangi firmanın ürününüzü doğru müşteri grubuna ulaştırabileceğidir.\n\nYazan: GENCO · 11 Ekim 2026 · Sektör Notu",
           "Producing a list of distributors in a country is where research begins. The real decision is which company can get your product to the right customer group."
         ),
       },
@@ -1588,6 +1588,21 @@ const distributorDevelopment = [
  *  Bu yüzden listeler "• " ön ekiyle yazılmıştır; <ul> etiketi üretilmez.
  * ========================================================================== */
 
+/* Yazının yazarı ve tarihi.
+   Yazar kurum olarak GENCO kullanılıyor: doğrulanmış bir kişi adı olmadığı
+   için isim uydurulmadı; kurum adı hem doğru hem savunulabilir.
+   Tarih, yazının ilk yayım tarihidir. Panelden değiştirilebilir. */
+const YAZI_YAZARI = bi("GENCO", "GENCO");
+const YAZI_TARIHI = bi("11 Ekim 2026", "11 October 2026");
+
+/* Yazı başlığının altında görünen yazar · tarih satırı.
+   Article şeması makine içindir; ziyaretçinin de görmesi gerekir.
+   Yayın tarihi 11 Ekim 2026'dır (ilk yayım). Panelden güncellenebilir. */
+const YAZI_BYLINE = bi(
+  "Yazan: GENCO · 11 Ekim 2026 · Sektör Notu",
+  "Written by GENCO · 11 October 2026 · Sector Note"
+);
+
 const yazi = (id, bolumler) =>
   bolumler.map((b, i) => ({
     id: `${id}_${i + 1}`,
@@ -1619,8 +1634,8 @@ const yaziSartname = [
       en: "Clarifying the Technical Specification Before Requesting Quotes",
     },
     {
-      tr: "Bir satın alma veya ihracat görüşmesinde ürün adı tek başına yeterli değildir. Aynı adla sunulan ürünler malzeme, ölçü, tolerans, yüzey, ambalaj veya belge kapsamı açısından farklı olabilir.\n\nBu nedenle fiyat istemeden önce teklifin hangi özellikleri kapsayacağını tanımlamak gerekir.",
-      en: "In a purchasing or export discussion, the product name alone is not enough. Products offered under the same name may differ in material, dimension, tolerance, surface, packaging or the scope of documentation.\n\nThis is why the features a quotation is to cover should be defined before a price is requested.",
+      tr: "Bir satın alma veya ihracat görüşmesinde ürün adı tek başına yeterli değildir. Aynı adla sunulan ürünler malzeme, ölçü, tolerans, yüzey, ambalaj veya belge kapsamı açısından farklı olabilir.\n\nBu nedenle fiyat istemeden önce teklifin hangi özellikleri kapsayacağını tanımlamak gerekir.\n\nYazan: GENCO · 11 Ekim 2026 · Sektör Notu",
+      en: "In a purchasing or export discussion, the product name alone is not enough. Products offered under the same name may differ in material, dimension, tolerance, surface, packaging or the scope of documentation.\n\nThis is why the features a quotation is to cover should be defined before a price is requested.\n\nWritten by GENCO · 11 October 2026 · Sector Note",
     }
   ),
   {
@@ -1680,8 +1695,8 @@ const yaziUretici = [
       en: "What to Look At Beyond Price When Choosing a Manufacturer",
     },
     {
-      tr: "Üretici seçiminde düşük fiyat önemli olabilir; ancak satın alma kararını tek başına açıklamaz. Ürünün ihtiyaca uygunluğu, üretim kapasitesi ve siparişin nasıl yönetileceği birlikte değerlendirilmelidir.",
-      en: "A low price can matter when choosing a manufacturer, but it does not explain the purchasing decision on its own. How well the product fits your requirement, the production capacity, and how the order will be managed all need to be assessed together.",
+      tr: "Üretici seçiminde düşük fiyat önemli olabilir; ancak satın alma kararını tek başına açıklamaz. Ürünün ihtiyaca uygunluğu, üretim kapasitesi ve siparişin nasıl yönetileceği birlikte değerlendirilmelidir.\n\nYazan: GENCO · 11 Ekim 2026 · Sektör Notu",
+      en: "A low price can matter when choosing a manufacturer, but it does not explain the purchasing decision on its own. How well the product fits your requirement, the production capacity, and how the order will be managed all need to be assessed together.\n\nWritten by GENCO · 11 October 2026 · Sector Note",
     }
   ),
   {
@@ -1763,7 +1778,7 @@ const yaziDistributor = [
     },
     {
       tr: "Bir ülkedeki distribütörlerin listesini çıkarmak araştırmanın başlangıcıdır. Asıl karar, hangi firmanın ürününüzü doğru müşteri grubuna ulaştırabileceğidir.",
-      en: "Producing a list of distributors in a country is where research begins. The real decision is which company can get your product to the right customer group.",
+      en: "Producing a list of distributors in a country is where research begins. The real decision is which company can get your product to the right customer group.\n\nWritten by GENCO · 11 October 2026 · Sector Note",
     }
   ),
   {

@@ -214,6 +214,42 @@ export function schemaFaq(questions, pathname = "/") {
 }
 
 /**
+ * Yazı şeması (Article) — /insights/* sayfaları.
+ *
+ * Yazının yazarı ve yayın tarihi burada bildirilir; arama motorları ve AI
+ * asistanları içeriği kimin yazdığını ve ne zaman yayımlandığını görebilir.
+ *
+ * @param {string} pathname  Yazının adresi (/insights/...)
+ * @param {"TR"|"EN"} locale
+ * @param {{title:string, description:string, date:string}} bilgi
+ */
+export function schemaArticle(pathname, locale, bilgi) {
+  const en = locale === "EN";
+  const yazar = en ? ORG.shortName : ORG.legalName;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": `${pageUrl(pathname)}#article`,
+    url: pageUrl(pathname),
+    headline: bilgi.title,
+    description: bilgi.description || undefined,
+    inLanguage: inLang(locale),
+    datePublished: bilgi.date,
+    dateModified: bilgi.date,
+    author: {
+      // Yazar kurum: GENCO. Kişisel isim kullanılmıyor çünkü doğrulanmış
+      // bir kişi adı yok; kurum adı hem doğru hem savunulabilir.
+      "@type": en ? "Organization" : "LocalBusiness",
+      "@id": `${ORG.url}/#organization`,
+      name: yazar,
+    },
+    publisher: { "@id": `${ORG.url}/#organization` },
+    mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl(pathname) },
+  };
+}
+
+/**
  * Sayfa meta verisi için yol haritası (breadcrumb) şeması.
  * /en/... adreslerinde de Türkçe karşılığı gösterilir; böylece iki dil aynı
  * şirketin aynı bölümü olarak makine tarafından eşleşir.
