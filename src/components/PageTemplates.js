@@ -1777,7 +1777,7 @@ const yaziDistributor = [
       en: "From a Distributor List to Choosing a Business Partner",
     },
     {
-      tr: "Bir ülkedeki distribütörlerin listesini çıkarmak araştırmanın başlangıcıdır. Asıl karar, hangi firmanın ürününüzü doğru müşteri grubuna ulaştırabileceğidir.",
+      tr: "Bir ülkedeki distribütörlerin listesini çıkarmak araştırmanın başlangıcıdır. Asıl karar, hangi firmanın ürününüzü doğru müşteri grubuna ulaştırabileceğidir.\n\nYazan: GENCO · 11 Ekim 2026 · Sektör Notu.",
       en: "Producing a list of distributors in a country is where research begins. The real decision is which company can get your product to the right customer group.\n\nWritten by GENCO · 11 October 2026 · Sector Note",
     }
   ),

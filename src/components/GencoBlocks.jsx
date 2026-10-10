@@ -178,6 +178,7 @@ export const INDUSTRIES_DEFAULTS = {
     "* Uzmanlık alanlarımız haricinde, talebe göre her sektörde özel pazar araştırması ve operasyon yönetimi sağlanmaktadır.",
     "* Beyond our core specialties, bespoke market research and operation management are available for any sector upon request."
   ),
+  noteHref: "",
 };
 
 export const ROUTES_DEFAULTS = {
@@ -1955,9 +1956,22 @@ function IndustriesBlock({ block, ctx }) {
         </div>
 
         <div className="text-center mt-8 text-sm text-gray-500 font-medium">
-          <EditableText as="div" editable={edit} value={L(block.note, lang)}
-            onChange={(v) => set("note", mergeLang(block.note, lang, v))}
-            placeholder="Alt not" />
+          {/* Not: `noteHref` tanımlıysa başlığa dönüşen bağlantı. */}
+          {block.noteHref && !edit ? (
+            <a
+              href={localeHref(block.noteHref, lang)}
+              className="inline-flex items-center gap-2 font-bold text-orange-500 hover:text-orange-400 transition-colors"
+            >
+              {L(block.note, lang)}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
+          ) : (
+            <EditableText as="div" editable={edit} value={L(block.note, lang)}
+              onChange={(v) => set("note", mergeLang(block.note, lang, v))}
+              placeholder="Alt not" />
+          )}
         </div>
       </div>
     </section>

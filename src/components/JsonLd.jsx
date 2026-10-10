@@ -240,7 +240,9 @@ export function schemaArticle(pathname, locale, bilgi) {
     author: {
       // Yazar kurum: GENCO. Kişisel isim kullanılmıyor çünkü doğrulanmış
       // bir kişi adı yok; kurum adı hem doğru hem savunulabilir.
-      "@type": en ? "Organization" : "LocalBusiness",
+        // İki dilde de Organization ve aynı @id: kurumsal yazarın iki dilde
+        // iki farklı türde tanımlanması şema tutarsızlığı yaratıyordu.
+        "@type": "Organization",
       "@id": `${ORG.url}/#organization`,
       name: yazar,
     },

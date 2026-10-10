@@ -54,7 +54,9 @@ export const ORG = {
 /** Sayfa başlıkları ve açıklamaları — tek tek özgün. */
 export const PAGES = {
   home: {
-    title: "Türkiye'deki Uluslararası Ticaret Ekibiniz",
+    // Marka başlığın içinde yazılı: title şablonu ('%s | GENCO') ana sayfada
+    // uygulanmıyor ve alt sayfaların aksine burada marka kaybolmuştu.
+    title: "Türkiye'deki Uluslararası Ticaret Ekibiniz | GENCO",
     titleEn: "GENCO — Your International Trade Team in Turkey",
     description:
       "2008'den beri İzmir'den ithalat ve ihracat operasyonlarını yürütüyoruz. Çelik, denizcilik, medikal, tohumculuk, ambalaj ve femtech sektörlerinde ürün kaynağından gümrükleme ve teslimata kadar tüm zincir bizim sorumluluğumuzda.",
