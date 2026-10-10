@@ -1995,10 +1995,13 @@ function FootIcon({ name, className = "w-4 h-4" }) {
     arrow: <path d="M4 10h12m-4.5-4.5L16 10l-4.5 4.5" {...p} />,
     linkedin: (
       <>
-        <rect x="2.5" y="2.5" width="15" height="15" rx="2.5" {...p} />
-        <path d="M6.5 8.8v5.4" {...p} />
-        <circle cx="6.5" cy="6.2" r="1" {...p} />
-        <path d="M10.5 14.2V8.8M10.5 11c0-1.2.9-2.2 2.1-2.2s2.1 1 2.1 2.2v3.2" {...p} />
+        {/* Dolu kare logo: LinkedIn'in kendi marka kutusu. Küçük boyutta çizgi
+    ikon okunmuyordu; "in" harfleri ayrı kolonlara ayrıldı. */}
+        <rect x="0" y="0" width="20" height="20" rx="3" fill="currentColor" stroke="none" />
+        <circle cx="5.2" cy="5" r="1.35" fill="#0b1520" stroke="none" />
+        <path d="M5.2 9.2v7.3" stroke="#0b1520" strokeWidth="2" strokeLinecap="round" />
+        <path d="M9.8 16.5V9.2" stroke="#0b1520" strokeWidth="2" strokeLinecap="round" />
+        <path d="M9.8 11.4c.5-1.4 1.8-2.3 3.3-2.3 1.9 0 3.1 1.2 3.1 3.1v4.3" stroke="#0b1520" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </>
     ),
   };
@@ -2156,7 +2159,7 @@ function FooterBlock({ block, ctx }) {
 
           {/* Sosyal / kimlik bağlantıları */}
           {socials.length > 0 && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               {socials.map((s) => (
                 <a
                   key={s.id}
@@ -2166,9 +2169,10 @@ function FooterBlock({ block, ctx }) {
                   rel="noopener noreferrer me"
                   title={L(s.label, lang)}
                   aria-label={L(s.label, lang)}
-                  className="inline-grid place-items-center h-9 w-9 rounded-md border border-white/15 text-white/60 hover:text-[#f97316] hover:border-[#f97316]/60 transition"
+                  className="inline-flex items-center gap-2.5 h-11 pl-2.5 pr-4 rounded-lg bg-white/10 border border-white/25 text-white shadow-sm hover:bg-[#f97316] hover:border-[#f97316] hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200"
                 >
-                  <FootIcon name={s.icon || "arrow"} className="w-4 h-4" />
+                  <FootIcon name={s.icon || "arrow"} className="w-[22px] h-[22px] shrink-0" />
+                  <span className="text-sm font-bold leading-none">{L(s.label, lang)}</span>
                 </a>
               ))}
               {edit && (
