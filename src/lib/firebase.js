@@ -3,10 +3,14 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
+// Yapılandırma tek yerden gelir (bkz. firebaseConfig.js): sunucu tarafı
+// okuma katmanı da aynı anahtarı kullanıyor.
+import { FIREBASE_API_KEY, FIREBASE_PROJECT_ID } from "./firebaseConfig";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyAnAih19--l7BLzm8mHQSyKQetIZJiSX1M",
+  apiKey: FIREBASE_API_KEY,
   authDomain: "genco-platform.firebaseapp.com",
-  projectId: "genco-platform",
+  projectId: FIREBASE_PROJECT_ID,
   storageBucket: "genco-platform.firebasestorage.app",
   messagingSenderId: "603983528447",
   appId: "1:603983528447:web:3ade95c0a15dd6125ea7ca"

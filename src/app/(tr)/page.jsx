@@ -1,27 +1,30 @@
 /**
- * GENCO — Türkçe ana sayfa (canlı) · sunucu bileşeni.
+ * GENCO — Ana sayfa (sunucu bileşeni).
  * ---------------------------------------------------------------------------
- * Dil artık URL'e bağlıdır. Bu dosya yalnızca Türkçe karşılıktır; İngilizce
- * karşılık src/app/(en)/en/page.jsx'de aynı bileşenleri besler.
+ * İçerik stüdyoda yayınlanmışsa Firestore'dan gelir; yayınlanmamışsa kod
+ * içindeki varsayılan şablon kullanılır.
  *
- * Sayfaya özel title / description ortak `pageMetadata()` yardımcısından gelir
- * (src/lib/seo.js) — böylece TR ve EN sayfaları aynı kaynaktan beslenir ve
- * iki dil birbirinden ayrılamaz.
- *
- * Veri çekme ve tasarım src/components/HomeClient.jsx içinde.
+ * ÖNEMLİ: Bu okuma SUNUCUDA yapılır. Önceden istemci SDK'sıyla okunuyordu ve
+ * üretimde getDoc() hiç tamamlanmıyordu — sayfa sessizce eski içeriği
+ * gösteriyordu. REST ucu ([slug] ve sitemap.js'in zaten kullandığı yol)
+ * güvenilir çalışıyor ve metin botlara JavaScript çalıştırmadan gidiyor.
+ * Ayrıntı: src/lib/studioData.js
  */
 
-import HomeClient from "../../components/HomeClient";
+import HomePage from "../../components/HomePage";
 import JsonLd, { schemaPage } from "../../components/JsonLd";
 import { pageMetadata, localePath } from "../../lib/seo";
+import { yayinlananAnaSayfa } from "../../lib/studioData";
 
 export const metadata = pageMetadata("home", "TR");
 
-export default function Home() {
+export default async function Home() {
+  const blocks = await yayinlananAnaSayfa();
+
   return (
     <>
       <JsonLd data={schemaPage("home", localePath("TR", "/"), "TR")} />
-      <HomeClient lang="TR" />
+      <HomePage blocks={blocks || []} mode="live" lang="TR" />
     </>
   );
 }

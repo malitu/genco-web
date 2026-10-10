@@ -38,7 +38,7 @@ async function dokumanOku({ zamanAsimi = 2500 } = {}) {
   try {
     const controller = new AbortController();
     const zaman = setTimeout(() => controller.abort(), zamanAsimi);
-    const res = await fetch(dokumanUrls(), {
+    const res = await fetch(firestoreBelgeUrl(), {
       signal: controller.signal,
       cache: "no-store",
     });

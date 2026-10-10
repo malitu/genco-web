@@ -1,27 +1,27 @@
 /**
- * GENCO — English home page (live) · server component.
+ * GENCO — English home page (server component).
  * ---------------------------------------------------------------------------
- * The language is defined by the URL: Turkish lives at `/`, English at `/en`.
  * Turkish counterpart: src/app/(tr)/page.jsx
  *
- * Page-level title / description come from the shared `pageMetadata()` helper
- * (src/lib/seo.js), so both languages are fed from a single source and can
- * never drift apart.
- *
- * Data fetching and rendering live in src/components/HomeClient.jsx.
+ * Content is read from Firestore ON THE SERVER (src/lib/studioData.js).
+ * The client SDK read used to hang silently in production; the REST path is
+ * reliable and also lets crawlers see the text without running JavaScript.
  */
 
-import HomeClient from "../../../components/HomeClient";
+import HomePage from "../../../components/HomePage";
 import JsonLd, { schemaPage } from "../../../components/JsonLd";
 import { pageMetadata, localePath } from "../../../lib/seo";
+import { yayinlananAnaSayfa } from "../../../lib/studioData";
 
 export const metadata = pageMetadata("home", "EN");
 
-export default function HomeEn() {
+export default async function HomeEn() {
+  const blocks = await yayinlananAnaSayfa();
+
   return (
     <>
       <JsonLd data={schemaPage("home", localePath("EN", "/"), "EN")} />
-      <HomeClient lang="EN" />
+      <HomePage blocks={blocks || []} mode="live" lang="EN" />
     </>
   );
 }
