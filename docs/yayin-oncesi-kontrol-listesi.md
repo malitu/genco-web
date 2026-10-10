@@ -103,7 +103,58 @@ olmalı. Yanlışsa canonical/sitemap kalıcı olarak yanlış adresi bildirir.
 | Mobil hamburger menü | `c4eca6b` |
 | Footer LinkedIn rozeti | `12c99fc` |
 | Stats bandı ana sayfada yukarı taşındı | `c4eca6b` |
+| `/services` + 3 hizmet detay sayfası | `8138a58` |
+| `/about`, `/contact` yeniden yazımı + 3 form alanı | `6227b20` |
+| `/services` footer() eksikliği düzeltildi | `cd410ff` |
+| `/insights` + 3 sektör analizi yazısı | `8dd3f2f` |
+| Ana sayfa sunucu tarafında okunuyor, Firebase anahtarı tek kaynakta | `ec1f18d` |
+| Otomatik doğrulama betiği (`npm run dogrula`) | sonraki commit |
 | Domain taşıması | ⏳ |
+
+---
+
+## 🔒 Her yayından sonra ONAYLAMANIZ GEREKEN ADIM
+
+> Bu madde kaldırılmasın. 2026-10-11'de ana sayfa içeriği güncellendi ama
+> site **eski metni göstermeye devam etti**. Hata yoktu, konsol temizdi, HTTP
+> 200 geliyordu, build temizdi. Kimse fark etmedi — ben de ancak beşinci
+> denemede yakaladım.
+
+### Adım 1 — Otomatik kontrolü çalıştırın
+
+Stüdyoda **"Kaydet & Yayınla"** dedikten sonra:
+
+```bash
+npm run dogrula -- https://genco-web.vercel.app
+```
+
+Betik şunları doğrular ve **hata varsa kırmızı `HATA` yazar, exit code 1 döner**:
+
+| Kontrol | Ne yakalar |
+|---|---|
+| 16 sayfa | 200 dönüyor mu, boş `<h2>` var mı, footer'ı var mı |
+| **Ana sayfa içeriği** | Firestore'daki yeni metin geliyor mu (kod varsayılanına düşmüş mü) |
+| Dil yapısı | `<html lang="tr">` / `lang="en"` doğru mu |
+| Dil içi bağlantılar | `/en/` altında Türkçe adrese sızan bağlantı var mı |
+| Kırık bağlantılar | Hizmet sayfalarına bağlantı veren kartlar gerçekten açılıyor mu |
+| Sitemap | Adres sayısı ve hreflang çiftleri |
+| Metin kalitesi | Ham `**` Markdown kalıntısı |
+
+### Adım 2 — Ana sayfayı gözle de açın
+
+```
+https://www.gencotr.com/
+```
+
+Görmeniz gereken: hero alt metni **"GENCO, üreticilerin yeni pazarlara
+ulaşmasına…"** ile başlıyor ve **"Projenizi Görüşelim"** butonu var.
+Eski metinleri ("Hedef Pazar & Rakip Analizi", "Sıfır Kurulum Maliyeti")
+görüyorsanız yayınlanmamış demektir.
+
+### Adım 3 — İçerik değişikliğini doğrulayın
+
+Değiştirdiğiniz metnin **sitenin ilk ekranında** olduğunu teyit edin.
+Firestore'a yazılan ama kod şablonunda kalan metinler hiç görünmez.
 
 ---
 

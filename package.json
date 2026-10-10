@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "dogrula": "node scripts/dogrula.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.3.3",
