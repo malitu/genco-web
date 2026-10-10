@@ -5,23 +5,11 @@
    Bu dosya sunucu bileşenidir (metadata dışa aktarabilmek için).
    Asıl arayüz <LivePage /> içinde, istemci bileşeni olarak çalışır. */
 
-import LivePage from "../../components/LivePage";
-import JsonLd, { schemaPage, schemaServices } from "../../components/JsonLd";
-import { PAGES, pageUrl } from "../../lib/seo";
+import LivePage from "../../../components/LivePage";
+import JsonLd, { schemaPage, schemaServices } from "../../../components/JsonLd";
+import { PAGES, pageUrl, pageMetadata, localePath } from "../../../lib/seo";
 
-export const metadata = {
-  title: PAGES.services.title,
-  description: PAGES.services.description,
-  alternates: {
-    canonical: "/services",
-    languages: { "tr-TR": "/services", "x-default": "/services" },
-  },
-  openGraph: {
-    title: PAGES.services.title,
-    description: PAGES.services.description,
-    url: pageUrl("/services"),
-  },
-};
+export const metadata = pageMetadata("services", "TR");
 
 export default function ServicesPage() {
   return (

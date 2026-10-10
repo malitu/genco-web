@@ -20,6 +20,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { sendContactMessage, openMailFallback } from "../lib/contact";
+import { dileGore } from "../lib/localeYol";
 import Turnstile from "./Turnstile";
 
 /* ========================================================================== *
@@ -63,6 +64,31 @@ export function mergeLang(current, lang, next) {
   }
   const other = key === "en" ? "tr" : "en";
   return { [key]: next, [other]: typeof current === "string" ? current : "" };
+}
+
+/**
+ * İç bağlantıyı aktif dile göre yeniden adresler.
+ *
+ * Dil artık adrestir: Türkçe sayfalar /services, İngilizce karşılıkları
+ * /en/services. Blok motoru içindeki menü, alt bilgi ve CTA bağlantıları bu
+ * fonksiyondan geçer; böylece /en/ altında hiçbir bağlantı Türkçe sayfaya
+ * düşmez.
+ *
+ * Adres eşlemesi src/lib/localeYol.js'te; metadata ve sitemap de aynı dosyayı
+ * okur, böylece iki taraf birbirinden ayrışamaz.
+ *
+ *   "/services"  + EN -> "/en/services"
+ *   "/"          + EN -> "/en"
+ *   "/en/privacy-policy" + TR -> "/gizlilik"
+ *   TR'de olduğu gibi bırakılır.
+ */
+export function localeHref(href, lang) {
+  if (typeof href !== "string" || !href.startsWith("/")) return href;
+  // Teknik ve varlık yolları dile çevrilmez.
+  if (/^\/(img|api|admin|_next|llms\.txt|robots\.txt|sitemap\.xml|favicon|logo)/.test(href)) {
+    return href;
+  }
+  return dileGore(href, lang === "EN");
 }
 
 /* ========================================================================== *
@@ -473,7 +499,7 @@ function MediaItem({ block, item, ctx, index, total }) {
               rel="noreferrer"
               className="grid h-full w-full place-items-center text-xs font-bold text-white"
             >
-              Videoyu aç
+              {lang === "EN" ? "Open video" : "Videoyu aç"}
             </a>
           )}
           {edit && (
@@ -530,7 +556,7 @@ function MediaItem({ block, item, ctx, index, total }) {
 
           {!edit && (
             <span className="pointer-events-none absolute right-2 top-2 rounded-md bg-black/45 px-2 py-1 text-[10px] font-bold text-white opacity-0 transition group-hover:opacity-100">
-              Büyüt
+              {lang === "EN" ? "Enlarge" : "Büyüt"}
             </span>
           )}
 
@@ -1532,6 +1558,20 @@ function NavBlock({ block, ctx }) {
 
   const linkler = block.links || [];
 
+  /* --- Dil bağlantıları -----------------------------------------------------
+     Dil artık adrestir, dolayısıyla TR/EN düğmeleri düğme değil bağlantıdır.
+     Kullanıcı bulunduğu sayfanın aynı karşılığına gider:
+        /services  ->  /en/services
+        /en/services  ->  /services
+     Paneldeki menü bağlantıları da aynı dil önekini taşır. */
+  const enMi = lang === "EN";
+  // Dil hedefleri ortak eşlemeden gelir; /en/privacy-policy -> /gizlilik gibi
+  // özel durumlar burada da doğru karşılığı bulur.
+  const hedefTr = localeHref(pathname, "TR");
+  const hedefEn = localeHref(pathname, "EN");
+  // Panel ve masaüstü menü bağlantıları aktif dilin önekiyle eşleşmeli
+  const menüHedefi = (href) => localeHref(href, lang);
+
   return (
     <nav className="bg-white border-b border-gray-200 py-3 sm:py-4 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center gap-3">
@@ -1559,7 +1599,7 @@ function NavBlock({ block, ctx }) {
             </div>
           ) : (
             <a
-              href="/"
+              href={edit ? "/" : menüHedefi("/")}
               aria-label="GENCO — ana sayfa"
               title="Ana sayfa"
               className="flex items-center rounded px-1 transition hover:opacity-80"
@@ -1603,7 +1643,7 @@ function NavBlock({ block, ctx }) {
                   )
                 )
               }
-              href={edit ? undefined : link.href}
+              href={edit ? undefined : menüHedefi(link.href)}
               onClick={(e) => edit && e.preventDefault()}
               className={`transition whitespace-nowrap ${
                 !edit && pathname === link.href
@@ -1615,35 +1655,32 @@ function NavBlock({ block, ctx }) {
           ))}
         </div>
 
-        {/* Canlı sitede menünün kendi TR/EN düğmesi çalışır. Stüdyo
-            modunda dil üstteki "Dil" seçicisiyle belirlenir; buradaki
-            düğmeler karışmasın diye gizlenir.
-            md altında gizli: mobil panelin içinde kendi TR/EN satırı var. */}
+        {/* TR/EN artık bağlantıdır: dil adresin parçası, düğme değil. Arama
+            motorları her iki adresi de ayrı sayfa olarak görür.
+            Stüdyo modunda gizlenir; orada dil üstteki seçiciden gelir. */}
         {!edit && (
           <div className="hidden md:flex items-center space-x-2 text-xs font-bold">
-            <button
-              type="button"
-              onClick={() => onLangChange?.("TR")}
+            <a
+              href={hedefTr}
+              hrefLang="tr-TR"
+              aria-current={!enMi ? "true" : undefined}
               className={`px-2 py-1 rounded transition ${
-                lang === "TR"
-                  ? "bg-[#f97316] text-white"
-                  : "text-gray-800 hover:text-[#f97316]"
+                !enMi ? "bg-[#f97316] text-white" : "text-gray-800 hover:text-[#f97316]"
               }`}
             >
               TR
-            </button>
+            </a>
             <span className="text-gray-300">|</span>
-            <button
-              type="button"
-              onClick={() => onLangChange?.("EN")}
+            <a
+              href={hedefEn}
+              hrefLang="en-GB"
+              aria-current={enMi ? "true" : undefined}
               className={`px-2 py-1 rounded transition ${
-                lang === "EN"
-                  ? "bg-[#f97316] text-white"
-                  : "text-gray-400 hover:text-[#f97316]"
+                enMi ? "bg-[#f97316] text-white" : "text-gray-400 hover:text-[#f97316]"
               }`}
             >
               EN
-            </button>
+            </a>
           </div>
         )}
 
@@ -1687,7 +1724,7 @@ function NavBlock({ block, ctx }) {
             {linkler.map((link) => (
               <a
                 key={link.id}
-                href={link.href}
+                href={menüHedefi(link.href)}
                 onClick={() => setAcik(false)}
                 className={`flex items-center justify-between py-3.5 border-b border-gray-100 text-[15px] font-semibold transition ${
                   pathname === link.href ? "text-[#f97316]" : "text-[#0f172a]"
@@ -1715,23 +1752,34 @@ function NavBlock({ block, ctx }) {
               </a>
             )}
 
-            {/* TR/EN: masaüstünde nav barın sağında, mobilde panelin altında. */}
+            {/* TR/EN: masaüstünde nav barın sağında, mobilde panelin altında.
+                Bunlar da düğme değil bağlantı — dil adresin parçası. */}
             {!edit && (
               <div className="mt-4 flex items-center gap-2">
-                {["TR", "EN"].map((d) => (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => onLangChange?.(d)}
-                    className={`flex-1 py-2.5 rounded-lg text-xs font-bold border transition ${
-                      lang === d
-                        ? "bg-[#f97316] border-[#f97316] text-white"
-                        : "border-gray-200 text-gray-600 hover:border-[#f97316] hover:text-[#f97316]"
-                    }`}
-                  >
-                    {d === "TR" ? "Türkçe" : "English"}
-                  </button>
-                ))}
+                <a
+                  href={hedefTr}
+                  hrefLang="tr-TR"
+                  aria-current={!enMi ? "true" : undefined}
+                  className={`flex-1 text-center py-2.5 rounded-lg text-xs font-bold border transition ${
+                    !enMi
+                      ? "bg-[#f97316] border-[#f97316] text-white"
+                      : "border-gray-200 text-gray-600 hover:border-[#f97316] hover:text-[#f97316]"
+                  }`}
+                >
+                  Türkçe
+                </a>
+                <a
+                  href={hedefEn}
+                  hrefLang="en-GB"
+                  aria-current={enMi ? "true" : undefined}
+                  className={`flex-1 text-center py-2.5 rounded-lg text-xs font-bold border transition ${
+                    enMi
+                      ? "bg-[#f97316] border-[#f97316] text-white"
+                      : "border-gray-200 text-gray-600 hover:border-[#f97316] hover:text-[#f97316]"
+                  }`}
+                >
+                  English
+                </a>
               </div>
             )}
 
@@ -1779,7 +1827,7 @@ function HeroBlock({ block, ctx }) {
 
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <a
-              href={edit ? undefined : block.primaryHref}
+              href={edit ? undefined : localeHref(block.primaryHref || "/contact", lang)}
               onClick={(e) => edit && e.preventDefault()}
               className="bg-[#f97316] text-white px-8 py-4 text-center font-bold rounded hover:bg-orange-600 transition shadow-lg"
             >
@@ -1939,7 +1987,7 @@ function RoutesBlock({ block, ctx }) {
                 </div>
                 <EditableText as="a" editable={edit} value={L(card.link, lang)}
                   onChange={(v) => set("cards", block.cards.map((c) => (c.id === card.id ? { ...c, link: mergeLang(c.link, lang, v) } : c)))}
-                  href={edit ? undefined : card.href || "/services"}
+                  href={edit ? undefined : localeHref(card.href || "/services", lang)}
                   onClick={(e) => edit && e.preventDefault()}
                   className="text-[#0f172a] font-bold text-sm hover:text-[#f97316] flex items-center" placeholder="Bağlantı metni" />
               </div>
@@ -2190,7 +2238,7 @@ function FooterBlock({ block, ctx }) {
 
             <div className="mt-6">
               <a
-                href={edit ? undefined : block.brandCtaHref || "/contact"}
+                href={edit ? undefined : localeHref(block.brandCtaHref || "/contact", lang)}
                 onClick={(e) => edit && e.preventDefault()}
                 className="inline-flex items-center gap-2 text-[#f97316] font-bold text-sm hover:text-orange-400 transition"
               >
@@ -2261,7 +2309,7 @@ function FooterBlock({ block, ctx }) {
                     value={L(l.label, lang)}
                     onChange={(v) =>
                       set("links", links.map((x) => (x.id === l.id ? { ...x, label: mergeLang(x.label, lang, v) } : x)))}
-                    href={edit ? undefined : l.href || "#"}
+                    href={edit ? undefined : localeHref(l.href || "#", lang)}
                     onClick={(e) => edit && e.preventDefault()}
                     className="text-white/75 hover:text-[#f97316] transition"
                     placeholder="Baglanti adi"
@@ -2860,7 +2908,7 @@ function CtaBandBlock({ block, ctx }) {
           placeholder="Açıklama"
         />
         <a
-          href={edit ? undefined : block.buttonHref || "#"}
+          href={edit ? undefined : localeHref(block.buttonHref || "#", lang)}
           onClick={(e) => edit && e.preventDefault()}
           className="inline-block px-8 py-3.5 font-bold rounded bg-[#f97316] hover:opacity-90 transition"
         >
@@ -3142,7 +3190,13 @@ function ContactBlock({ block, ctx }) {
                       onChange={(v) =>
                         set("privacyLabel", mergeLang(block.privacyLabel, lang, v))
                       }
-                      href={edit ? undefined : block.privacyHref || "#"}
+                      href={
+                        edit
+                          ? undefined
+                          : lang === "EN" && block.privacyHref === "/gizlilik"
+                            ? "/en/privacy-policy"
+                            : localeHref(block.privacyHref || "#", lang)
+                      }
                       onClick={(e) => edit && e.preventDefault()}
                       className="font-bold text-[#f97316] hover:underline"
                       placeholder="Gizlilik Politikası"

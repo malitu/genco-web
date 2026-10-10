@@ -172,6 +172,94 @@ export function fullAddress() {
   return `${a.street}, ${a.district}/${a.city} – ${a.countryName}`;
 }
 
+/* ========================================================================== *
+ *  Dil (locale) yardımcıları
+ * ========================================================================== *
+ * Dil artık URL'e bağlıdır: Türkçe sayfalar `/services`, İngilizce karşılıkları
+ * `/en/services`. Bu, hem arama motorlarına hem de kullanıcıya aynı adresi
+ * verir; localStorage tabanlı dil seçimi iki sayfaya iki farklı içerik
+ * sunduğu için kaldırıldı.
+ *
+ * Adres eşlemesinin kendisi src/lib/localeYol.js'te yaşar; hem burada hem
+ * blok motorunda aynı dosya okunur — iki kopya birbirinden ayrışır.
+ */
+
+import {
+  TR_YOLLAR as PAGE_PATHS,
+  EN_YOL_FARKLI as PAGE_PATHS_EN,
+  enYol,
+  trYol,
+} from "./localeYol";
+
+export { PAGE_PATHS, PAGE_PATHS_EN };
+
+/** "TR" | "EN" → og:locale değeri. */
+export function localeOg(locale) {
+  return locale === "EN" ? "en_GB" : "tr_TR";
+}
+
+/** "TR" | "EN" → hreflang anahtarı. */
+export function localeHreflang(locale) {
+  return locale === "EN" ? "en-GB" : "tr-TR";
+}
+
+/**
+ * Verilen adresi dile göre karşılığına çevirir.
+ * Çift önek koruması içerir: "/en/x" TR için "/x"e, EN için "/en/x"e döner.
+ */
+export function localePath(locale, yol = "/") {
+  return locale === "EN" ? enYol(yol) : trYol(yol);
+}
+
+/** Sayfa anahtarının İngilizce adresi. */
+export function enPagePath(pageKey) {
+  return enYol(PAGE_PATHS[pageKey]);
+}
+
+/**
+ * Sayfanın tam metadata nesnesini üretir — iki dilli başlık/açıklama,
+ * doğru canonical, karşılıklı hreflang ve Open Graph.
+ * TR ve EN sayfaları aynı fonksiyonu çağırır; ayrım yalnızca `locale`.
+ */
+export function pageMetadata(pageKey, locale) {
+  const sayfa = PAGES[pageKey];
+  if (!sayfa) throw new Error(`Bilinmeyen sayfa anahtarı: ${pageKey}`);
+
+  const en = locale === "EN";
+  const trAdres = localePath("TR", PAGE_PATHS[pageKey]);
+  const enAdres = enPagePath(pageKey);
+  const yol = en ? enAdres : trAdres;
+
+  const title = en ? sayfa.titleEn : sayfa.title;
+  const description = en ? sayfa.descriptionEn : sayfa.description;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: yol,
+      languages: {
+        [localeHreflang("TR")]: trAdres,
+        [localeHreflang("EN")]: enAdres,
+        "x-default": trAdres,
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      url: pageUrl(yol),
+      locale: localeOg(locale),
+      siteName: ORG.shortName,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ORG.image],
+    },
+  };
+}
+
 /** Sayfa URL'si. */
 export function pageUrl(pathname = "/") {
   return `${SITE_URL}${pathname === "/" ? "" : pathname}`;
