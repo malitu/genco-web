@@ -271,8 +271,8 @@ const services = [
         eyebrow: bi("SONUÇ", "OUTCOME"),
         title: bi("Depoya ulaşan ürün", "Product delivered to your door"),
         desc: bi(
-          "Her aşamayı sıfır risk ilkesiyle yönetiyor, ürünün eksiksiz ve hatasız biçimde deponuza ulaşmasını sağlıyoruz. Böylece bürokratik karmaşalarla ve uzun prosedürlerle uğraşmadan ana işinize odaklanıyorsunuz.",
-          "We manage every step on a zero-risk principle and ensure your goods arrive at your warehouse complete and correct — so you stay focused on your core business instead of bureaucracy."
+          "Her aşamayı risk minimizasyonu ilkesiyle yönetiyor, ürünün eksiksiz ve hatasız biçimle deponuza ulaşmasını sağlıyoruz. Böylece bürokratik karmaşalarla ve uzun prosedürlerle uğraşmadan ana işinize odaklanıyorsunuz.",
+          "We manage every step with risk minimisation at the centre and ensure your goods arrive at your warehouse complete and correct — so you stay focused on your core business instead of bureaucracy."
         ),
         note: bi("", ""),
         image: "",

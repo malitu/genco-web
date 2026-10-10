@@ -35,9 +35,9 @@ export const ORG = {
   },
   sameAs: [],
   description:
-    "İzmir merkezli ithalat ve ihracat operasyon firması. Vasıflı çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal, otomotiv yan sanayi ve femtech sektörlerinde ürün kaynağından gümrükleme ve teslimata kadar uçtan uca operasyon yönetimi.",
+    "İzmir merkezli ithalat ve ihracat operasyon firması. Vasıflı çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal, ambalaj ve femtech sektörlerinde ürün kaynağından gümrükleme ve teslimata kadar uçtan uca operasyon yönetimi.",
   descriptionEn:
-    "Izmir-based import and export operations company. We manage the entire chain from product sourcing through customs clearance to delivery across engineering steel, yachting and marine equipment, seed trade, medical, automotive supply chain and femtech sectors.",
+    "Izmir-based import and export operations company. We manage the entire chain from product sourcing through customs clearance to delivery across engineering steel, yachting and marine equipment, seed trade, medical, packaging and femtech sectors.",
   slogan: "Rotanızı dünyaya çevirin, biz pusulanız olalım.",
   sloganEn: "Take your business around the world — we'll be your compass.",
   areasServed: ["Türkiye", "Avrupa", "Orta Doğu", "Afrika", "Asya", "Amerika"],
@@ -50,9 +50,9 @@ export const PAGES = {
     title: "GENCO — Türkiye'deki Uluslararası Ticaret Ekibiniz",
     titleEn: "GENCO — Your International Trade Team in Turkey",
     description:
-      "2008'den beri İzmir'den ithalat ve ihracat operasyonlarını yürütüyoruz. Çelik, denizcilik, medikal, tohumculuk, otomotiv ve femtech sektörlerinde ürün kaynağından gümrükleme ve teslimata kadar tüm zincir bizim sorumluluğumuzda.",
+      "2008'den beri İzmir'den ithalat ve ihracat operasyonlarını yürütüyoruz. Çelik, denizcilik, medikal, tohumculuk, ambalaj ve femtech sektörlerinde ürün kaynağından gümrükleme ve teslimata kadar tüm zincir bizim sorumluluğumuzda.",
     descriptionEn:
-      "Since 2008 we have run import and export operations from Izmir. Across steel, marine, medical, seed trade, automotive and femtech sectors, the entire chain from sourcing to delivery is our responsibility.",
+      "Since 2008 we have run import and export operations from Izmir. Across steel, marine, medical, seed trade, packaging and femtech sectors, the entire chain from sourcing to delivery is our responsibility.",
   },
   services: {
     title: "İthalat & İhracat Hizmetleri — Anahtar Teslim Operasyon",
@@ -66,9 +66,9 @@ export const PAGES = {
     title: "Sektörlerimiz — Çelik, Denizcilik, Medikal, Ambalaj, Tohum, Femtech",
     titleEn: "Our Sectors — Steel, Marine, Medical, Packaging, Seed, Femtech",
     description:
-      "Altı ana sektörde tescilli teknik bilgi ve yerleşik alıcı ağları: vasıflı çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal ve cerrahi sarf, otomotiv yan sanayi, ambalaj ve femtech.",
+      "Altı ana sektörde tescilli teknik bilgi ve yerleşik alıcı ağları: vasıflı çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal ve cerrahi sarf, ambalaj ve femtech.",
     descriptionEn:
-      "Proprietary technical knowledge and established buyer networks across six sectors: engineering steel, yachting and marine equipment, seed trade, medical and surgical consumables, automotive supply chain, packaging and femtech.",
+      "Proprietary technical knowledge and established buyer networks across six sectors: engineering steel, yachting and marine equipment, seed trade, medical and surgical consumables, packaging and femtech.",
   },
   caseStudies: {
     title: "Vaka Analizleri — Sektör, Pazar ve Kapsam",
