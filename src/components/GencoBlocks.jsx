@@ -961,6 +961,18 @@ export const FOOTER_DEFAULTS = {
   linksTitle: bi("Bağlantılar", "Links"),
   /* --- arka plan görseli (boş bırakılırsa düz koyu zemin) --- */
   bgImage: "",
+  /* --- sosyal / kimlik bağlantıları (alt bilgi alt şeridi) --- */
+  // Boş bırakılabilir. Panelden eklenip çıkarılabilir; sosyal medya hesapları
+  // şirket kimliğini güçlendirir (arama motorları ve AI asistanları bunları
+  // sameAs üzerinden de doğrular).
+  socials: [
+    {
+      id: "soc_linkedin",
+      label: bi("LinkedIn", "LinkedIn"),
+      url: "https://tr.linkedin.com/company/genco-ithalat-ihracat",
+      icon: "linkedin",
+    },
+  ],
   /* --- alt şerit --- */
   rights: bi(
     "© 2026 Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. Tüm hakları saklıdır.",
@@ -1981,6 +1993,14 @@ function FootIcon({ name, className = "w-4 h-4" }) {
       </>
     ),
     arrow: <path d="M4 10h12m-4.5-4.5L16 10l-4.5 4.5" {...p} />,
+    linkedin: (
+      <>
+        <rect x="2.5" y="2.5" width="15" height="15" rx="2.5" {...p} />
+        <path d="M6.5 8.8v5.4" {...p} />
+        <circle cx="6.5" cy="6.2" r="1" {...p} />
+        <path d="M10.5 14.2V8.8M10.5 11c0-1.2.9-2.2 2.1-2.2s2.1 1 2.1 2.2v3.2" {...p} />
+      </>
+    ),
   };
   return (
     <svg viewBox="0 0 20 20" className={className} aria-hidden="true">
@@ -1992,6 +2012,7 @@ function FootIcon({ name, className = "w-4 h-4" }) {
 function FooterBlock({ block, ctx }) {
   const { set, edit, lang } = ctx;
   const links = Array.isArray(block.links) ? block.links : [];
+  const socials = Array.isArray(block.socials) ? block.socials : [];
   const tel = L(block.footerPhone, lang).replace(/[^\d+]/g, "");
   const mail = L(block.footerEmail, lang);
 
@@ -2129,9 +2150,49 @@ function FooterBlock({ block, ctx }) {
         </div>
 
         {/* ---------- alt serit ---------- */}
-        <div className="mt-14 pt-6 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs text-white/45">
+        <div className="mt-14 pt-6 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs text-white/45">
           <EditableText as="div" editable={edit} value={L(block.rights, lang)}
             onChange={(v) => set("rights", mergeLang(block.rights, lang, v))} placeholder="Telif" />
+
+          {/* Sosyal / kimlik bağlantıları */}
+          {socials.length > 0 && (
+            <div className="flex items-center gap-2">
+              {socials.map((s) => (
+                <a
+                  key={s.id}
+                  href={edit ? undefined : s.url}
+                  onClick={(e) => edit && e.preventDefault()}
+                  target="_blank"
+                  rel="noopener noreferrer me"
+                  title={L(s.label, lang)}
+                  aria-label={L(s.label, lang)}
+                  className="inline-grid place-items-center h-9 w-9 rounded-md border border-white/15 text-white/60 hover:text-[#f97316] hover:border-[#f97316]/60 transition"
+                >
+                  <FootIcon name={s.icon || "arrow"} className="w-4 h-4" />
+                </a>
+              ))}
+              {edit && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    set("socials", [
+                      ...socials,
+                      {
+                        id: `soc_${Math.random().toString(36).slice(2, 7)}`,
+                        label: bi("Yeni bağlantı", "New link"),
+                        url: "https://",
+                        icon: "arrow",
+                      },
+                    ]);
+                  }}
+                  className="text-[11px] font-bold text-white/40 hover:text-[#f97316]"
+                >
+                  + bağlantı ekle
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </footer>
