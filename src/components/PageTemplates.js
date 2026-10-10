@@ -838,165 +838,185 @@ const insights = [
  *  Hakkımızda — /about
  * ========================================================================== */
 
+// /about sablonu: kurulus hikayesi, calisma bicimi ve sorumluluk
+// sinirlari acikca yazilir.
+//
+// NOT — Yonetici profili: Brief'te istenen "Ali Tuncdamar" bolumu buraya
+// eklenmedi. Gorevi, calisma yillari ve fotografi dogrulanmadan yayinlanan
+// metin yaniltici olur. Bilgiler teyit edildiginde panelden bu bolum
+// eklenebilir (nav → footer arasi feature blogu).
 const about = [
   nav(),
   header(
-    { tr: "Kurumsal Kimlik & Vizyon", en: "Corporate Identity & Vision" },
+    { tr: "HAKKIMIZDA", en: "ABOUT US" },
     {
-      tr: "Analiz yön gösterir. Uygulama ticareti büyütür.",
-      en: "Analysis guides. Execution grows trade.",
+      tr: "2008'den Beri Uluslararası Ticaretin İçindeyiz",
+      en: "In International Trade Since 2008",
     },
     {
-      tr: "Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. olarak şirketlere dışarıdan rapor sunan pasif bir danışmanlık kurumu değiliz; küresel ticaret ağlarında sizin adınıza masaya oturan ve sahada operasyon yürüten bir iş ortağıyız.",
-      en: "As Genco Import Export Medical Products Industry and Trading Co. Ltd., we are not a passive consultancy handing over outside reports; we are a business partner who sits at the table on your behalf and runs operations on the ground.",
+      tr: "GENCO, 2008 yılında İzmir'de ithalat ve ihracat alanında faaliyet göstermek üzere kuruldu.\n\nBugün üreticilerin dış pazarlara ulaşmasına, uluslararası alıcıların Türkiye'den tedarik yapmasına ve markaların yeni iş ortakları geliştirmesine destek oluyoruz. Çalışmalarımızı araştırma, iletişim ve operasyon takibini bir araya getirerek yürütüyoruz.",
+      en: "GENCO was established in 2008 in Izmir to operate in import and export.\n\nToday we support manufacturers in reaching new markets, international buyers in sourcing from Turkey, and brands in developing new business partners. We carry out our work by bringing research, communication and operational follow-up together.",
     }
   ),
 
-  /* ---- Operasyon merkezi bandı ---- */
   media(
     "tpl_about_band",
     "row",
     [
       {
         url: "/img/about-band-operations.webp",
-        tr: "İzmir Bornova'daki operasyon merkezimiz: ofis ve depo aynı çatı altında, sevkiyat planlaması sahadan başlar.",
-        en: "Our operations centre in Bornova, Izmir: office and warehouse under one roof, with shipment planning starting on site.",
+        tr: "Operasyon sahada: araştırma sonucunu temas, görüşme ve sipariş takibine taşırız.",
+        en: "Operations in the field: we carry the research result through to contact, meetings and order follow-up.",
       },
     ],
-    null
+    { tr: "Söz değil, çalışma biçimi", en: "Not promises, but a working method" }
   ),
 
-  /* ---- Kurum bilgileri: sayılar doğrulanana kadar boş kalır ---- */
-  {
-    ...STATS_BAND_DEFAULTS,
-    id: "tpl_about_facts",
-    heading: bi("", ""),
-    items: [
-      { id: "tpl_about_f1", value: bi("2008", "2008"), label: bi("Kuruluş yılı", "Founded") },
-      { id: "tpl_about_f2", value: bi("18", "18"), label: bi("Yıllık deneyim", "Years of experience") },
-      { id: "tpl_about_f3", value: bi("48+", "48+"), label: bi("Aktif pazar sayısı", "Active markets") },
-      { id: "tpl_about_f4", value: bi("1000+", "1000+"), label: bi("Tamamlanan proje", "Completed projects") },
-    ],
-  },
-
+  /* ---- Neden GENCO -------------------------------------------------------- */
   feature(
-    "tpl_about_intro",
-    { tr: "İzmir'den Küresel Arenaya", en: "From Izmir to the Global Arena" },
+    "tpl_about_why",
+    { tr: "NEDEN GENCO?", en: "WHY GENCO?" },
     {
-      tr: "Neden buradayız",
-      en: "Why We Exist",
+      tr: "Uluslararası ticarette doğru firmayı bulmak tek başına yeterli değildir",
+      en: "Finding the right company is not enough on its own",
     },
     {
-      tr: "İzmir Bornova merkezli kurulan GENCO; demir çelikten medikal malzemelere, denizcilikten tarım ve tohumculuğa, ambalajdan yenilikçi femtech teknolojilerine kadar geniş bir dikey yelpazede tescilli teknik bilgiye ve yerleşik alıcı ağlarına sahiptir.\n\nBu bilgi ve ağları müşterimiz adına sahada kullanıyoruz: doğrudan karar vericiye ulaşmak, teknik şartname uyumunu yerinde doğrulamak ve sevkiyat kapanışına kadar süreci yönetmek.",
-      en: "Founded in Izmir Bornova, GENCO holds proprietary technical knowledge and established buyer networks across a wide vertical spectrum: from steel and metals to medical supplies, marine, agriculture, packaging, and innovative femtech technologies.\n\nWe put that knowledge and those networks to work on the ground on our clients' behalf: reaching decision-makers directly, verifying technical specification compliance on site, and managing the process through to shipment closure.",
+      tr: "Teknik beklentilerin anlaşılması, tekliflerin karşılaştırılması, görüşmelerin takip edilmesi ve siparişin doğru bilgilerle ilerlemesi gerekir. GENCO bu aşamalar arasındaki koordinasyonu sağlar. Kararlaştırılan kapsamda müşterimizin ekibinin bir uzantısı olarak çalışır; üretici, alıcı ve hizmet sağlayıcılar arasındaki iletişimi takip ederiz.",
+      en: "Technical expectations have to be understood, quotations compared, meetings followed up and the order progressed with accurate information. GENCO provides the coordination between these stages. Within the agreed scope we work as an extension of our client's team, and we follow up the communication between manufacturers, buyers and service providers.",
     },
-    [],
-    { tr: "Ölçütümüz", en: "Our Standard" },
+    [
+      { tr: "Teknik beklentilerin birlikte netleştirilmesi", en: "Clarifying technical expectations together" },
+      { tr: "Tekliflerin aynı kapsam üzerinden karşılaştırılması", en: "Comparing quotations on the same scope" },
+      { tr: "Görüşme ve teklif takibi", en: "Meeting and quotation follow-up" },
+      { tr: "Sipariş ve sevkiyat bilgilerinin takibi", en: "Follow-up on order and shipment information" },
+    ],
     {
-      tr: "Küresel ticarette başarı, genel listelerle vakit kaybetmek değil; doğru teknik standartları bilmek, doğrudan karar vericiyle temas kurmak ve operasyonun her aşamasında sahada var olmaktır.",
-      en: "Success in global trade is not about wasting time on generic lists; it is knowing the right technical standards, reaching decision-makers directly, and being on the ground at every stage of the operation.",
+      tr: "Çalışma yaklaşımımız",
+      en: "How we approach the work",
+    },
+    {
+      tr: "Sorumlulukları açık tanımlarız: GENCO'nun yürüteceği işleri, müşterinin karar vermesi gereken konuları ve uzman kuruluşların sorumluluklarını başlangıçta belirleriz.",
+      en: "We define responsibilities clearly: at the outset we establish what GENCO will handle, what the client needs to decide, and which responsibilities belong to specialist bodies.",
     }
   ),
 
-  /* ---- Çalışma biçimimiz: malzeme seçimi ve teknik inceleme ---- */
-  media(
-    "tpl_about_details",
-    "row",
-    [
-      {
-        url: "/img/about-detail-samples.webp",
-        tr: "Ürün ve malzeme seçimi: müşterinin hedef pazarı ve raf ömrü beklentisine göre numune ve teknik dosya birlikte belirlenir.",
-        en: "Product and material selection: samples and technical documentation are defined together against the buyer's target market and shelf-life expectations.",
-      },
-      {
-        url: "/img/about-detail-engineering.webp",
-        tr: "Mühendislik incelemesi: çizim, ölçü ve malzeme uyumu masa başında değil, numune üzerinde doğrulanır.",
-        en: "Engineering review: drawing, dimension and material compatibility are verified on the sample, not at the desk.",
-      },
-    ],
-    null
-  ),
-
+  /* ---- Çalışma yaklaşımımız: dört adım ----------------------------------- */
   {
-    ...CARD_GRID_DEFAULTS,
-    id: "tpl_about_steps",
-    heading: bi("The GENCO Method — Dört Aşama", "The GENCO Method — Four Steps"),
-    sub: bi(
-      "Uluslararası ticareti masada bırakmıyoruz; araştırmadan kapanışa kadar dört aşamalı bir icraat metodolojisiyle ilerliyoruz.",
-      "We don't leave international trade at the table; we run a four-step execution methodology from research through to closure."
-    ),
-    columns: 2,
-    cards: [
+    ...ARTICLE_LIST_DEFAULTS,
+    id: "tpl_about_approach",
+    heading: bi("Çalışma Yaklaşımımız", "Our Working Approach"),
+    articles: [
       {
-        id: "tpl_about_step1",
-        eyebrow: bi("01 / RESEARCH", "01 / RESEARCH"),
-        title: bi(
-          "Araştırma & Hedef Pazar Analizi",
-          "Research & Target Market Analysis"
+        id: "tpl_about_ap1",
+        eyebrow: bi("01", "01"),
+        category: bi("İHTİYAÇ", "NEED"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Önce ihtiyacı netleştiririz", "We clarify the need first"),
+        body: bi(
+          "Ürünü, hedef ülkeyi, teknik beklentileri ve ticari koşulları anlamadan araştırmaya başlamayız.",
+          "We do not begin research before we understand the product, the target country, the technical expectations and the commercial terms."
         ),
-        desc: bi(
-          "Genel listelerle vakit kaybetmiyoruz. Tescilli ticaret istihbarat ağlarımız üzerinden ürününüzün küresel pazardaki en doğru alıcılarını nokta atışı tespit ediyor; EN, ASTM ve sektörel teknik şartnameleri eksiksiz analiz ederek stratejimizi kuruyoruz.",
-          "We don't waste time with generic lists. Through our proprietary trade intelligence networks, we pinpoint the right buyers for your product in the global market and build our strategy by thoroughly analysing EN, ASTM, and sectoral technical specs."
-        ),
-        note: bi("", ""),
-        image: "",
       },
       {
-        id: "tpl_about_step2",
-        eyebrow: bi("02 / CONNECT", "02 / CONNECT"),
-        title: bi(
-          "Stratejik B2B İletişim (Connect)",
-          "Strategic B2B Communication (Connect)"
+        id: "tpl_about_ap2",
+        eyebrow: bi("02", "02"),
+        category: bi("KARŞILAŞTIRMA", "COMPARISON"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Seçenekleri karşılaştırılabilir hale getiririz", "We make options comparable"),
+        body: bi(
+          "Firma isimleriyle birlikte ürün uygunluğu, kapasite bilgileri, fiyat, teslim süresi ve açık konuları değerlendiririz.",
+          "Alongside company names, we assess product suitability, capacity data, price, lead time and open points."
         ),
-        desc: bi(
-          "Aracıları ve alt kademeleri atlıyoruz. Doğrulanmış altyapılarımızla doğrudan C-level karar vericilere ulaşıyor; ürününüzün teknik avantajlarını ve tolerans üstünlüklerini en doğru dille doğrudan masaya taşıyoruz.",
-          "We skip intermediaries and lower tiers. Using our verified infrastructure, we reach C-level decision-makers directly and bring your product's technical advantages and tolerance superiorities straight to the table."
-        ),
-        note: bi("", ""),
-        image: "",
       },
       {
-        id: "tpl_about_step3",
-        eyebrow: bi("03 / EXECUTE", "03 / EXECUTE"),
-        title: bi(
-          "Sahada İcraat ve Müzakere (Execute)",
-          "Field Execution & Negotiation (Execute)"
+        id: "tpl_about_ap3",
+        eyebrow: bi("03", "03"),
+        category: bi("TAKİP", "FOLLOW-UP"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Görüşmeleri ve sonraki adımları takip ederiz", "We follow up on meetings and next steps"),
+        body: bi(
+          "İlk teması bir sonuç olarak görmeyiz. Teklif, numune, teknik soru ve ticari görüşmelerin ilerlemesini düzenli takip ederiz.",
+          "We do not treat first contact as an outcome. We follow up regularly on the progress of quotations, samples, technical questions and commercial meetings."
         ),
-        desc: bi(
-          "Rapor sunup çekilmiyoruz. Müzakerelerin yürütülmesi, ticari tekliflerin optimize edilmesi, üretim tesislerinde yerinde kapasite ve kalite denetimlerinin yapılması ile sevkiyat kapanışına kadar tüm operasyonel süreci bizzat yönetiyor, riski sıfırlıyoruz.",
-          "We don't just deliver reports and walk away. We personally manage the entire operational process from conducting negotiations and optimizing commercial offers to on-site capacity and quality audits in manufacturing facilities until shipment closure, eliminating risk."
-        ),
-        note: bi("", ""),
-        image: "",
       },
       {
-        id: "tpl_about_step4",
-        eyebrow: bi("04 / GROW", "04 / GROW"),
-        title: bi("Sürdürülebilir Büyüme (Grow)", "Sustainable Growth (Grow)"),
-        desc: bi(
-          "Tek seferlik satışlar değil, küresel ölçekte kalıcı distribütörlükler ve güçlü bayi ağları kuruyoruz. Markanızın uluslararası pazarlarda uzun vadeli, karlı ve sürdürülebilir bir ticari hacme ulaşmasını sağlayarak köprü olmaya devam ediyoruz.",
-          "We build permanent distributorships and strong dealer networks on a global scale, not just one-off sales. We continue to act as a bridge ensuring your brand reaches a long-term, profitable, and sustainable commercial volume in international markets."
+        id: "tpl_about_ap4",
+        eyebrow: bi("04", "04"),
+        category: bi("KAPSAM", "SCOPE"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Sorumlulukları açık tanımlarız", "We define responsibilities clearly"),
+        body: bi(
+          "GENCO'nun yürüteceği işleri, müşterinin karar vermesi gereken konuları ve uzman kuruluşların sorumluluklarını başlangıçta belirleriz.",
+          "At the outset we establish what GENCO will handle, what the client needs to decide, and which responsibilities belong to specialist bodies."
         ),
-        note: bi("", ""),
-        image: "",
       },
     ],
   },
+
+  /* ---- Yerel koordinasyon ------------------------------------------------- */
+  media(
+    "tpl_about_local",
+    "split",
+    [
+      {
+        url: "/img/about-detail-samples.webp",
+        tr: "Numune çalışmaları: teknik değerlendirme gerektiren ürünlerde numune planlaması ve takibi.",
+        en: "Sample work: planning and tracking samples for products requiring technical evaluation.",
+      },
+      {
+        url: "/img/about-detail-engineering.webp",
+        tr: "Üretici ziyaretleri: kapasite ve üretim koşullarının yerinde görülmesi.",
+        en: "Factory visits: seeing capacity and production conditions on site.",
+      },
+    ],
+    { tr: "Türkiye'de Yerel Koordinasyon, Uluslararası İletişim", en: "Local Coordination in Turkey, International Communication" },
+    {
+      tr: "İzmir merkezli yapımızla Türkiye'deki üreticiler ve hizmet sağlayıcılarla iletişim kuruyor; uluslararası müşterilerimizin taleplerini Türkçe ve İngilizce takip ediyoruz. Ürün ve proje ihtiyacına göre üretici ziyaretleri, numune çalışmaları ve sevkiyat hazırlıklarını koordine ediyoruz.",
+      en: "From our base in Izmir we liaise with manufacturers and service providers in Turkey, and follow the requirements of our international clients in Turkish and English. Depending on the product and project, we coordinate factory visits, sample work and shipment preparation.",
+    }
+  ),
+
+  /* ---- Çalışma modeli ----------------------------------------------------- */
+  feature(
+    "tpl_about_model",
+    { tr: "ÇALIŞMA MODELİ", en: "WORKING MODEL" },
+    {
+      tr: "Projenize Uygun Bir Çalışma Modeli",
+      en: "A Working Model That Suits Your Project",
+    },
+    {
+      tr: "Her şirketin ihtiyacı aynı değildir. Bazı müşterilerimiz belirli bir ülkede alıcı araştırmasına, bazıları bir ürün için üretici bulmaya, bazıları ise düzenli ihracat ve sipariş takibine ihtiyaç duyar.",
+      en: "Every company's needs differ. Some clients need buyer research in a specific country, some need to find a manufacturer for a product, and some need ongoing export and order follow-up.",
+    },
+    [
+      { tr: "Belirli bir ülkede alıcı araştırması", en: "Buyer research in a specific country" },
+      { tr: "Bir ürün grubu için üretici bulma", en: "Finding a manufacturer for a product group" },
+      { tr: "Düzenli ihracat ve sipariş takibi", en: "Ongoing export and order follow-up" },
+      { tr: "Tek seferlik, tanımlanmış kapsamlı proje", en: "A one-off project with a defined scope" },
+    ],
+    {
+      tr: "Çalışma modelimizi bu ihtiyaca göre oluştururuz.",
+      en: "We build the working model around that need.",
+    },
+    { tr: "", en: "" }
+  ),
+
   cta(
     "tpl_about_cta",
-    { tr: "BİZİMLE ÇALIŞIN", en: "WORK WITH US" },
+    { tr: "TANIŞALIM", en: "LET'S TALK" },
+    { tr: "GENCO ile Tanışın", en: "Meet GENCO" },
     {
-      tr: "Küresel Ticarette Güçlü Bir Ortak Arıyorsanız",
-      en: "Looking for a Strong Partner in Global Trade?",
+      tr: "Ürününüzü, hedef pazarınızı ve ihtiyaç duyduğunuz desteği paylaşın. Size uygun çalışma kapsamını birlikte belirleyelim.",
+      en: "Share your product, your target market and the support you need. Let us define the right scope of work together.",
     },
-    {
-      tr: "İzmir Bornova merkezli operasyon gücümüzle tanışmak ve projelerinizi görüşmek için bizimle iletişime geçin.",
-      en: "Contact us to meet our Izmir Bornova-based operational strength and discuss your projects.",
-    },
-    { tr: "İletişime Geçin", en: "Get in Touch" }
+    { tr: "Talebimi Gönder", en: "Send My Request" }
   ),
   footer(),
-];
+];;
 
 /* ========================================================================== *
  *  İletişim — /contact
@@ -1005,19 +1025,47 @@ const about = [
 const contact = [
   nav(),
   header(
-    { tr: "İletişim & İş Birliği", en: "Contact & Collaboration" },
+    { tr: "İLETİŞİM", en: "CONTACT" },
     {
-      tr: "Projelerinizi Sahada Birlikte Yönetelim",
-      en: "Let's Manage Your Projects Together on the Ground",
+      tr: "İhracat veya Tedarik İhtiyacınızı Paylaşın",
+      en: "Share Your Export or Sourcing Requirement",
     },
     {
-      tr: "İhracatınızı büyütmek, Türkiye'den güvenli tedarik sağlamak veya pazarınıza yeni bir ortak aramak için bizimle doğrudan iletişime geçin.",
-      en: "Contact us directly to scale your exports, secure sourcing from Turkey, or find a new partner for your market.",
+      tr: "Yeni bir pazara ulaşmak, Türkiye'den üretici bulmak veya mevcut bir siparişi daha düzenli takip etmek istiyorsanız projenizi bize anlatın.\n\nÜrününüzü, hedef ülkenizi ve ihtiyaç duyduğunuz desteği öğrendikten sonra uygun çalışma kapsamını değerlendirelim.",
+      en: "If you are looking to reach a new market, find a manufacturer in Turkey, or have an existing order followed up more regularly, tell us about your project.\n\nOnce we understand your product, your target country and the support you need, we will assess the appropriate scope of work.",
     }
   ),
+
+  /* ---- Size nasıl destek olabiliriz ---------------------------------------- */
+  feature(
+    "tpl_ct_help",
+    { tr: "KAPSAM", en: "SCOPE" },
+    { tr: "Size Nasıl Destek Olabiliriz?", en: "How We Can Help" },
+    {
+      tr: "Çalışma kapsamını ihtiyacınıza göre belirli bir iş üzerinden veya daha geniş bir süreç üzerinden tanımlarız.",
+      en: "We define the scope around your need, either for a specific piece of work or across a broader process.",
+    },
+    [
+      { tr: "İhracat geliştirme ve alıcı araştırması", en: "Export development and buyer research" },
+      { tr: "Türkiye'den üretici ve ürün tedariki", en: "Manufacturer and product sourcing from Turkey" },
+      { tr: "Distribütör veya yerel iş ortağı araştırması", en: "Distributor or local partner research" },
+      { tr: "İthalat ve sipariş koordinasyonu", en: "Import and order coordination" },
+      { tr: "Ambalaj geliştirme ve üretim tedariki", en: "Packaging development and production sourcing" },
+      { tr: "Diğer uluslararası ticaret projeleri", en: "Other international trade projects" },
+    ],
+    {
+      tr: "Talebinizde Hangi Bilgiler Bulunmalı?",
+      en: "What Information Should Your Request Include?",
+    },
+    {
+      tr: "Daha sağlıklı bir ilk değerlendirme için mümkünse şu bilgileri paylaşın: Şirketiniz ve faaliyet alanınız · Ürün veya ürün grubu · Hedef ülke ya da teslim yeri · Yaklaşık miktar veya proje kapsamı · Teknik şartname, çizim veya ürün bağlantısı · Hedef takvim ve ihtiyaç duyduğunuz destek.\n\nTüm bilgiler henüz hazır değilse mevcut durumunuzu yazabilirsiniz.",
+      en: "For a more useful first assessment, please share where possible: your company and field of activity · the product or product group · the target country or delivery location · approximate quantity or project scope · technical specification, drawing or a product link · your target timeline and the support you need.\n\nIf not everything is ready yet, simply describe your current situation.",
+    }
+  ),
+
   { ...CONTACT_DEFAULTS, id: "tpl_contact_body" },
   footer(),
-];
+];;
 
 /* ========================================================================== *
  *  Gizlilik Politikası (KVKK) — /gizlilik

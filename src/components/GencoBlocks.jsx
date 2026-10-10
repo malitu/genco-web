@@ -916,6 +916,18 @@ export const CONTACT_DEFAULTS = {
   emailLabel: bi("Kurumsal E-Posta", "Corporate Email"),
   phoneLabel: bi("Telefon Numarası", "Phone Number"),
   messageLabel: bi("Proje Detayları ve Talebiniz", "Project Details & Inquiry"),
+  // Teklif hazırlamayı kolaylaştıran, ZORUNLU OLMAYAN bağlama alanları.
+  companyLabel: bi("Şirket / Web Sitesi", "Company / Website"),
+  countryLabel: bi("Hedef Ülke veya Teslim Yeri", "Target Country or Delivery Location"),
+  serviceLabel: bi("İhtiyaç Duyduğunuz Hizmet", "Service You Need"),
+  serviceOptions: [
+    { id: "svc_export", label: bi("Dış kaynaklı ihracat", "Outsourced export") },
+    { id: "svc_sourcing", label: bi("Türkiye'den tedarik", "Sourcing from Turkey") },
+    { id: "svc_buyer", label: bi("Alıcı ve distribütör geliştirme", "Buyer and distributor development") },
+    { id: "svc_import", label: bi("İthalat ve sevkiyat koordinasyonu", "Import and shipment coordination") },
+    { id: "svc_packaging", label: bi("Ambalaj geliştirme ve üretim", "Packaging development and production") },
+    { id: "svc_other", label: bi("Diğer", "Other") },
+  ],
   submitLabel: bi("Mesajı Gönder", "Send Message"),
   // KVKK aydınlatma metni: form gönderilmeden önce onay zorunludur.
   consent: bi(
@@ -3091,6 +3103,10 @@ function ContactBlock({ block, ctx }) {
       email: String(fd.get("email") || "").trim(),
       phone: String(fd.get("phone") || "").trim(),
       message: String(fd.get("message") || "").trim(),
+      // Teklif hazırlamaya yardımcı bağlama alanları (isteğe bağlı).
+      company: String(fd.get("company") || "").trim(),
+      service: String(fd.get("service") || "").trim(),
+      country: String(fd.get("country") || "").trim(),
       consent: fd.get("kvkk") === "on",
       // Gizli tuzak: botlar doldurur, insanlar göremez.
       website: String(fd.get("website") || ""),
@@ -3128,6 +3144,9 @@ function ContactBlock({ block, ctx }) {
       email: "ornek@sirketiniz.com",
       phone: "Örn. +90 5XX XXX XX XX",
       message: "Talebinizi birkaç cümleyle özetleyin",
+      company: "Şirket adı ve web sitesi (isteğe bağlı)",
+      country: "Hedef ülke veya teslim yeri (isteğe bağlı)",
+      serviceNone: "Seçiniz (isteğe bağlı)",
       required: "Zorunlu alan",
       sending: "Gönderiliyor…",
       send: L(block.submitLabel, lang),
@@ -3137,6 +3156,9 @@ function ContactBlock({ block, ctx }) {
       email: "you@company.com",
       phone: "e.g. +90 5XX XXX XX XX",
       message: "Briefly describe your request",
+      company: "Company name and website (optional)",
+      country: "Target country or delivery location (optional)",
+      serviceNone: "Please select (optional)",
       required: "Required",
       sending: "Sending…",
       send: L(block.submitLabel, lang),
@@ -3192,6 +3214,65 @@ function ContactBlock({ block, ctx }) {
                     Website
                     <input type="text" name="website" tabIndex={-1} autoComplete="off" />
                   </label>
+                </div>
+
+                {/* --- Teklif hazırlama bağlamı -----------------------------------
+                    Zorunlu değil: ziyaretçi henüz ürününü netleştirmemiş
+                    olabilir. Dolu geldiğinde ilk değerlendirme çok hızlanır. */}
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div>
+                    <label
+                      htmlFor="company"
+                      className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2"
+                    >
+                      {L(block.companyLabel, lang)}
+                    </label>
+                    <input
+                      id="company"
+                      type="text"
+                      name="company"
+                      autoComplete="organization"
+                      placeholder={h.company}
+                      className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:border-[#f97316] text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="country"
+                      className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2"
+                    >
+                      {L(block.countryLabel, lang)}
+                    </label>
+                    <input
+                      id="country"
+                      type="text"
+                      name="country"
+                      placeholder={h.country}
+                      className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:border-[#f97316] text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="service"
+                    className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2"
+                  >
+                    {L(block.serviceLabel, lang)}
+                  </label>
+                  <select
+                    id="service"
+                    name="service"
+                    defaultValue=""
+                    className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:border-[#f97316] text-sm bg-white"
+                  >
+                    <option value="">{h.serviceNone}</option>
+                    {(block.serviceOptions || []).map((o, i) => (
+                      <option key={o.id || i} value={L(o.label, lang)}>
+                        {L(o.label, lang)}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>

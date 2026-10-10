@@ -90,6 +90,12 @@ export async function POST(request) {
     email: clean(body.email, 160).toLowerCase(),
     phone: clean(body.phone, 40),
     message: clean(body.message, 4000),
+    // Teklif hazırlamak için gerekli bağlama alanları. Zorunlu DEĞİL:
+    // ziyaretçi henüz ürününü netleştirmemiş olabilir. Boş gönderilebilir,
+    // dolu gönderildiğinde ilk değerlendirme hızlanır.
+    company: clean(body.company, 160),
+    service: clean(body.service, 120),
+    country: clean(body.country, 120),
     consent: body.consent === true,
     notRobot: body.notRobot === true,
     captchaToken: typeof body.captchaToken === "string" ? body.captchaToken : "",
@@ -205,8 +211,14 @@ export async function POST(request) {
           "---",
           `Telefon: ${data.phone}`,
           `Gönderen: ${data.name} <${data.email}>`,
+          // Bağlama alanları — teklif hazırlarken doğrudan kullanılır.
+          data.company ? `Şirket / web sitesi: ${data.company}` : null,
+          data.service ? `İhtiyaç duyulan hizmet: ${data.service}` : null,
+          data.country ? `Hedef ülke: ${data.country}` : null,
           "Kaynak: genco web sitesi iletişim formu",
-        ].join("\n"),
+        ]
+          .filter(Boolean)
+          .join("\n"),
         botcheck: "",
       }),
     });
