@@ -12,6 +12,9 @@
 export const TR_YOLLAR = {
   home: "/",
   services: "/services",
+  outsourcedExport: "/services/outsourced-export",
+  turkeySourcing: "/services/turkey-sourcing",
+  distributorDevelopment: "/services/distributor-development",
   industries: "/industries",
   caseStudies: "/case-studies",
   insights: "/insights",

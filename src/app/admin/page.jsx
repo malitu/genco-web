@@ -67,6 +67,9 @@ const MEDIA_COLLECTION = "genco_media";
 const STATIC_PAGES = [
   { id: "home", label: "Ana Sayfa", live: true },
   { id: "services", label: "Hizmetler" },
+  { id: "outsourcedExport", label: "Hizmet — Dış Kaynaklı İhracat" },
+  { id: "turkeySourcing", label: "Hizmet — Türkiye'den Tedarik" },
+  { id: "distributorDevelopment", label: "Hizmet — Alıcı ve Distribütör" },
   { id: "industries", label: "Sektörler" },
   { id: "caseStudies", label: "Vaka Analizleri" },
   { id: "insights", label: "Sektör Analizleri" },
@@ -76,7 +79,13 @@ const STATIC_PAGES = [
 ];
 
 // Anahtar → canlı adres parçası. Yeni sayfalarda anahtar zaten adrestir.
-const PAGE_PATHS = { home: "", caseStudies: "case-studies" };
+const PAGE_PATHS = {
+  home: "",
+  caseStudies: "case-studies",
+  outsourcedExport: "services/outsourced-export",
+  turkeySourcing: "services/turkey-sourcing",
+  distributorDevelopment: "services/distributor-development",
+};
 
 // Every sayfanın başlangıç şablonu. Ana sayfa GencoBlocks içinde, alt sayfalar
 // src/components/PageTemplates.js içinde tanımlıdır. Böylece canlı site ile
@@ -85,6 +94,9 @@ const PAGE_PATHS = { home: "", caseStudies: "case-studies" };
 const DEFAULT_PAGES = {
   home: DEFAULT_SITE_BLOCKS,
   services: PAGE_TEMPLATES.services,
+  outsourcedExport: PAGE_TEMPLATES.outsourcedExport,
+  turkeySourcing: PAGE_TEMPLATES.turkeySourcing,
+  distributorDevelopment: PAGE_TEMPLATES.distributorDevelopment,
   industries: PAGE_TEMPLATES.industries,
   caseStudies: PAGE_TEMPLATES.caseStudies,
   insights: PAGE_TEMPLATES.insights,

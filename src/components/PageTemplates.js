@@ -1196,8 +1196,338 @@ const privacy = [
  *  Dışa aktarım
  * ========================================================================== */
 
+/* ========================================================================== *
+ *  Hizmet detay sayfaları — /services/*
+ * --------------------------------------------------------------------------
+ *  Her biri kendi URL'ine sahip ayrı bir sayfadır ve /services özetinde
+ *  bağlantı verilir. Neden ayrı sayfa: her hizmetin kapsamı, çıktısı ve
+ *  "kimin için uygun" sorusu farklıdır; tek sayfada toplamak bunları
+ *  kaybettirir.
+ *
+ *  Yeni hizmet sayfası eklerken dört yeri güncelle:
+ *    1. Buraya şablonu yaz ve PAGE_TEMPLATES'e ekle.
+ *    2. src/lib/seo.js → PAGES'e title/description (TR + EN) ekle.
+ *    3. src/lib/localeYol.js → TR_YOLLAR'a anahtarı ekle.
+ *    4. app/(tr)/services/<slug>/page.jsx ve app/(en)/en/services/<slug>/page.jsx
+ *       dosyalarını oluştur; sitemap.js ve admin STATIC_PAGES'a da ekle.
+ * ========================================================================== */
+
+/* --- Ortak yardımcı: hizmet detay sayfasının süreç listesi -------------- */
+const steps = (id, items) =>
+  items.map((t, i) => ({
+    id: `${id}_s${i + 1}`,
+    eyebrow: bi(`0${i + 1}`, `0${i + 1}`),
+    category: bi("ADIM", "STEP"),
+    date: bi("", ""),
+    author: bi("", ""),
+    title: bi(t.baslik.tr, t.baslik.en),
+    body: bi(t.metin.tr, t.metin.en),
+  }));
+
+/* ========================================================================== *
+ *  A. Dış kaynaklı ihracat — /services/outsourced-export
+ * ========================================================================== */
+
+const outsourcedExport = [
+  nav(),
+  header(
+    { tr: "DIŞ KAYNAKLI İHRACAT", en: "OUTSOURCED EXPORT" },
+    {
+      tr: "Şirketinizin Dış Kaynaklı İhracat Ekibi",
+      en: "Your Outsourced Export Team",
+    },
+    {
+      tr: "İhracata başlamak veya mevcut satışlarını geliştirmek isteyen üreticiler için araştırma, iletişim ve operasyon takibini bir araya getiriyoruz. GENCO, kararlaştırılan kapsamda şirketinizin dış kaynaklı ihracat ekibi olarak çalışır.",
+      en: "For manufacturers looking to start exporting or to grow existing sales, we bring research, communication and operational follow-up together. Within the agreed scope, GENCO works as your outsourced export team.",
+    }
+  ),
+
+  feature(
+    "tpl_oe_who",
+    { tr: "KİMLER İÇİN", en: "WHO IT SUITS" },
+    { tr: "Kimler İçin Uygun?", en: "Who Is This For?" },
+    {
+      tr: "Mevcut ekibini kurmadan ihracat hareketini yönetmek isteyen işletmeler için uygundur.",
+      en: "This model suits companies that want to manage their export activity without building their own team.",
+    },
+    [
+      { tr: "İhracata başlamak isteyen üreticiler", en: "Manufacturers looking to start exporting" },
+      { tr: "Ayrı bir ihracat ekibi kurmadan çalışmak isteyen şirketler", en: "Companies that want to work without a separate export team" },
+      { tr: "Mevcut ekibini yeni pazar araştırmasında desteklemek isteyen işletmeler", en: "Businesses that want to support their existing team in new market research" },
+      { tr: "Alıcı görüşmeleri ve teklif takibinde düzenli desteğe ihtiyaç duyan firmalar", en: "Firms that need regular support with buyer meetings and quotation follow-up" },
+    ],
+    {
+      tr: "Çalışmaya nasıl başlıyoruz?",
+      en: "How we start",
+    },
+    {
+      tr: "Önce ürün gamınızı, üretim kapasitenizi, mevcut satış yapınızı ve hedeflerinizi değerlendiriyoruz. Ürün bilgileri, fiyatlandırma yaklaşımı, teslim süreleri ve gerekli satış materyalleri üzerinden araştırma kapsamını belirliyoruz.",
+      en: "We first assess your product range, production capacity, current sales activity and objectives. From there we define the research scope in terms of product information, pricing approach, lead times and the sales materials required.",
+    }
+  ),
+
+  {
+    ...ARTICLE_LIST_DEFAULTS,
+    id: "tpl_oe_work",
+    heading: bi("Hangi İşleri Yürütüyoruz?", "What We Handle"),
+    articles: steps("tpl_oe_w", [
+      {
+        baslik: { tr: "Hedef pazar ve müşteri araştırması", en: "Target market and customer research" },
+        metin: {
+          tr: "Hedef ülkeleri, müşteri gruplarını ve satış kanalını araştırır; aday firma listesini oluştururuz.",
+          en: "We research target countries, customer groups and the sales channel, and build a candidate company list.",
+        },
+      },
+      {
+        baslik: { tr: "Aday firmalarla ilk temas", en: "First contact with candidate companies" },
+        metin: {
+          tr: "Doğru kişiye ulaşmak için iletişim bilgilerini araştırır ve kararlaştırılan kapsamda ilk teması yaparız.",
+          en: "We research contact details to reach the right person and make first contact within the agreed scope.",
+        },
+      },
+      {
+        baslik: { tr: "Ürün sunumu ve ticari görüşme", en: "Product presentation and commercial meetings" },
+        metin: {
+          tr: "Ürün sunumunu hazırlar, görüşmeleri organize eder ve sonuçları takip ederiz.",
+          en: "We prepare the product presentation, arrange meetings and track the outcomes.",
+        },
+      },
+      {
+        baslik: { tr: "Teklif ve numune takibi", en: "Quotation and sample follow-up" },
+        metin: {
+          tr: "Gelen talepleri, teklifleri ve numune durumlarını kaydeder, açık konuları takip ederiz.",
+          en: "We record incoming requests, quotations and sample status, and follow up on open points.",
+        },
+      },
+      {
+        baslik: { tr: "Sipariş aşamalarının takibi", en: "Order stage follow-up" },
+        metin: {
+          tr: "Sipariş onayından sevkiyat hazırlığına kadar aşamaları takip eder, taraflar arasındaki iletişimi yürütürüz.",
+          en: "We follow the stages from order confirmation through shipment preparation and manage communication between the parties.",
+        },
+      },
+    ]),
+  },
+
+  feature(
+    "tpl_oe_report",
+    { tr: "RAPORLAMA", en: "REPORTING" },
+    { tr: "Süreç Nasıl Raporlanıyor?", en: "How Is Progress Reported?" },
+    {
+      tr: "Raporlama biçimi başlangıçta kararlaştırılır.",
+      en: "The reporting format is agreed at the outset.",
+    },
+    [
+      { tr: "Araştırılan aday listesi", en: "The list of researched candidates" },
+      { tr: "Temas durumları", en: "Contact status" },
+      { tr: "Gelen talepler ve değerlendirmesi", en: "Incoming requests and their assessment" },
+      { tr: "Bekleyen işler ve açık konular", en: "Pending items and open points" },
+    ],
+    {
+      tr: "Satış garantisi var mı?",
+      en: "Is There a Sales Guarantee?",
+    },
+    {
+      tr: "Satış kararı piyasa koşullarına ve alıcının değerlendirmesine bağlıdır. GENCO'nun üstleneceği işleri ve takip edilecek çıktıları başlangıçta netleştiririz.",
+      en: "A sales decision depends on market conditions and the buyer's assessment. At the outset we set out what GENCO will handle and which outputs will be tracked.",
+    }
+  ),
+
+  cta(
+    "tpl_oe_cta",
+    { tr: "BAŞLAYALIM", en: "LET'S START" },
+    { tr: "İhracat Hedefinizi Görüşelim", en: "Discuss Your Export Objective" },
+    {
+      tr: "Ürün gamınızı ve hedef pazarınızı paylaşın; araştırma kapsamını birlikte belirleyelim.",
+      en: "Share your product range and target market, and let us define the research scope together.",
+    },
+    { tr: "Talebimi Gönder", en: "Send My Request" }
+  ),
+  footer(),
+];
+
+/* ========================================================================== *
+ *  B. Türkiye'den tedarik — /services/turkey-sourcing
+ * ========================================================================== */
+
+const turkeySourcing = [
+  nav(),
+  header(
+    { tr: "TÜRKİYE'DEN TEDARİK", en: "SOURCING FROM TURKEY" },
+    {
+      tr: "Türkiye'den Tedarik Süreciniz İçin Yerel Koordinasyon",
+      en: "Local Coordination for Your Sourcing Process in Turkey",
+    },
+    {
+      tr: "GENCO, Türkiye'den ürün satın almak isteyen uluslararası şirketler için üretici araştırması ve sipariş koordinasyonu sağlar. Teknik şartnameniz ve satın alma koşullarınız üzerinden uygun seçenekleri araştırır; üreticilerle iletişimi ve açık konuların takibini yürütürüz.",
+      en: "GENCO provides manufacturer research and order coordination for international companies looking to buy from Turkey. We research suitable options against your technical specification and purchasing conditions, and manage communication with manufacturers and follow-up on open points.",
+    }
+  ),
+
+  {
+    ...ARTICLE_LIST_DEFAULTS,
+    id: "tpl_ts_process",
+    heading: bi("Süreç Nasıl İlerliyor?", "How the Process Works"),
+    articles: steps("tpl_ts_p", [
+      {
+        baslik: { tr: "Satın alma ihtiyacını tanımlama", en: "Defining the purchasing requirement" },
+        metin: {
+          tr: "Ürün, kullanım amacı, miktar, teknik özellikler, ambalaj ve teslim beklentilerini netleştiririz.",
+          en: "We clarify the product, its intended use, quantity, technical features, packaging and delivery expectations.",
+        },
+      },
+      {
+        baslik: { tr: "Üretici araştırması", en: "Manufacturer research" },
+        metin: {
+          tr: "Ürün grubuna uygun adayları belirler; ürün gamı, kapasite ve ilgili belge bilgilerini toplarız.",
+          en: "We identify suitable candidates for the product group and collect product range, capacity and relevant documentation.",
+        },
+      },
+      {
+        baslik: { tr: "Teklif karşılaştırması", en: "Quotation comparison" },
+        metin: {
+          tr: "Fiyatın yanında teslim süresi, ödeme koşulları, teknik farklılıklar ve teklif kapsamını değerlendiririz.",
+          en: "Alongside price, we assess lead time, payment terms, technical differences and the scope of each quotation.",
+        },
+      },
+      {
+        baslik: { tr: "Numune ve ziyaret koordinasyonu", en: "Sample and visit coordination" },
+        metin: {
+          tr: "Gerekli olduğunda numune gönderimini ve üretici ziyaretini planlarız. Teknik inceleme veya bağımsız denetim ihtiyacını ilgili uzmanlarla koordine ederiz.",
+          en: "Where required, we arrange sample dispatch and factory visits. We coordinate technical inspection or independent inspection needs with the relevant specialists.",
+        },
+      },
+      {
+        baslik: { tr: "Sipariş ve sevkiyat takibi", en: "Order and shipment tracking" },
+        metin: {
+          tr: "Onaylanan kapsamın üreticiye aktarılmasını, üretim durumunun takip edilmesini ve sevkiyat hazırlığının ilgili taraflarla koordinasyonunu sağlarız.",
+          en: "We ensure the agreed scope is passed to the manufacturer, follow production status, and coordinate shipment preparation with the relevant parties.",
+        },
+      },
+    ]),
+  },
+
+  feature(
+    "tpl_ts_deliver",
+    { tr: "ÇIKTILAR", en: "DELIVERABLES" },
+    { tr: "Size Ne Sunuyoruz?", en: "What We Provide" },
+    {
+      tr: "Araştırma sonucu, karşılaştırılabilir bir tabloya dönüşür.",
+      en: "The research result is turned into a comparable table.",
+    },
+    [
+      { tr: "Üretici kısa listesi", en: "A shortlist of manufacturers" },
+      { tr: "Karşılaştırmalı teklifler", en: "Comparative quotations" },
+      { tr: "Teknik ve ticari açık konular tablosu", en: "A table of open technical and commercial points" },
+      { tr: "Sipariş durum bilgileri", en: "Order status information" },
+    ],
+    {
+      tr: "İlk Değerlendirme İçin Ne Göndermelisiniz?",
+      en: "What Should You Send for a First Assessment?",
+    },
+    {
+      tr: "Teknik şartname veya ürün açıklaması, yaklaşık miktar, hedef teslim yeri ve istediğiniz takvim.",
+      en: "A technical specification or product description, approximate quantity, target delivery location and the timeline you have in mind.",
+    }
+  ),
+
+  cta(
+    "tpl_ts_cta",
+    { tr: "TEDARİK TALEBİ", en: "SOURCING REQUEST" },
+    { tr: "Tedarik Talebinizi Paylaşın", en: "Share Your Sourcing Requirement" },
+    {
+      tr: "Ürün grubunuzu ve teknik beklentinizi iletin; uygun üretici adaylarını birlikte belirleyelim.",
+      en: "Send us your product group and technical expectations, and let us identify suitable manufacturer candidates together.",
+    },
+    { tr: "Talebimi Gönder", en: "Send My Request" }
+  ),
+  footer(),
+];
+
+/* ========================================================================== *
+ *  C. Alıcı ve distribütör geliştirme — /services/distributor-development
+ * ========================================================================== */
+
+const distributorDevelopment = [
+  nav(),
+  header(
+    { tr: "PAZAR GELİŞTİRME", en: "MARKET DEVELOPMENT" },
+    {
+      tr: "Ürününüz İçin Uygun Alıcı ve Distribütörleri Araştıralım",
+      en: "We Research the Right Buyers and Distributors for Your Product",
+    },
+    {
+      tr: "GENCO, hedef pazardaki potansiyel iş ortaklarını ürününüz, fiyat segmentiniz ve satış kanalınız üzerinden araştırır. Firma listesi hazırlamanın yanında ilk temas, ilgi değerlendirmesi ve görüşme takibi de çalışma kapsamına alınabilir.",
+      en: "GENCO researches potential partners in the target market based on your product, price segment and sales channel. Alongside compiling a list of companies, first contact, interest assessment and meeting follow-up can also be included in the scope.",
+    }
+  ),
+
+  feature(
+    "tpl_dd_profile",
+    { tr: "ADAY PROFİLİ", en: "CANDIDATE PROFILE" },
+    { tr: "Önce Doğru Aday Profilini Belirleriz", en: "We Define the Right Candidate Profile First" },
+    {
+      tr: "Aradığınız iş ortağı bir ithalatçı, distribütör, bayi, üretici veya kurumsal alıcı olabilir.",
+      en: "The partner you are looking for may be an importer, a distributor, a dealer, a manufacturer or a corporate buyer.",
+    },
+    [
+      { tr: "Ürününüzün teknik satış, yerel stok, eğitim veya servis ihtiyacı", en: "Your product's need for technical selling, local stock, training or service" },
+      { tr: "Hedef müşteri grubu", en: "The target customer group" },
+      { tr: "Aranan kanallar", en: "The channels sought" },
+      { tr: "Bölgesel faaliyet beklentisi", en: "Expected regional coverage" },
+    ],
+    {
+      tr: "Adayları hangi bilgilerle değerlendiririz?",
+      en: "What Information Do We Assess Candidates On?",
+    },
+    {
+      tr: "Faaliyet alanı ve ürün portföyü · Hedef müşteri grubu · Çalıştığı satış kanalları · Bölgesel faaliyet kapsamı · Mevcut markalarla olası uyum · Ulaşılabilir iletişim bilgileri. Araştırma sırasında doğrulanamayan bilgileri açıkça belirtiriz.",
+      en: "Field of activity and product portfolio · Target customer group · Sales channels used · Regional coverage · Potential fit with existing brands · Reachable contact details. We state clearly any information that cannot be verified during the research.",
+    }
+  ),
+
+  feature(
+    "tpl_dd_next",
+    { tr: "İLK TEMAS", en: "FIRST CONTACT" },
+    { tr: "İlk Temastan Sonra Ne Olur?", en: "What Happens After First Contact?" },
+    {
+      tr: "Gelen cevapları ürün uygunluğu ve ilgi düzeyine göre değerlendiririz.",
+      en: "We assess responses according to product suitability and level of interest.",
+    },
+    [
+      { tr: "Gelen cevapların değerlendirilmesi", en: "Assessment of the responses received" },
+      { tr: "Görüşme ve ürün sunumu", en: "Meetings and product presentation" },
+      { tr: "Numune veya teklif aşaması", en: "The sample or quotation stage" },
+      { tr: "Sonraki adımların takibi", en: "Follow-up on next steps" },
+    ],
+    {
+      tr: "Başlamak için gerekli bilgiler",
+      en: "What We Need to Start",
+    },
+    {
+      tr: "Ürün kataloğunuz, hedef ülkeleriniz, mevcut satış kanallarınız, temel ticari koşullarınız ve aradığınız iş ortağının özellikleri.",
+      en: "Your product catalogue, your target countries, your current sales channels, your main commercial terms and the characteristics of the partner you are seeking.",
+    }
+  ),
+
+  cta(
+    "tpl_dd_cta",
+    { tr: "HEDEF PAZAR", en: "TARGET MARKET" },
+    { tr: "Hedef Pazarınızı Paylaşın", en: "Share Your Target Market" },
+    {
+      tr: "Ürününüzü ve aradığınız iş ortağının özelliklerini yazın; aday araştırmasını birlikte planlayalım.",
+      en: "Tell us about your product and the partner you are looking for, and let us plan the candidate research together.",
+    },
+    { tr: "Talebimi Gönder", en: "Send My Request" }
+  ),
+  footer(),
+];
+
 export const PAGE_TEMPLATES = {
   services,
+  outsourcedExport,
+  turkeySourcing,
+  distributorDevelopment,
   industries,
   caseStudies,
   insights,
@@ -1224,6 +1554,9 @@ export const RESERVED_SLUGS = [
   "home",
   "admin",
   "method",
+  // "en" ayrı bir dil ağacıdır; stüdyodan /en slug'ıyla sayfa açılırsa
+  // gerçek /en rotasiyla cakisir.
+  "en",
   "_next",
   "api",
   "favicon.ico",

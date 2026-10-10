@@ -20,6 +20,9 @@ import { ozelSayfaSluglari as ozelSluglari } from "../lib/ozelSayfa";
 const STATIK = [
   { path: "/", key: "home", priority: 1.0, freq: "weekly" },
   { path: "/services", key: "services", priority: 0.9, freq: "monthly" },
+  { path: "/services/outsourced-export", key: "outsourcedExport", priority: 0.8, freq: "monthly" },
+  { path: "/services/turkey-sourcing", key: "turkeySourcing", priority: 0.8, freq: "monthly" },
+  { path: "/services/distributor-development", key: "distributorDevelopment", priority: 0.8, freq: "monthly" },
   { path: "/industries", key: "industries", priority: 0.9, freq: "monthly" },
   { path: "/case-studies", key: "caseStudies", priority: 0.8, freq: "monthly" },
   { path: "/insights", key: "insights", priority: 0.8, freq: "weekly" },

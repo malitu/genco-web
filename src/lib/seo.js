@@ -117,6 +117,34 @@ export const PAGES = {
     descriptionEn:
       "Our notice explaining how personal data shared through this website is processed under Turkish Personal Data Protection Law no. 6698 (KVKK), including the data controller and your rights.",
   },
+
+  /* --- Hizmet detay sayfaları (/services/...) ---------------------------
+     Kapsam, çıktı ve kapsanan süreç sayfa başlığında belirtilir; özet
+     sayfadan ayrışmalarının nedeni budur. */
+  outsourcedExport: {
+    title: "Dış Kaynaklı İhracat Departmanı — GENCO",
+    titleEn: "Outsourced Export Department — GENCO",
+    description:
+      "İhracata başlamak isteyen üreticiler için hedef pazar araştırması, alıcı teması, ürün sunumu, teklif, numune ve sipariş takibi içeren dış kaynaklı ihracat modeli.",
+    descriptionEn:
+      "An outsourced export model for manufacturers starting out: target market research, buyer contact, product presentation, quotations, samples and order follow-up.",
+  },
+  turkeySourcing: {
+    title: "Türkiye'den Tedarik ve Üretici Araştırması — GENCO",
+    titleEn: "Sourcing from Turkey and Manufacturer Research — GENCO",
+    description:
+      "Türkiye'den ürün satın alan uluslararası şirketler için üretici araştırması, karşılaştırmalı teklif değerlendirmesi, numune ve fabrika ziyareti koordinasyonu ile sipariş takibi.",
+    descriptionEn:
+      "Manufacturer research, comparative quotation assessment, sample and factory visit coordination, and order follow-up for international companies buying from Turkey.",
+  },
+  distributorDevelopment: {
+    title: "Alıcı ve Distribütör Araştırması — GENCO",
+    titleEn: "Buyer and Distributor Research — GENCO",
+    description:
+      "Hedef pazarda ürününüze uygun alıcı ve distribütör adaylarının araştırılması, ilk temas kurulması, ilgi değerlendirmesi ve görüşme takibi için GENCO desteği.",
+    descriptionEn:
+      "GENCO support for researching suitable buyers and distributors in your target market, making first contact, assessing interest and following up on meetings.",
+  },
 };
 
 /** Sektör listesi — /industries ve yapısal veri için tek kaynak. */
