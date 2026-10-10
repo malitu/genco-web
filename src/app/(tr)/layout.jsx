@@ -1,8 +1,8 @@
-import './globals.css';
+import '../globals.css';
 
-import { ORG, PAGES, SITE_URL } from '../lib/seo';
-import JsonLd from '../components/JsonLd';
-import { schemaOrganization, schemaWebSite } from '../components/JsonLd';
+import { ORG, PAGES, SITE_URL } from '../../lib/seo';
+import JsonLd from '../../components/JsonLd';
+import { schemaOrganization, schemaWebSite } from '../../components/JsonLd';
 
 /**
  * Kök düzen.

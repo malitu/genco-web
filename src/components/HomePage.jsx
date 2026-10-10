@@ -16,7 +16,6 @@
  *     hiçbir zaman boş kalmaz ve eski görünüm korunur.
  */
 
-import { useEffect, useState } from "react";
 import GencoBlocks, { DEFAULT_SITE_BLOCKS, normaliseBlock } from "./GencoBlocks";
 
 export default function HomePage({
@@ -32,28 +31,21 @@ export default function HomePage({
   onDuplicate,
   onPickImage,
 }) {
-  // Dil kaynağı tek yerden yönetilir:
-  //   • Stüdyo modunda dil, üstteki "Dil" seçicisinden gelir (langProp).
-  //   • Canlı sitede dil menünün TR/EN düğmesiyle değişir ve localStorage'da
-  //     hatırlanır.
-  // Böylece iki kontrol birbiriyle çakışmaz.
-  const [ownLang, setOwnLang] = useState("TR");
+  // Dil kaynağı URL'dir. Sayfa dosyası (sunucu bileşeni) /en/ öneki olup
+  // olmadığına bakarak "TR" veya "EN" geçirir; böylece Türkçe bir adres
+  // yalnızca Türkçe, /en/... adresi yalnızca İngilizce gösterir.
+  //
+  // Önceden dil localStorage'da tutuluyordu; bunun iki sakıncası vardı:
+  //   1) /en/ adresi hiçbir zaman taranamıyordu (botlar JS çalıştırmaz).
+  //   2) Aynı adres kullanıcıya göre iki farklı içerik gösteriyordu.
+  // Artık böyle bir durum yok.
+  const lang = typeof langProp === "string" ? langProp : "TR";
 
-  useEffect(() => {
-    const saved = localStorage.getItem("genco_lang");
-    if (saved === "TR" || saved === "EN") setOwnLang(saved);
-  }, []);
-
-  const controlled = typeof langProp === "string";
-  const lang = controlled ? langProp : ownLang;
-
+  // Canlı sitede langProp her zaman geçilir ve bu geri çağrı hiç çalışmaz:
+  // dil değişimi bağlantıyla (URL) yapılır. Yalnızca stüdyo modunda, üstteki
+  // "Dil" seçicisinin değerini günceller.
   const changeLang = (next) => {
-    if (controlled) {
-      onLangChangeProp?.(next);
-      return;
-    }
-    setOwnLang(next);
-    localStorage.setItem("genco_lang", next);
+    onLangChangeProp?.(next);
   };
 
   // Veritabanında blok yoksa tam şablonu kullan.

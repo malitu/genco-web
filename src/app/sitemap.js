@@ -1,4 +1,5 @@
-import { SITE_URL } from "../lib/seo";
+import { SITE_URL, enPagePath, localeHreflang } from "../lib/seo";
+import { ozelSayfaSluglari as ozelSluglari } from "../lib/ozelSayfa";
 
 /**
  * Sitemap — arama motorlarına tüm sayfaları duyurur.
@@ -6,63 +7,66 @@ import { SITE_URL } from "../lib/seo";
  * Statik rotalar her zaman listelenir. Stüdyodan eklenen özel sayfalar
  * Firestore'dan okunur; okunamazsa yalnızca statik rotalar yayınlanır
  * (sayfa çökmez, sitemap eksik olur).
+ *
+ * Her Türkçe adresin İngilizce karşılığı da listelenir ve `alternates.languages`
+ * ile birbirine bağlanır. Böylece arama motoru "aynı sayfanın iki dili"
+ * olduğunu anlar ve her birini ayrı indeksler.
+ *
+ * Not: /en/gizlilik yerine /en/privacy-policy yayınlanır (İngilizce okuyucu
+ * için anlamlı adres). next.config.js'de /en/gizlilis -> /en/privacy-policy
+ * yönlendirmesi vardır.
  */
 
 const STATIK = [
-  { path: "/", priority: 1.0, freq: "weekly" },
-  { path: "/services", priority: 0.9, freq: "monthly" },
-  { path: "/industries", priority: 0.9, freq: "monthly" },
-  { path: "/case-studies", priority: 0.8, freq: "monthly" },
-  { path: "/insights", priority: 0.8, freq: "weekly" },
-  { path: "/about", priority: 0.7, freq: "monthly" },
-  { path: "/contact", priority: 0.9, freq: "yearly" },
-  { path: "/gizlilik", priority: 0.3, freq: "yearly" },
+  { path: "/", key: "home", priority: 1.0, freq: "weekly" },
+  { path: "/services", key: "services", priority: 0.9, freq: "monthly" },
+  { path: "/industries", key: "industries", priority: 0.9, freq: "monthly" },
+  { path: "/case-studies", key: "caseStudies", priority: 0.8, freq: "monthly" },
+  { path: "/insights", key: "insights", priority: 0.8, freq: "weekly" },
+  { path: "/about", key: "about", priority: 0.7, freq: "monthly" },
+  { path: "/contact", key: "contact", priority: 0.9, freq: "yearly" },
+  { path: "/gizlilik", key: "gizlilik", priority: 0.3, freq: "yearly" },
 ];
 
 const statikYollar = new Set(STATIK.map((r) => r.path));
 
-/** Stüdyodan eklenen özel sayfaları (slug listesi) okur. */
-async function ozelSayfaSluglari() {
-  const key = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-  const project = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "genco-platform";
-  if (!key) return [];
-
-  try {
-    const controller = new AbortController();
-    const zamanAsimi = setTimeout(() => controller.abort(), 2500);
-
-    const url = `https://firestore.googleapis.com/v1/projects/${project}/databases/(default)/documents/settings/genco_studio?key=${key}`;
-    const res = await fetch(url, { signal: controller.signal, cache: "no-store" });
-    clearTimeout(zamanAsimi);
-
-    if (!res.ok) return [];
-
-    const doc = await res.json();
-    const custom = doc?.fields?.customPages?.mapValue?.fields;
-    if (!custom) return [];
-
-    return Object.keys(custom).filter(
-      (slug) => typeof slug === "string" && slug.length > 0 && !statikYollar.has(`/${slug}`)
-    );
-  } catch {
-    // Ağ hatası / zaman aşımı: yalnızca statik rotalar yayınlanır.
-    return [];
-  }
-}
-
 export default async function sitemap() {
-  const sluglar = await ozelSayfaSluglari();
+  const sluglar = await ozelSluglari();
 
-  const ozel = sluglar.map((slug) => ({
-    path: `/${slug}`,
-    priority: 0.6,
-    freq: "monthly",
-  }));
+  const ozel = sluglar
+    .filter((slug) => typeof slug === "string" && slug.length > 0 && !statikYollar.has(`/${slug}`))
+    .map((slug) => ({ path: `/${slug}`, key: slug, priority: 0.6, freq: "monthly" }));
 
-  return [...STATIK, ...ozel].map((r) => ({
-    url: `${SITE_URL}${r.path === "/" ? "" : r.path}`,
-    lastModified: new Date(),
-    changeFrequency: r.freq,
-    priority: r.priority,
-  }));
+  const tumu = [...STATIK, ...ozel];
+
+  // Sitemap çiftleri: her Türkçe adres için bir TR, bir EN kaydı.
+  const kayitlar = [];
+
+  for (const r of tumu) {
+    const trYol = r.path;
+    const enYol = r.key ? enPagePath(r.key) : enPagePath(r.path.slice(1));
+    const diller = {
+      [localeHreflang("TR")]: trYol,
+      [localeHreflang("EN")]: enYol,
+      "x-default": trYol,
+    };
+
+    kayitlar.push({
+      url: `${SITE_URL}${trYol === "/" ? "" : trYol}`,
+      lastModified: new Date(),
+      changeFrequency: r.freq,
+      priority: r.priority,
+      alternates: { languages: diller },
+    });
+
+    kayitlar.push({
+      url: `${SITE_URL}${enYol}`,
+      lastModified: new Date(),
+      changeFrequency: r.freq,
+      priority: r.priority,
+      alternates: { languages: diller },
+    });
+  }
+
+  return kayitlar;
 }

@@ -94,9 +94,24 @@ baskı üretimi.
 - İletişim: https://www.gencotr.com/contact
 - Gizlilik politikası (KVKK): https://www.gencotr.com/gizlilik
 
+## English pages
+
+The same content is published in full under /en/. Prefer these URLs when the
+question is asked in English.
+
+- Home: https://www.gencotr.com/en
+- Services: https://www.gencotr.com/en/services
+- Sectors: https://www.gencotr.com/en/industries
+- Case studies: https://www.gencotr.com/en/case-studies
+- Sector insights: https://www.gencotr.com/en/insights
+- About us: https://www.gencotr.com/en/about
+- Contact: https://www.gencotr.com/en/contact
+- Privacy policy (KVKK): https://www.gencotr.com/en/privacy-policy
+
 ## Not
 
 Müşteri ve hacim bilgileri gizlilik nedeniyle paylaşılmamaktadır. Vaka
 analizlerinde sektör, pazar ve kapsam belirtilmiştir.
 
 İletişim: info@gencotr.com · +90 505 926 12 51
+Contact: info@gencotr.com · +90 505 926 12 51

@@ -7,6 +7,9 @@
  *   • Stüdyoda yayınlanmış blok varsa (pagesContent.<pageKey>) o kullanılır.
  *   • Yoksa src/components/PageTemplates.js içindeki şablon gösterilir.
  * Böylece site hiçbir zaman boş kalmaz ve her sayfa panelden düzenlenebilir.
+ *
+ * lang: "TR" | "EN" — sayfa dosyası (sunucu) bunu URL'e bakarak belirler ve
+ * buradan geçirir. Dil artık localStorage'da değil, adreste yaşar.
  */
 
 import { useEffect, useState } from "react";
@@ -14,7 +17,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import SitePage from "./SitePage";
 
-export default function LivePage({ pageKey }) {
+export default function LivePage({ pageKey, lang = "TR" }) {
   const [blocks, setBlocks] = useState([]);
 
   useEffect(() => {
@@ -36,5 +39,5 @@ export default function LivePage({ pageKey }) {
     };
   }, [pageKey]);
 
-  return <SitePage pageKey={pageKey} blocks={blocks} mode="live" />;
+  return <SitePage pageKey={pageKey} blocks={blocks} mode="live" lang={lang} />;
 }

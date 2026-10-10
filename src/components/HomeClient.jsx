@@ -22,7 +22,7 @@ import { db } from "../lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import HomePage from "./HomePage";
 
-export default function HomeClient() {
+export default function HomeClient({ lang = "TR" }) {
   const [blocks, setBlocks] = useState([]);
   const [siteData, setSiteData] = useState({});
 
@@ -60,5 +60,5 @@ export default function HomeClient() {
     };
   }, []);
 
-  return <HomePage blocks={blocks} mode="live" siteData={siteData} />;
+  return <HomePage blocks={blocks} mode="live" siteData={siteData} lang={lang} />;
 }

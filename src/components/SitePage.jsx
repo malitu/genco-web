@@ -12,7 +12,6 @@
  *   blocks boşsa → sayfanın kendi varsayılan şablonu (PAGE_TEMPLATES)
  */
 
-import { useEffect, useState } from "react";
 import GencoBlocks, {
   DEFAULT_SITE_BLOCKS,
   NAV_DEFAULTS,
@@ -39,23 +38,14 @@ export default function SitePage({
   onDuplicate,
   onPickImage,
 }) {
-  const [ownLang, setOwnLang] = useState("TR");
+  // Dil kaynağı URL'dir (bkz. HomePage.jsx). Canlı sayfa dosyası "TR" veya
+  // "EN" geçirir; langProp yoksa Türkçe gösterilir.
+  const lang = typeof langProp === "string" ? langProp : "TR";
 
-  useEffect(() => {
-    const saved = localStorage.getItem("genco_lang");
-    if (saved === "TR" || saved === "EN") setOwnLang(saved);
-  }, []);
-
-  const controlled = typeof langProp === "string";
-  const lang = controlled ? langProp : ownLang;
-
+  // Canlı sitede bu geri çağrı çalışmaz (dil bağlantıyla değişir); yalnızca
+  // stüdyo modunda üstteki "Dil" seçicisini günceller.
   const changeLang = (next) => {
-    if (controlled) {
-      onLangChangeProp?.(next);
-      return;
-    }
-    setOwnLang(next);
-    localStorage.setItem("genco_lang", next);
+    onLangChangeProp?.(next);
   };
 
   // Yayınlanmış blok yoksa sayfanın kendi şablonu kullanılır; site hiçbir

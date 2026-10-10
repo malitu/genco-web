@@ -49,6 +49,15 @@ const nextConfig = {
 
   async redirects() {
     return [
+      // Türkçe "gizlilik" adresinin İngilizce karşılığı daha okunabilir bir
+      // adreste yayınlanıyor. Blok motoru iç bağlantıyı /en/gizlilik olarak
+      // üretebildiği için eski adres buraya yönlendirilir.
+      {
+        source: "/en/gizlilik",
+        destination: "/en/privacy-policy",
+        permanent: true,
+      },
+
       // /method sayfası blok sistemine taşınmadan önce elle yazılmış bir
       // kopya olarak duruyordu ve içeriği /about içinde zaten var.
       // Yayına almadan önce tek noktaya yönlendiriyoruz.

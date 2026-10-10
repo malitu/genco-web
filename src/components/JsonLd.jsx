@@ -10,7 +10,36 @@
  *   <JsonLd data={schemaHolds("home", "/")} />
  */
 
-import { ORG, PAGES, SECTORS, SERVICES, fullAddress, pageUrl } from "../lib/seo";
+import { ORG, PAGES, SECTORS, SERVICES, fullAddress, pageUrl, PAGE_PATHS } from "../lib/seo";
+
+/**
+ * Şema metinleri iki dilli tutulur. `PAGES` yalnızca meta başlık/açıklama
+ * taşıdığı için görünen adlar burada ayrıca tanımlanır.
+ */
+const SAYFA_ADLARI = {
+  home: { tr: "Ana Sayfa", en: "Home" },
+  services: { tr: "Hizmetler", en: "Services" },
+  industries: { tr: "Sektörler", en: "Sectors" },
+  caseStudies: { tr: "Vaka Analizleri", en: "Case Studies" },
+  insights: { tr: "Sektör Analizleri", en: "Sector Insights" },
+  about: { tr: "Hakkımızda", en: "About Us" },
+  contact: { tr: "İletişim", en: "Contact" },
+  gizlilik: { tr: "Gizlilik Politikası", en: "Privacy Policy" },
+};
+
+const SEKTOR_LISTESI_ADI = { tr: "Çalıştığımız sektörler", en: "Sectors we operate in" };
+const HIZMET_LISTESI_ADI = { tr: "Hizmetlerimiz", en: "Our services" };
+
+/** "TR" | "EN" -> schema.org inLanguage. */
+function inLang(locale) {
+  return locale === "EN" ? "en-GB" : "tr-TR";
+}
+
+/** İki dilli alandan dile uygun olanı seçer. */
+function pick(ad, locale) {
+  if (!ad) return "";
+  return locale === "EN" ? ad.en || ad.tr : ad.tr || ad.en;
+}
 
 /** LocalBusiness + Organization: en sık sorgulanan çekirdek bilgiler. */
 export function schemaOrganization() {
@@ -51,7 +80,7 @@ export function schemaOrganization() {
         address: postalAddress,
         contactPoint: [contactPoint],
         areaServed: ORG.areasServed,
-        knowsLanguage: ["tr"],
+        knowsLanguage: ["tr", "en"],
         sameAs: ORG.sameAs,
       },
       {
@@ -94,57 +123,65 @@ export function schemaOrganization() {
   };
 }
 
-/** Site geneli WebSite + arama kutusu. */
-export function schemaWebSite() {
+/**
+ * Site geneli WebSite şeması.
+ * @param {"TR"|"EN"} locale Hangi dil ağacında olduğumuz
+ *
+ * Önceden İngilizce içerik yalnızca istemci tarafında (localStorage) sunuluyordu
+ * ve taranabilir bir adresi yoktu; bu yüzden burada ilan edilmiyordu. Artık
+ * /en/ altında gerçek adresleri var.
+ */
+export function schemaWebSite(locale = "TR") {
+  const en = locale === "EN";
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "@id": `${ORG.url}/#website`,
-    url: ORG.url,
+    url: en ? `${ORG.url}/en` : ORG.url,
     name: ORG.shortName,
-    legalName: ORG.legalName,
-    description: ORG.description,
-    // Yalnızca taranabilir diller. İngilizce içerik şu anda istemci tarafında
-    // (localStorage) sunuluyor; ayrı bir adresi olmadığı için burada
-    // ilan edilmez — aksi halde bot olmayan bir EN sayfası vaat edilmiş olur.
-    inLanguage: "tr-TR",
+    legalName: en ? ORG.legalNameEn : ORG.legalName,
+    description: en ? ORG.descriptionEn : ORG.description,
+    // Her iki dil de artık ayrı adrese sahip; ikisi de taranabilir.
+    inLanguage: en ? ["en-GB", "tr-TR"] : ["tr-TR", "en-GB"],
     publisher: { "@id": `${ORG.url}/#organization` },
   };
 }
 
 /** Sektör listesi — /industries sayfası. */
-export function schemaSectorList(pathname = "/industries") {
+export function schemaSectorList(pathname = "/industries", locale = "TR") {
+  const en = locale === "EN";
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "@id": `${pageUrl(pathname)}#sectors`,
-    name: "Çalıştığımız sektörler",
+    name: pick(SEKTOR_LISTESI_ADI, locale),
     numberOfItems: SECTORS.length,
     itemListElement: SECTORS.map((s, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      name: s.tr,
-      alternateName: s.en,
+      name: en ? s.en : s.tr,
+      alternateName: en ? s.tr : s.en,
     })),
   };
 }
 
 /** Hizmet listesi — /services sayfası. */
-export function schemaServices(pathname = "/services") {
+export function schemaServices(pathname = "/services", locale = "TR") {
+  const en = locale === "EN";
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "@id": `${pageUrl(pathname)}#services`,
-    name: "Hizmetlerimiz",
+    name: pick(HIZMET_LISTESI_ADI, locale),
     numberOfItems: SERVICES.length,
     itemListElement: SERVICES.map((s, i) => ({
       "@type": "ListItem",
       position: i + 1,
       item: {
         "@type": "Service",
-        name: s.tr,
-        alternateName: s.en,
-        description: s.desc,
+        name: en ? s.en : s.tr,
+        alternateName: en ? s.tr : s.en,
+        description: en ? s.descEn : s.desc,
         provider: { "@id": `${ORG.url}/#organization` },
         areaServed: ORG.areasServed,
       },
@@ -176,27 +213,28 @@ export function schemaFaq(questions, pathname = "/") {
   };
 }
 
-/** Sayfa meta verisi için yol haritası (breadcrumb) şeması. */
-export function schemaBreadcrumb(pathname = "/") {
-  const map = {
-    "/": "Ana Sayfa",
-    "/services": "Hizmetler",
-    "/industries": "Sektörler",
-    "/case-studies": "Vaka Analizleri",
-    "/insights": "Sektör Analizleri",
-    "/about": "Hakkımızda",
-    "/contact": "İletişim",
-    "/gizlilik": "Gizlilik Politikası",
-  };
+/**
+ * Sayfa meta verisi için yol haritası (breadcrumb) şeması.
+ * /en/... adreslerinde de Türkçe karşılığı gösterilir; böylece iki dil aynı
+ * şirketin aynı bölümü olarak makine tarafından eşleşir.
+ */
+export function schemaBreadcrumb(pathname = "/", locale = "TR") {
+  // /en/servis -> /services
+  const kok = pathname.replace(/^\/en(?=\/|$)/, "") || "/";
+  const anahtar = Object.keys(SAYFA_ADLARI).find((k) => PAGE_PATHS[k] === kok);
 
-  const items = [
-    { name: "Ana Sayfa", path: "/" },
-    ...(pathname !== "/" && map[pathname]
-      ? [{ name: map[pathname], path: pathname }]
-      : pathname !== "/"
-        ? [{ name: pathname, path: pathname }]
-        : []),
-  ];
+  const ev = { name: pick(SAYFA_ADLARI.home, locale), path: locale === "EN" ? "/en" : "/" };
+
+  const items =
+    kok === "/"
+      ? [ev]
+      : [
+          ev,
+          {
+            name: anahtar ? pick(SAYFA_ADLARI[anahtar], locale) : kok,
+            path: pathname,
+          },
+        ];
 
   return {
     "@context": "https://schema.org",
@@ -214,22 +252,25 @@ export function schemaBreadcrumb(pathname = "/") {
 /**
  * Sayfa düzeyi şema seti.
  * @param {string} key PAGES anahtarı (home, services, ...)
+ * @param {string} pathname Sayfanın gerçek adresi (EN sayfalarında /en/...)
+ * @param {"TR"|"EN"} locale
  */
-export function schemaPage(key, pathname) {
+export function schemaPage(key, pathname, locale = "TR") {
   const p = PAGES[key];
-  const parts = [schemaBreadcrumb(pathname)];
-  if (key === "services") parts.push(schemaServices(pathname));
-  if (key === "industries") parts.push(schemaSectorList(pathname));
+  const en = locale === "EN";
+
+  // Not: sektör/hizmet liste şemaları sayfa dosyalarında ayrı <JsonLd />
+  // olarak basılır; burada yalnızca WebPage tanımlanır (çift kayıt olmasın).
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "@id": `${pageUrl(pathname)}#webpage`,
     url: pageUrl(pathname),
-    name: p?.title,
-    description: p?.description,
+    name: en ? p?.titleEn : p?.title,
+    description: en ? p?.descriptionEn : p?.description,
     isPartOf: { "@id": `${ORG.url}/#website` },
     about: { "@id": `${ORG.url}/#organization` },
-    inLanguage: "tr-TR",
+    inLanguage: inLang(locale),
   };
 }
 
