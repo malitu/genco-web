@@ -1493,9 +1493,48 @@ function NavBlock({ block, ctx }) {
   // Bulunulan sayfa linki turuncu ve kalın gösterilir.
   const pathname = usePathname();
 
+  /* --- Mobil menü -------------------------------------------------------
+     Yatay menü 6 bağlantı + telefon + TR/EN toplamı ~1000px; md altında
+     sığmadığı için linkler taşıyor ve nav barı bozuk görünüyordu. Mobilde
+     tek bir hamburger düğmesi, açılınca tam genişlikte panel. */
+  const [acik, setAcik] = useState(false);
+
+  // Panel açıkken arka sayfa kaydırılmasın.
+  useEffect(() => {
+    if (!acik) return;
+    const eski = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = eski;
+    };
+  }, [acik]);
+
+  // ESC ile kapat + masaüstüne dönünce (md) menüyü sıfırla. md breakpoint'i
+  // 768px; oraya çıkınca yatay menü tekrar görünür, panel açık kalırsa
+  // kullanıcı iki menüyü birden görür.
+  useEffect(() => {
+    if (!acik) return;
+    const esc = (e) => e.key === "Escape" && setAcik(false);
+    const genis = window.matchMedia("(min-width: 768px)");
+    const degis = () => genis.matches && setAcik(false);
+    window.addEventListener("keydown", esc);
+    genis.addEventListener("change", degis);
+    return () => {
+      window.removeEventListener("keydown", esc);
+      genis.removeEventListener("change", degis);
+    };
+  }, [acik]);
+
+  // Sayfa değişince paneli kapat (mobilde linke tıklayınca).
+  useEffect(() => {
+    setAcik(false);
+  }, [pathname]);
+
+  const linkler = block.links || [];
+
   return (
     <nav className="bg-white border-b border-gray-200 py-3 sm:py-4 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center gap-3">
         {/* Logo: canlı sitede ana sayfaya giden bağlantı, stüdyoda tıklanınır
             alan (görsel yolunu değiştirmek için). */}
         <div className="flex items-center -ml-1 sm:ml-0">
@@ -1578,9 +1617,10 @@ function NavBlock({ block, ctx }) {
 
         {/* Canlı sitede menünün kendi TR/EN düğmesi çalışır. Stüdyo
             modunda dil üstteki "Dil" seçicisiyle belirlenir; buradaki
-            düğmeler karışmasın diye gizlenir. */}
+            düğmeler karışmasın diye gizlenir.
+            md altında gizli: mobil panelin içinde kendi TR/EN satırı var. */}
         {!edit && (
-          <div className="flex items-center space-x-2 text-xs font-bold">
+          <div className="hidden md:flex items-center space-x-2 text-xs font-bold">
             <button
               type="button"
               onClick={() => onLangChange?.("TR")}
@@ -1606,7 +1646,107 @@ function NavBlock({ block, ctx }) {
             </button>
           </div>
         )}
+
+        {/* --- Hamburger (yalnız md altı) ---------------------------------
+            Üç çizgi / çarpı ikonu. aria-expanded ve aria-controls
+            ekran okuyucular için; klavye ile odaklanabilir. */}
+        <button
+          type="button"
+          onClick={() => setAcik((v) => !v)}
+          aria-expanded={acik}
+          aria-controls="genco-mobil-menu"
+          aria-label={acik ? (lang === "TR" ? "Menüyü kapat" : "Close menu") : lang === "TR" ? "Menüyü aç" : "Open menu"}
+          className="md:hidden inline-grid place-items-center h-11 w-11 -mr-2 rounded-lg text-[#0f172a] hover:bg-gray-100 active:bg-gray-200 transition"
+        >
+          <svg viewBox="0 0 24 24" className="w-6 h-6" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            {acik ? (
+              <>
+                <path d="M6 6l12 12" />
+                <path d="M18 6L6 18" />
+              </>
+            ) : (
+              <>
+                <path d="M4 7h16" />
+                <path d="M4 12h16" />
+                <path d="M4 17h16" />
+              </>
+            )}
+          </svg>
+        </button>
       </div>
+
+      {/* --- Mobil menü paneli -------------------------------------------
+          Nav barın hemen altında, tam genişlikte. md üstünde hiç render
+          edilmez (görsel olarak gizli değil, DOM'da da yok). */}
+      {acik && (
+        <div
+          id="genco-mobil-menu"
+          className="md:hidden border-t border-gray-200 bg-white shadow-lg"
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col">
+            {linkler.map((link) => (
+              <a
+                key={link.id}
+                href={link.href}
+                onClick={() => setAcik(false)}
+                className={`flex items-center justify-between py-3.5 border-b border-gray-100 text-[15px] font-semibold transition ${
+                  pathname === link.href ? "text-[#f97316]" : "text-[#0f172a]"
+                }`}
+              >
+                <span>{L(link.label, lang)}</span>
+                <svg viewBox="0 0 20 20" className="w-4 h-4 text-gray-300 shrink-0" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="m7 4 6 6-6 6" />
+                </svg>
+              </a>
+            ))}
+
+            {/* Telefon: yatay menüde xl altında gizli; mobil panelde her
+                zaman görünür çünkü B2B'de asıl eylem çağrısı bu. */}
+            {!edit && block.phone && (
+              <a
+                href={`tel:${String(block.phone).replace(/\s/g, "")}`}
+                onClick={() => setAcik(false)}
+                className="mt-4 flex items-center gap-3 rounded-lg bg-[#f97316] px-4 py-3.5 text-white font-bold"
+              >
+                <svg viewBox="0 0 20 20" className="w-5 h-5 shrink-0" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                  <path d="M4 3h3l1.5 4-2 1.5a10 10 0 0 0 5 5L13 11.5l4 1.5v3a1.5 1.5 0 0 1-1.7 1.5C8.6 17 3 11.4 2.5 4.7A1.5 1.5 0 0 1 4 3Z" />
+                </svg>
+                <span className="text-sm">{block.phone}</span>
+              </a>
+            )}
+
+            {/* TR/EN: masaüstünde nav barın sağında, mobilde panelin altında. */}
+            {!edit && (
+              <div className="mt-4 flex items-center gap-2">
+                {["TR", "EN"].map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => onLangChange?.(d)}
+                    className={`flex-1 py-2.5 rounded-lg text-xs font-bold border transition ${
+                      lang === d
+                        ? "bg-[#f97316] border-[#f97316] text-white"
+                        : "border-gray-200 text-gray-600 hover:border-[#f97316] hover:text-[#f97316]"
+                    }`}
+                  >
+                    {d === "TR" ? "Türkçe" : "English"}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Stüdyo modunda menü bağlantıları burada düzenlenebilir olmalı:
+                ekip canlı panelde de aynı düzeni görsün. */}
+            {edit && (
+              <p className="mt-4 text-[11px] text-gray-400">
+                {lang === "TR"
+                  ? "Menü bağlantılarını düzenlemek için üstteki bağlantı alanına tıklayın."
+                  : "To edit menu links, click the links field above."}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
