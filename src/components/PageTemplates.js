@@ -727,6 +727,55 @@ const insights = [
   ),
   {
     ...ARTICLE_LIST_DEFAULTS,
+    id: "tpl_ins_full",
+    heading: bi("Uygulama notları", "Implementation notes"),
+    articles: [
+      {
+        id: "tpl_ins_f1",
+        eyebrow: bi("NOT 01", "NOTE 01"),
+        category: bi("TEKNİK ŞARTNAME", "TECHNICAL SPECIFICATION"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Teklif Öncesi Teknik Şartnameyi Netleştirmek", "Clarifying the Technical Specification Before Requesting Quotes"),
+        href: "/insights/teknik-sartnameyi-netlestirmek",
+        linkLabel: bi("", ""),
+        body: bi(
+          "Aynı ürün adıyla sunulan iki teklif aynı kapsamı içermeyebilir. Malzeme, ölçü, tolerans, teslim durumu ve belge beklentileri açık yazılmadığında fiyat karşılaştırması yanıltıcı olabilir.",
+          "Two quotations offered under the same product name may not cover the same scope. Without written clarity on material, dimensions, tolerance, delivery condition and documentation, comparing prices can be misleading."
+        ),
+      },
+      {
+        id: "tpl_ins_f2",
+        eyebrow: bi("NOT 02", "NOTE 02"),
+        category: bi("URETICI SECIMI", "MANUFACTURER SELECTION"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Üretici Seçiminde Fiyatın Yanında Neye Bakılmalı?", "What to Look At Beyond Price When Choosing a Manufacturer"),
+        href: "/insights/uretici-seciminde-karsilastirilacak-basliklar",
+        linkLabel: bi("", ""),
+        body: bi(
+          "Uygun fiyat, üreticinin ihtiyacınıza uygun olduğu anlamına gelmez. Ürün deneyimi, kapasite, numune süreci, iletişim ve teslim koşullarının birlikte değerlendirilmesi gerekir.",
+          "A suitable price does not mean the manufacturer fits your requirement. Product experience, capacity, the sample process, communication and delivery conditions need to be assessed together."
+        ),
+      },
+      {
+        id: "tpl_ins_f3",
+        eyebrow: bi("NOT 03", "NOTE 03"),
+        category: bi("İŞ ORTAĞI", "BUSINESS PARTNERS"),
+        date: bi("", ""),
+        author: bi("", ""),
+        title: bi("Distribütör Listesinden İş Ortağı Seçimine", "From a Distributor List to Choosing a Business Partner"),
+        href: "/insights/distributor-listesinden-is-ortagi-secimine",
+        linkLabel: bi("", ""),
+        body: bi(
+          "Bir ulkedeki distributorlerin listesini cikarmak arastirmanin baslangicidir. Asil karar, hangi firmanin urununuzu dogru musteri grubuna ulastirabilecegidir.",
+          "Producing a list of distributors in a country is where research begins. The real decision is which company can get your product to the right customer group."
+        ),
+      },
+    ],
+  },
+  {
+    ...ARTICLE_LIST_DEFAULTS,
     id: "tpl_ins_articles",
     heading: bi("", ""),
     articles: [
@@ -1524,8 +1573,264 @@ const distributorDevelopment = [
   footer(),
 ];
 
+/* ========================================================================== *
+ *  Sektör analizleri — /insights/*
+ * --------------------------------------------------------------------------
+ *  /insights sayfasındaki kısa tanıtımların karşılığı olan tam yazılar.
+ *  Her yazı kendi adresinde yayınlanır; indeks sayfası bunlara bağlanır.
+ *
+ *  Yazar ve tarih: Bu alanlar boş bırakılmıştır. Brief'te "gerçek yazar adı
+ *  ve yayın tarihi" isteniyor ancak doğrulanmamış bir isim veya tarih
+ *  uydurmak yanıltıcı olur. Yazılar yayımlandıktan sonra panelden
+ *  doldurulabilir (articleList blogunda "Yazar / ekip" alanı).
+ *
+ *  Madde imleri: articleList gövdesi düz metin basar (whitespace-pre-wrap).
+ *  Bu yüzden listeler "• " ön ekiyle yazılmıştır; <ul> etiketi üretilmez.
+ * ========================================================================== */
+
+const yazi = (id, bolumler) =>
+  bolumler.map((b, i) => ({
+    id: `${id}_${i + 1}`,
+    eyebrow: bi(b.etiket ? b.etiket.tr : "", b.etiket ? b.etiket.en : ""),
+    category: bi("", ""),
+    date: bi("", ""),
+    author: bi("", ""),
+    title: bi(b.baslik.tr, b.baslik.en),
+    body: bi(b.metin.tr, b.metin.en),
+  }));
+
+const yaziCta = (id, baslik, alt) =>
+  cta(
+    id,
+    { tr: "SONRAKİ ADIM", en: "NEXT STEP" },
+    baslik,
+    alt,
+    { tr: "Talebimi Gönder", en: "Send My Request" }
+  );
+
+/* --- Yazı 1 — Teklif öncesi teknik şartname ------------------------------ */
+
+const yaziSartname = [
+  nav(),
+  header(
+    { tr: "SEKTÖR NOTU", en: "SECTOR NOTE" },
+    {
+      tr: "Teklif Öncesi Teknik Şartnameyi Netleştirmek",
+      en: "Clarifying the Technical Specification Before Requesting Quotes",
+    },
+    {
+      tr: "Bir satın alma veya ihracat görüşmesinde ürün adı tek başına yeterli değildir. Aynı adla sunulan ürünler malzeme, ölçü, tolerans, yüzey, ambalaj veya belge kapsamı açısından farklı olabilir.\n\nBu nedenle fiyat istemeden önce teklifin hangi özellikleri kapsayacağını tanımlamak gerekir.",
+      en: "In a purchasing or export discussion, the product name alone is not enough. Products offered under the same name may differ in material, dimension, tolerance, surface, packaging or the scope of documentation.\n\nThis is why the features a quotation is to cover should be defined before a price is requested.",
+    }
+  ),
+  {
+    ...ARTICLE_LIST_DEFAULTS,
+    id: "tpl_yn1_body",
+    heading: bi("", ""),
+    articles: yazi("tpl_yn1", [
+      {
+        baslik: { tr: "Teklif talebinde hangi bilgiler bulunmalı?", en: "What should a request for quotation include?" },
+        metin: {
+          tr: "• Ürünün adı ve kullanım amacı\n• Malzeme veya kalite tanımı\n• Referans standart ve gerekli teknik özellikler\n• Ölçü, tolerans ve teslim durumu\n• Sipariş miktarı ve ambalaj beklentisi\n• İstenen belgeler ve testler\n• Teslim yeri ve hedef tarih\n\nÜrün grubuna göre çizim, fotoğraf, referans numune veya teknik veri sayfası da gerekebilir.",
+          en: "• Product name and intended use\n• Material or quality definition\n• Reference standards and required technical properties\n• Dimensions, tolerances and delivery condition\n• Order quantity and packaging expectations\n• Requested documents and tests\n• Delivery location and target date\n\nDepending on the product group, a drawing, photograph, reference sample or technical datasheet may also be required.",
+        },
+      },
+      {
+        baslik: { tr: "Farklılıkları görünür hale getirin", en: "Make the differences visible" },
+        metin: {
+          tr: "Her tedarikçiden aynı özellikleri sunduğunu varsaymak yerine, teklifindeki farklılıkları belirtmesini isteyin.\n\nAlternatif bir malzeme, farklı teslim süresi veya ek ücretli bir test teklifin değerlendirilmesini değiştirebilir. Bu konuları ayrı satırlarda karşılaştırmak, yalnızca toplam fiyat üzerinden karar vermekten daha sağlıklıdır.",
+          en: "Rather than assuming every supplier offers the same features, ask them to state the differences in their quotation.\n\nAn alternative material, a different lead time, or a chargeable additional test can change how a quotation should be assessed. Comparing these on separate lines is sounder than deciding on the total price alone.",
+        },
+      },
+      {
+        baslik: { tr: "Sipariş öncesinde açık konuları kapatın", en: "Close open points before ordering" },
+        metin: {
+          tr: "Teklif aşamasındaki e-posta ve görüşmelerde ortaya çıkan teknik kararların sipariş belgesine aktarılması gerekir.\n\nNumune onayı, çizim revizyonu ve kabul edilen alternatifler kayıt altına alınmalıdır. Teknik bir konu belirsizse, ilgili üretici veya uzmanla netleştirilmeden sipariş verilmemelidir.",
+          en: "Technical decisions that emerge in quotations, e-mails and meetings during the quotation stage need to be carried over into the order document.\n\nSample approval, drawing revisions and accepted alternatives should be recorded. Where a technical point is unclear, the order should not be placed until it has been settled with the manufacturer or the relevant specialist.",
+        },
+      },
+      {
+        baslik: { tr: "GENCO'nun katkısı", en: "What GENCO adds" },
+        metin: {
+          tr: "GENCO, teknik ve ticari bilgilerin taraflar arasında toplanmasını, açık konuların takip edilmesini ve tekliflerin karşılaştırılabilir hale getirilmesini destekler.",
+          en: "GENCO supports the collection of technical and commercial information between the parties, the follow-up of open points, and the process of making quotations comparable.",
+        },
+      },
+    ]),
+  },
+  yaziCta(
+    "tpl_yn1_cta",
+    { tr: "Ürününüz için teknik şartname hazırlayalım", en: "Let's prepare the specification for your product" },
+    {
+      tr: "Ürün grubunuzu ve hedef pazarınızı paylaşın; teklif toplanacak şartnameyi birlikte oluşturalım.",
+      en: "Share your product group and target market, and let us build the specification against which quotes will be collected.",
+    }
+  ),
+  footer(),
+];
+
+/* --- Yazı 2 — Üretici seçiminde karşılaştırılacak başlıklar -------------- */
+
+const yaziUretici = [
+  nav(),
+  header(
+    { tr: "SEKTÖR NOTU", en: "SECTOR NOTE" },
+    {
+      tr: "Üretici Seçiminde Fiyatın Yanında Neye Bakılmalı?",
+      en: "What to Look At Beyond Price When Choosing a Manufacturer",
+    },
+    {
+      tr: "Üretici seçiminde düşük fiyat önemli olabilir; ancak satın alma kararını tek başına açıklamaz. Ürünün ihtiyaca uygunluğu, üretim kapasitesi ve siparişin nasıl yönetileceği birlikte değerlendirilmelidir.",
+      en: "A low price can matter when choosing a manufacturer, but it does not explain the purchasing decision on its own. How well the product fits your requirement, the production capacity, and how the order will be managed all need to be assessed together.",
+    }
+  ),
+  {
+    ...ARTICLE_LIST_DEFAULTS,
+    id: "tpl_yn2_body",
+    heading: bi("", ""),
+    articles: yazi("tpl_yn2", [
+      {
+        baslik: { tr: "Ürün deneyimi", en: "Product experience" },
+        metin: {
+          tr: "Üreticinin sizin ürün grubunuzda hangi çalışmaları yaptığını öğrenin. Genel bir katalog yerine, talep ettiğiniz özelliklere yakın ürünler hakkında bilgi isteyin.",
+          en: "Find out what the manufacturer has produced in your product group. Ask for information about products close to the features you require, rather than reviewing a general catalogue.",
+        },
+      },
+      {
+        baslik: { tr: "Kapasite ve teslim süresi", en: "Capacity and lead time" },
+        metin: {
+          tr: "Teklif edilen teslim süresinin hangi koşullara bağlı olduğunu netleştirin. Hammadde temini, üretim planı, numune onayı ve ambalaj hazırlığı termin üzerinde etkili olabilir.",
+          en: "Clarify what the offered lead time depends on. Raw material supply, the production plan, sample approval and packaging preparation can all affect the date.",
+        },
+      },
+      {
+        baslik: { tr: "Teknik bilgi ve belgeler", en: "Technical information and documents" },
+        metin: {
+          tr: "İhtiyaç duyduğunuz teknik veri ve belgelerin ürünle ilişkisini kontrol edin. Bir belgenin bulunması, her ürün veya her kullanım amacı için yeterli olduğunu göstermez.\n\nGerekli değerlendirmeyi ürünün niteliğine göre yetkin kişilerle yapın.",
+          en: "Check how the technical data and documents you need relate to the product. The presence of a document does not show that it is sufficient for every product or every intended use.\n\nHave the necessary assessment carried out by people competent for the nature of the product.",
+        },
+      },
+      {
+        baslik: { tr: "Numune süreci", en: "The sample process" },
+        metin: {
+          tr: "Numunenin neyi temsil ettiğini belirleyin. Seri üretim ürünü mü, özel hazırlanmış örnek mi? Numunede kabul edilen özellikler siparişe nasıl aktarılacak?",
+          en: "Establish what the sample represents: a series-production item, or a specially prepared example? How will the features accepted on the sample be carried into the order?",
+        },
+      },
+      {
+        baslik: { tr: "Ticari koşullar", en: "Commercial terms" },
+        metin: {
+          tr: "Fiyatla birlikte ödeme planını, teslim kapsamını, ambalajı, teklif geçerlilik süresini ve değişiklik koşullarını karşılaştırın.",
+          en: "Alongside price, compare the payment plan, the scope of delivery, packaging, the validity period of the quotation and the conditions for changes.",
+        },
+      },
+      {
+        baslik: { tr: "İletişim ve takip", en: "Communication and follow-up" },
+        metin: {
+          tr: "Teknik sorulara verilen cevapların açıklığı ve hızı, üreticiyle çalışmanın nasıl ilerleyeceği hakkında fikir verir. Belirsiz cevapları sipariş sonrasına bırakmayın.",
+          en: "How clearly and quickly technical questions are answered tells you how working with the manufacturer will go. Do not leave unclear answers until after the order.",
+        },
+      },
+      {
+        baslik: { tr: "GENCO'nun katkısı", en: "What GENCO adds" },
+        metin: {
+          tr: "GENCO, üretici seçeneklerini bu başlıklar üzerinden karşılaştırır; karar için gerekli bilgilerin toplanmasını ve açık konuların takibini sağlar.",
+          en: "GENCO compares manufacturer options across these headings, and ensures the information needed for a decision is gathered and open points are tracked.",
+        },
+      },
+    ]),
+  },
+  yaziCta(
+    "tpl_yn2_cta",
+    { tr: "Üretici adaylarını birlikte değerlendirelim", en: "Let's assess manufacturer candidates together" },
+    {
+      tr: "Ürün grubunuzu ve teknik beklentilerinizi paylaşın; adayları aynı başlıklar üzerinden karşılaştıralım.",
+      en: "Share your product group and technical expectations, and let us compare the candidates across the same headings.",
+    }
+  ),
+  footer(),
+];
+
+/* --- Yazı 3 — Distribütör listesinden iş ortağı seçimine ----------------- */
+
+const yaziDistributor = [
+  nav(),
+  header(
+    { tr: "SEKTÖR NOTU", en: "SECTOR NOTE" },
+    {
+      tr: "Distribütör Listesinden İş Ortağı Seçimine",
+      en: "From a Distributor List to Choosing a Business Partner",
+    },
+    {
+      tr: "Bir ülkedeki distribütörlerin listesini çıkarmak araştırmanın başlangıcıdır. Asıl karar, hangi firmanın ürününüzü doğru müşteri grubuna ulaştırabileceğidir.",
+      en: "Producing a list of distributors in a country is where research begins. The real decision is which company can get your product to the right customer group.",
+    }
+  ),
+  {
+    ...ARTICLE_LIST_DEFAULTS,
+    id: "tpl_yn3_body",
+    heading: bi("", ""),
+    articles: yazi("tpl_yn3", [
+      {
+        baslik: { tr: "Önce aradığınız iş ortağını tanımlayın", en: "Define the partner you are looking for first" },
+        metin: {
+          tr: "Ürününüz hangi kanalda satılacak? Teknik satış mı gerektiriyor, perakende dağıtım mı? Yerel stok, servis veya eğitim ihtiyacı var mı?\n\nBu sorular cevaplanmadan oluşturulan geniş listeler, çok sayıda düşük uygunluklu aday içerebilir.",
+          en: "Through which channel will your product be sold? Does it require technical selling, or retail distribution? Is local stock, service or training needed?\n\nA long list built before these questions are answered tends to contain a large number of unsuitable candidates.",
+        },
+      },
+      {
+        baslik: { tr: "Ürün portföyünü inceleyin", en: "Review the product portfolio" },
+        metin: {
+          tr: "Adayın mevcut markaları, fiyat segmenti ve ürün grupları sizin teklifinizle uyumlu olmalıdır. Tamamlayıcı ürünler fırsat oluşturabilir; doğrudan rakip ürünler ise firmanın ilgisini veya çalışma koşullarını etkileyebilir.",
+          en: "A candidate's existing brands, price segment and product groups need to be compatible with your offer. Complementary products can create an opportunity; direct competing products may affect the firm's interest or the terms on which it would work.",
+        },
+      },
+      {
+        baslik: { tr: "Müşteri ve kanal uyumunu değerlendirin", en: "Assess customer and channel fit" },
+        metin: {
+          tr: "Firmanın yalnızca hangi sektörde çalıştığını değil, kime ve nasıl satış yaptığını araştırın. Kurumsal alıcı, uzman mağaza, bayi ağı ve çevrim içi satış farklı kabiliyetler gerektirir.",
+          en: "Research not only which sector a company operates in, but whom it sells to and how. Corporate buyers, specialist retailers, dealer networks and online sales each require different capabilities.",
+        },
+      },
+      {
+        baslik: { tr: "İlk görüşmede neyi netleştirin?", en: "What should be settled at the first meeting?" },
+        metin: {
+          tr: "• Ürüne yönelik ilgi ve değerlendirme süreci\n• Hedeflenen müşteri grubu\n• Beklenen fiyat ve ticari koşullar\n• Numune veya eğitim ihtiyacı\n• Stok ve pazarlama yaklaşımı\n• Sonraki görüşmenin konusu ve tarihi",
+          en: "• Interest in the product and the evaluation process\n• The customer group targeted\n• Expected pricing and commercial terms\n• Need for samples or training\n• Stock and marketing approach\n• The subject and date of the next meeting",
+        },
+      },
+      {
+        baslik: { tr: "İlk olumlu cevap sonuç değildir", en: "A first positive response is not an outcome" },
+        metin: {
+          tr: "İlk olumlu cevap, distribütörlük anlaşması anlamına gelmez. Karşılıklı uygunluk değerlendirmesini ve ticari görüşmeleri aşamalı yürütün.",
+          en: "A first positive response does not mean a distribution agreement. Carry out the mutual fit assessment and the commercial discussions in stages.",
+        },
+      },
+      {
+        baslik: { tr: "GENCO'nun katkısı", en: "What GENCO adds" },
+        metin: {
+          tr: "GENCO, aday araştırmasını ilk temas ve görüşme takibiyle birleştirerek şirketlerin uygun iş ortaklarını değerlendirmesine destek olur.",
+          en: "GENCO combines candidate research with first contact and meeting follow-up, supporting companies in assessing suitable business partners.",
+        },
+      },
+    ]),
+  },
+  yaziCta(
+    "tpl_yn3_cta",
+    { tr: "Hedef pazarınızı paylaşın", en: "Share your target market" },
+    {
+      tr: "Ürününüzü ve aradığınız iş ortağının özelliklerini yazın; aday araştırmasını birlikte planlayalım.",
+      en: "Tell us about your product and the partner you are seeking, and let us plan the candidate research together.",
+    }
+  ),
+  footer(),
+];
+
 export const PAGE_TEMPLATES = {
   services,
+  yaziSartname,
+  yaziUretici,
+  yaziDistributor,
   outsourcedExport,
   turkeySourcing,
   distributorDevelopment,

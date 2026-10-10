@@ -1357,6 +1357,10 @@ export function normaliseBlock(raw, index = 0) {
       author: a?.author ?? bi("", ""),
       title: a?.title ?? bi("", ""),
       body: a?.body ?? bi("", ""),
+      // Tam yazının adresi. /insights indeksinde kart başlığı bu adrese
+      // bağlanır. Boş olduğunda kart düz metin olarak render edilir.
+      href: typeof a?.href === "string" ? a.href : "",
+      linkLabel: a?.linkLabel ?? bi("", ""),
     }));
   }
 
@@ -2878,14 +2882,36 @@ function ArticleListBlock({ block, ctx }) {
                   />
                 </div>
               )}
-              <EditableText
-                as="h2"
-                editable={edit}
-                value={L(a.title, lang)}
-                onChange={(v) => update(a.id, { title: mergeLang(a.title, lang, v) })}
-                className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-5"
-                placeholder="Makale başlığı"
-              />
+              {/* Başlık, tam yazının adresine giden bağlantı olabilir.
+                  href yoksa düz başlık olarak render edilir. */}
+              {a.href && !edit ? (
+                <a
+                  href={localeHref(a.href, lang)}
+                  className="group block mb-5"
+                >
+                  <EditableText
+                    as="h2"
+                    editable={false}
+                    value={L(a.title, lang)}
+                    onChange={() => {}}
+                    className="text-2xl md:text-3xl font-bold text-[#0f172a] group-hover:text-[#f97316] transition"
+                    placeholder="Makale başlığı"
+                  />
+                  <span className="inline-flex items-center gap-2 mt-2 text-sm font-bold text-[#f97316]">
+                    {L(a.linkLabel, lang) || (lang === "EN" ? "Read the full note" : "Yazıyı okuyun")}
+                    <FootIcon name="arrow" className="w-4 h-4" />
+                  </span>
+                </a>
+              ) : (
+                <EditableText
+                  as="h2"
+                  editable={edit}
+                  value={L(a.title, lang)}
+                  onChange={(v) => update(a.id, { title: mergeLang(a.title, lang, v) })}
+                  className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-5"
+                  placeholder="Makale başlığı"
+                />
+              )}
               <EditableText
                 as="div"
                 editable={edit}

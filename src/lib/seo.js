@@ -118,6 +118,32 @@ export const PAGES = {
       "Our notice explaining how personal data shared through this website is processed under Turkish Personal Data Protection Law no. 6698 (KVKK), including the data controller and your rights.",
   },
 
+  /* --- Sektör analizi yazıları (/insights/...) -------------------------- */
+  yaziSartname: {
+    title: "Teklif Öncesi Teknik Şartnameyi Netleştirmek — GENCO",
+    titleEn: "Clarifying the Technical Specification Before Requesting Quotes — GENCO",
+    description:
+      "Aynı ürün adıyla sunulan teklifler farklı kapsamda olabilir. Teklif talebinde bulunması gereken bilgiler, farklılıkları görünür kılma ve sipariş öncesi açık konuları kapatma yöntemi.",
+    descriptionEn:
+      "Quotations offered under the same product name may cover different scopes. What a request for quotation should include, how to make differences visible, and how to close open points before ordering.",
+  },
+  yaziUretici: {
+    title: "Üretici Seçiminde Fiyatın Yanında Neye Bakılmalı? — GENCO",
+    titleEn: "What to Look At Beyond Price When Choosing a Manufacturer — GENCO",
+    description:
+      "Düşük fiyat satın alma kararını tek başına açıklamaz. Ürün deneyimi, kapasite, belgeler, numune süreci, ticari koşullar ve iletişim başlıklarında karşılaştırma yöntemi.",
+    descriptionEn:
+      "A low price does not explain a purchasing decision on its own. A method for comparing manufacturers across product experience, capacity, documents, the sample process, commercial terms and communication.",
+  },
+  yaziDistributor: {
+    title: "Distribütör Listesinden İş Ortağı Seçimine — GENCO",
+    titleEn: "From a Distributor List to Choosing a Business Partner — GENCO",
+    description:
+      "Bir ülkedeki distribütör listesini çıkarmak başlangıçtır. Aday profilinin tanımlanması, portföy ve kanal uyumu ile ilk görüşmede netleştirilmesi gereken başlıklar.",
+    descriptionEn:
+      "Producing a list of distributors in a country is only the start. How to define the candidate profile, assess portfolio and channel fit, and what to settle at the first meeting.",
+  },
+
   /* --- Hizmet detay sayfaları (/services/...) ---------------------------
      Kapsam, çıktı ve kapsanan süreç sayfa başlığında belirtilir; özet
      sayfadan ayrışmalarının nedeni budur. */
