@@ -836,6 +836,10 @@ export const FEATURE_BLOCK_DEFAULTS = {
   // Vaka analizlerinde "kapsam" satırı: sektör + pazar + yapılan iş.
   // Boş bırakılırsa hiçbir yerde görünmez.
   scope: bi("", ""),
+  // Ayrıntı sayfasına giden bağlantı. Boş bırakılırsa hiç gösterilmez.
+  // /en/ ağacında otomatik olarak /en/... adresine çevrilir.
+  linkLabel: bi("", ""),
+  linkHref: "",
   heading: bi("Bölüm Başlığı", "Section Title"),
   desc: bi("Açıklama metni.", "Description text."),
   items: [
@@ -2768,6 +2772,17 @@ function FeatureBlockView({ block, ctx }) {
             className="text-gray-300 text-sm leading-relaxed"
             placeholder="Kutu açıklaması"
           />
+
+          {/* Ayrıntı sayfası bağlantısı. Boşsa render edilmez. */}
+          {!edit && L(block.linkLabel, lang) && block.linkHref && (
+            <a
+              href={localeHref(block.linkHref, lang)}
+              className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#f97316] hover:text-orange-400 transition"
+            >
+              {L(block.linkLabel, lang)}
+              <FootIcon name="arrow" className="w-4 h-4" />
+            </a>
+          )}
         </div>
       </div>
     </section>

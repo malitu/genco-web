@@ -38,10 +38,24 @@ const header = (badge, heading, sub) => ({
 });
 
 /**
+ * Hizmet/kapsam bloğu.
  * @param {string} scope  Vaka analizlerinde gösterilecek kapsam satırı
  *                        (sektör · pazar · yapılan iş). Boş bırakılırsa gizlenir.
+ * @param {{tr,en}} link  Ayrıntı sayfası bağlantısı (yoksa gizlenir).
+ * @param {string} linkHref
  */
-const feature = (id, eyebrow, heading, desc, items, boxTitle, boxSub, scope = null) => ({
+const feature = (
+  id,
+  eyebrow,
+  heading,
+  desc,
+  items,
+  boxTitle,
+  boxSub,
+  scope = null,
+  link = null,
+  linkHref = ""
+) => ({
   ...FEATURE_BLOCK_DEFAULTS,
   id,
   eyebrow: bi(eyebrow.tr, eyebrow.en),
@@ -51,6 +65,8 @@ const feature = (id, eyebrow, heading, desc, items, boxTitle, boxSub, scope = nu
   items: items.map((t, i) => ({ id: `${id}_i${i}`, title: bi(t.tr, t.en) })),
   boxTitle: bi(boxTitle.tr, boxTitle.en),
   boxSub: bi(boxSub.tr, boxSub.en),
+  linkLabel: link ? bi(link.tr, link.en) : bi("", ""),
+  linkHref,
 });
 
 const cta = (id, badge, heading, sub, buttonLabel) => ({
@@ -89,356 +105,277 @@ const media = (id, layout, items, heading = null, body = null) => ({
  *  Hizmetler — /services
  * ========================================================================== */
 
+// /services sayfasinin tam yeniden yazımı.
+// Kapsam, çıktı ve çalışma modeli her hizmette açıkça belirtilir.
 const services = [
   nav(),
   header(
-    { tr: "Uçtan Uca Ticaret Yönetimi", en: "End-to-End Trade Management" },
+    { tr: "HİZMETLER", en: "SERVICES" },
     {
-      tr: "Dış ticaret operasyonunuzu baştan sona yönetiyoruz",
-      en: "We Manage Your Entire Foreign Trade Operation",
+      tr: "Uluslararası Ticaretin Araştırma ve Uygulama Aşamalarında Yanınızdayız",
+      en: "We Support You Through Both the Research and the Execution Stages of International Trade",
     },
     {
-      tr: "Kendi bünyenizde bir ihracat departmanı kurmadan, dışarıdan çalışan profesyonel bir ekip gibi hizmet veriyoruz: doğru pazarı buluyor, doğru alıcıyı tespit ediyor, müzakereleri yürütüyor ve sevkiyat kapanışına kadar süreci biz yönetiyoruz.",
-      en: "We work as a professional team outside your organisation instead of asking you to build an in-house export department: we identify the right market and the right buyer, run the negotiations, and manage the process through to shipment closure.",
+      tr: "GENCO, şirketlerin ihracat, ithalat ve uluslararası iş geliştirme süreçlerini destekler. İhtiyacınıza göre belirli bir işi üstlenir veya araştırmadan sipariş takibine kadar daha geniş bir kapsamda çalışırız.\n\nHer projede hedefi, sorumlulukları, teslim edilecek çıktıları ve raporlama biçimini başlangıçta netleştiririz.",
+      en: "GENCO supports companies across their export, import and international business development processes. Depending on your needs, we take on a specific piece of work or operate across a wider scope, from research through to order follow-up.\n\nIn every project we define the objective, responsibilities, deliverables and reporting format at the outset.",
     }
   ),
+
+  /* ---- 1. Dış kaynaklı ihracat -------------------------------------------- */
   feature(
     "tpl_svc_1",
-    { tr: "01 / OUTSOURCED EXPORT", en: "01 / OUTSOURCED EXPORT" },
+    { tr: "01 / DIŞ KAYNAKLI İHRACAT", en: "01 / OUTSOURCED EXPORT" },
     {
       tr: "Dış Kaynaklı İhracat Departmanı",
       en: "Outsourced Export Department",
     },
     {
-      tr: "Kendi bünyenizde maliyetli bir ihracat departmanı kurma yüküne girmeden, küresel pazar dinamiklerine hakim profesyonel bir dış ticaret ekibiyle doğrudan çalışın. Ürünlerinizin hedef pazarlardaki en doğru alıcılara sunulmasını ve satış kapanışlarını üstleniyoruz.",
-      en: "Work directly with an expert foreign trade team specialized in global market dynamics without the burden of building an expensive internal export department. We ensure your products reach the right buyers and handle sales closures.",
+      tr: "İhracata başlamak veya mevcut satışlarını yeni ülkelere taşımak isteyen üreticiler için şirket dışından çalışan bir ihracat ekibi modeli sunuyoruz.",
+      en: "For manufacturers looking to start exporting or to carry existing sales into new countries, we offer an export team that works outside your organisation.",
     },
     [
-      { tr: "Hedef Pazar & Rakip Analizi", en: "Target Market & Competitor Analysis" },
-      { tr: "C-Level Karar Verici Teması", en: "Direct C-Level Decision-Maker Access" },
-      { tr: "Teklif & Sözleşme Yönetimi", en: "Offer & Contract Management" },
-      { tr: "Küresel Dağıtım Ağı Kurulumu", en: "Global Distribution Network Setup" },
+      { tr: "Ürün ve ihracat hazırlığının değerlendirilmesi", en: "Assessment of product and export readiness" },
+      { tr: "Hedef ülke ve müşteri gruplarının araştırılması", en: "Research into target countries and customer groups" },
+      { tr: "Potansiyel alıcılarla ilk temas", en: "First contact with potential buyers" },
+      { tr: "Ürün sunumu, teklif ve ticari görüşme takibi", en: "Product presentation, quotation and follow-up on commercial meetings" },
+      { tr: "Numune ve sipariş koordinasyonu", en: "Sample and order coordination" },
+      { tr: "Sevkiyat hazırlığının ilgili taraflarla takibi", en: "Tracking shipment preparation with the relevant parties" },
     ],
     {
-      tr: "Sıfır Kurulum Maliyeti, Doğrudan Satış",
-      en: "Zero Setup Cost, Direct Sales",
+      tr: "Sağlanan çıktılar",
+      en: "What you receive",
     },
     {
-      tr: "İzmir merkezli operasyon gücümüzle, markanızı uluslararası arenada aktif olarak temsil ediyor ve yeni pazarlara en kısa sürede giriş yapmanızı sağlıyoruz.",
-      en: "With our Izmir-based operational strength, we actively represent your brand in the international arena and ensure rapid entry into new markets.",
-    }
+      tr: "Hedef pazar değerlendirmesi, müşteri aday listesi, görüşme kayıtları, teklif ve numune durum takibi ile düzenli ilerleme raporları.",
+      en: "Target market assessment, candidate customer list, meeting records, quotation and sample status tracking, and regular progress reports.",
+    },
+    null,
+    { tr: "Dış Kaynaklı İhracat Modelini İnceleyin", en: "See the Outsourced Export Model" },
+    "/services/outsourced-export"
   ),
+
+  /* ---- 2. Türkiye'den tedarik --------------------------------------------- */
   feature(
     "tpl_svc_2",
-    { tr: "02 / STRATEGIC SOURCING", en: "02 / STRATEGIC SOURCING" },
+    { tr: "02 / TEDARİK", en: "02 / SOURCING" },
     {
-      tr: "Nitelikli Tedarik ve Üretici Denetimi",
-      en: "Qualified Sourcing & Manufacturer Audits",
+      tr: "Türkiye'den Tedarik ve Üretici Araştırması",
+      en: "Sourcing from Turkey and Manufacturer Research",
     },
     {
-      tr: "Uluslararası alıcılar için Türkiye’den güvenli ve standartlara tam uyumlu tedarik zinciri kuruyoruz. Kritik mühendislik gereksinimlerinize eksiksiz uyan üreticileri buluyor, kapasite ve kalite denetimlerini yerinde gerçekleştiriyoruz.",
-      en: "We build secure, fully compliant supply chains from Turkey for international buyers. We identify manufacturers matching your critical engineering specs and conduct on-site capacity and quality audits.",
+      tr: "Uluslararası alıcılar için ürün özelliklerine ve satın alma koşullarına uygun Türk üreticileri araştırıyoruz.",
+      en: "For international buyers, we research Turkish manufacturers that match your product specifications and purchasing conditions.",
     },
     [
-      { tr: "Teknik Şartname Uyumluluğu", en: "Technical Spec Compliance" },
-      { tr: "Fabrika Kapasite Denetimi", en: "Factory Capacity Audits" },
-      { tr: "Numune & Pilot Üretim", en: "Sample & Pilot Production" },
-      { tr: "Sevkiyat Kalite Kontrolü", en: "Shipment Quality Control" },
+      { tr: "Teknik şartname ve satın alma beklentilerinin netleştirilmesi", en: "Clarifying the technical specification and purchasing expectations" },
+      { tr: "Üretici adaylarının araştırılması", en: "Research into candidate manufacturers" },
+      { tr: "Kapasite, ürün gamı ve belge bilgilerinin toplanması", en: "Collecting capacity, product range and documentation data" },
+      { tr: "Fiyat, teslim süresi ve ödeme koşullarının karşılaştırılması", en: "Comparing price, lead time and payment terms" },
+      { tr: "Numune ve üretici ziyaretlerinin koordinasyonu", en: "Coordination of samples and factory visits" },
+      { tr: "Sipariş ve sevkiyat takibi", en: "Order and shipment tracking" },
     ],
     {
-      tr: "Tolerans & Standart Uyumu",
-      en: "Tolerance & Standard Compliance",
+      tr: "Sağlanan çıktılar",
+      en: "What you receive",
     },
     {
-      tr: "Demir çelik alaşım standartlarından medikal polimerlere kadar kritik teknik şartnamelerin sahada eksiksiz uygulanmasını denetliyoruz.",
-      en: "We ensure precise on-site execution of critical technical specifications ranging from steel alloy standards to medical polymers.",
-    }
+      tr: "Üretici kısa listesi, karşılaştırmalı teklif tablosu, açık teknik ve ticari konular listesi ile sipariş durum raporu.",
+      en: "A shortlist of manufacturers, a comparative quotation table, a list of open technical and commercial points, and an order status report.",
+    },
+    null,
+    { tr: "Türkiye'den Tedarik Sürecini İnceleyin", en: "See the Sourcing Process" },
+    "/services/turkey-sourcing"
   ),
+
+  /* ---- 3. Alıcı ve distribütör geliştirme --------------------------------- */
   feature(
     "tpl_svc_3",
-    { tr: "03 / B2B LEAD GENERATION", en: "03 / B2B LEAD GENERATION" },
+    { tr: "03 / PAZAR GELİŞTİRME", en: "03 / MARKET DEVELOPMENT" },
     {
-      tr: "Veri Odaklı Alıcı & Distribütör Bulma",
-      en: "Data-Driven Buyer & Distributor Sourcing",
+      tr: "Alıcı ve Distribütör Geliştirme",
+      en: "Buyer and Distributor Development",
     },
     {
-      tr: "Jenerik listelerle zaman kaybetmiyoruz. Küresel ticaret istihbarat ağları, tescilli veritabanları ve çok katmanlı araştırma metodolojimiz üzerinden doğrudan ithalatçıları tespit ederek nokta atışı outreach kampanyaları yürütüyoruz.",
-      en: "We don't waste time with generic lists. Through global trade intelligence networks, proprietary databases, and multi-layered research methodologies, we pinpoint importers and execute laser-focused outreach campaigns.",
+      tr: "Ürününüzü satabilecek firmaları belirlemek için hedef ülke, satış kanalı ve müşteri profili üzerinden araştırma yapıyoruz.",
+      en: "To identify the companies that can sell your product, we research by target country, sales channel and customer profile.",
     },
     [
-      { tr: "Doğrulanmış C-Level Veriler", en: "Verified C-Level Data" },
-      { tr: "Sektörel Outreach Stratejisi", en: "Sectoral Outreach Strategy" },
-      { tr: "Bölgesel Partner Eşleştirme", en: "Regional Partner Matching" },
-      { tr: "Aktif Dönüşüm Takibi", en: "Active Conversion Tracking" },
+      { tr: "Uygun distribütör ve alıcı profilinin tanımlanması", en: "Defining the suitable distributor and buyer profile" },
+      { tr: "Aday firmaların ürün portföyü ve pazar faaliyetlerinin incelenmesi", en: "Reviewing candidate companies' product portfolios and market activity" },
+      { tr: "Ulaşılabilir iletişim bilgilerinin araştırılması", en: "Research into reachable contact information" },
+      { tr: "İlk temas ve görüşme koordinasyonu", en: "First contact and meeting coordination" },
+      { tr: "İlgi, uygunluk ve sonraki adımların takibi", en: "Tracking interest, suitability and next steps" },
     ],
     {
-      tr: "Nokta Atışı Karar Verici Erişimi",
-      en: "Laser-Focused Decision-Maker Access",
+      tr: "Sağlanan çıktılar",
+      en: "What you receive",
     },
     {
-      tr: "Doğru kişiye, doğru zamanda ve doğru teknik argümanlarla ulaşarak satış döngülerini hızlandırıyoruz.",
-      en: "We accelerate sales cycles by reaching the right person at the right time with the right technical arguments.",
-    }
+      tr: "Gerekçeli aday listesi, temas kayıtları, görüşme notları ve değerlendirme tablosu.",
+      en: "A reasoned candidate list, contact records, meeting notes and an evaluation table.",
+    },
+    null,
+    { tr: "Alıcı ve Distribütör Geliştirme Hizmeti", en: "Buyer and Distributor Development" },
+    "/services/distributor-development"
   ),
+
+  /* ---- 4. Pazara giriş desteği -------------------------------------------- */
   feature(
     "tpl_svc_4",
-    { tr: "04 / MARKET ENTRY", en: "04 / MARKET ENTRY" },
+    { tr: "04 / PAZARA GİRİŞ", en: "04 / MARKET ENTRY" },
     {
-      tr: "Türkiye ve Avrupa Pazarına Giriş Stratejisi",
-      en: "Turkey & European Market Entry Strategy",
+      tr: "Pazara Giriş Desteği",
+      en: "Market Entry Support",
     },
     {
-      tr: "Küresel markaların Türkiye pazarındaki yapılanmalarında ya da Türk üreticilerin Avrupa ağlarında büyümesinde regülasyon uyumu, gümrük süreçleri ve yerel bayi/distribütör yapılanmalarını koordine ediyoruz.",
-      en: "We coordinate regulatory compliance, customs procedures, and local dealer/distributor setups for global brands entering Turkey or Turkish producers growing in European networks.",
+      tr: "Türkiye'ye veya farklı bir ülkeye giriş yapmak isteyen markalar için satış kanalı, rakip ve yerel iş ortağı araştırması sağlıyoruz. Ürünün hedef pazarda hangi kanallarda değerlendirilebileceğini araştırır; distribütör, bayi veya kurumsal alıcı adaylarıyla görüşmeleri destekleriz. Ürüne özel düzenleyici ve teknik konularda gerekli uzman ve hizmet sağlayıcılarla koordinasyon kurarız.",
+      en: "For brands entering Turkey or another country, we research sales channels, competitors and local partners. We investigate which channels your product can realistically be sold through, and support meetings with distributor, dealer or corporate buyer candidates. On regulatory and technical matters specific to your product, we coordinate with the relevant specialists and service providers.",
     },
     [
-      { tr: "Regülasyon & Mevzuat Uyumu", en: "Regulatory & Compliance Harmonization" },
-      { tr: "Yerel Partner Eşleştirme", en: "Local Partner Matching" },
-      { tr: "Operasyonel Süreç Kurulumu", en: "Operational Process Setup" },
-      { tr: "Sürdürülebilir Büyüme Ağı", en: "Sustainable Growth Network" },
+      { tr: "Satış kanalı ve rakip araştırması", en: "Sales channel and competitor research" },
+      { tr: "Yerel iş ortağı adaylarının belirlenmesi", en: "Identifying local partner candidates" },
+      { tr: "Görüşme ve değerlendirme sürecinin yürütülmesi", en: "Running the meeting and evaluation process" },
+      { tr: "Düzenleyici ve teknik uzmanlarla koordinasyon", en: "Coordination with regulatory and technical specialists" },
     ],
     {
-      tr: "İzmir'den Küresel Pazarlara",
-      en: "From Izmir to Global Markets",
+      tr: "Sağlanan çıktılar",
+      en: "What you receive",
     },
     {
-      tr: "Yerel üretim gücü ile küresel standartlar arasında kusursuz bir ticari köprü kurarak operasyonel riskleri sıfıra indiriyoruz.",
-      en: "We eliminate operational risks by establishing a seamless commercial bridge between local manufacturing power and global standards.",
+      tr: "Pazar ve kanal değerlendirmesi, iş ortağı aday listesi ve önceliklendirilmiş uygulama planı.",
+      en: "A market and channel assessment, a partner candidate list and a prioritised implementation plan.",
     }
   ),
+
+  /* ---- 5. İthalat ve sevkiyat koordinasyonu -------------------------------- */
+  feature(
+    "tpl_svc_5",
+    { tr: "05 / İTHALAT", en: "05 / IMPORT" },
+    {
+      tr: "İthalat ve Sevkiyat Koordinasyonu",
+      en: "Import and Shipment Coordination",
+    },
+    {
+      tr: "İthalat projelerinde tedarikçi araştırmasından siparişin teslimine kadar kararlaştırılan aşamaları takip ediyoruz. Teklif karşılaştırması, ödeme ve teslim koşullarının görüşülmesi, ticari belgelerin takibi, taşıma tekliflerinin koordinasyonu ve sevkiyat durum raporlaması bu kapsamda değerlendirilebilir. Gümrükleme, laboratuvar testi, belgelendirme ve taşıma gibi uzmanlık gerektiren işlemleri ilgili yetkili kuruluşlarla koordine ederiz.",
+      en: "On import projects we track the agreed stages from supplier research through to delivery of the order. Quotation comparison, negotiation of payment and delivery terms, follow-up on trade documents, coordination of freight quotations and shipment status reporting can all fall within this scope. Customs clearance, laboratory testing, certification and freight — which require specialist expertise — are coordinated with the relevant authorised bodies.",
+    },
+    [
+      { tr: "Tedarikçi araştırması ve teklif karşılaştırması", en: "Supplier research and quotation comparison" },
+      { tr: "Ödeme ve teslim koşullarının görüşülmesi", en: "Negotiation of payment and delivery terms" },
+      { tr: "Ticari belgelerin takibi", en: "Follow-up on trade documents" },
+      { tr: "Taşıma tekliflerinin koordinasyonu", en: "Coordination of freight quotations" },
+      { tr: "Sevkiyat durum raporlaması", en: "Shipment status reporting" },
+    ],
+    {
+      tr: "Sağlanan çıktılar",
+      en: "What you receive",
+    },
+    {
+      tr: "Karşılaştırmalı teklif tablosu, açık konular listesi, belge takip kaydı ve sevkiyat durum raporları.",
+      en: "A comparative quotation table, a list of open points, a document tracking record and shipment status reports.",
+    }
+  ),
+
+  /* ---- 6. Ambalaj ---------------------------------------------------------- */
+  feature(
+    "tpl_svc_6",
+    { tr: "06 / AMBALAJ", en: "06 / PACKAGING" },
+    {
+      tr: "Ambalaj Geliştirme ve Üretim Tedariki",
+      en: "Packaging Development and Production Sourcing",
+    },
+    {
+      tr: "Ürününüzün kullanım amacı, satış kanalı ve üretim koşullarına göre ambalaj tasarımı, baskı öncesi hazırlık ve üretim tedarikini koordine ediyoruz.",
+      en: "We coordinate packaging design, pre-press preparation and production sourcing according to your product's intended use, sales channel and production conditions.",
+    },
+    [
+      { tr: "Ambalaj ihtiyacının tanımlanması", en: "Defining the packaging requirement" },
+      { tr: "Tasarım ve ölçü bilgilerinin hazırlanması", en: "Preparing design and dimension data" },
+      { tr: "Numune veya prova değerlendirmesi", en: "Sample or proof evaluation" },
+      { tr: "Üretici tekliflerinin karşılaştırılması", en: "Comparing manufacturer quotations" },
+      { tr: "Üretim takibi", en: "Production follow-up" },
+    ],
+    {
+      tr: "Sağlanan çıktılar",
+      en: "What you receive",
+    },
+    {
+      tr: "Hazırlanmış tasarım dosyası, karşılaştırmalı üretici teklifleri ve numune/prova onay kaydı.",
+      en: "A prepared design file, comparative manufacturer quotations and a record of sample/proof approval.",
+    }
+  ),
+
+  /* ---- Çalışma modelimiz --------------------------------------------------- */
+  {
+    ...CARD_GRID_DEFAULTS,
+    id: "tpl_svc_model",
+    columns: 2,
+    heading: bi("Çalışma modelimiz", "How We Work Together"),
+    sub: bi(
+      "Ücretlendirmeyi ürün, hedef pazar, araştırma kapsamı ve operasyon yoğunluğuna göre tekliflendiririz. Çalışmaya başlamadan önce kapsam ve ticari koşulları yazılı olarak netleştiririz.",
+      "We quote based on the product, target market, research scope and operational intensity. Before work begins, the scope and commercial terms are set out in writing."
+    ),
+    cards: [
+      {
+        id: "tpl_svc_m1",
+        eyebrow: bi("PROJE BAZLI", "PROJECT-BASED"),
+        title: bi("Proje bazlı destek", "Project-based support"),
+        desc: bi(
+          "Belirli bir ürün, ülke, araştırma veya sipariş için tanımlanmış kapsam.",
+          "A defined scope for a specific product, country, research task or order."
+        ),
+        note: bi("", ""),
+        image: "",
+      },
+      {
+        id: "tpl_svc_m2",
+        eyebrow: bi("DÜZENLİ", "ONGOING"),
+        title: bi("Düzenli destek", "Ongoing support"),
+        desc: bi(
+          "İhracat veya tedarik süreçlerinin sürekli takibi için kararlaştırılan çalışma modeli.",
+          "An agreed working model for the continuous follow-up of your export or sourcing processes."
+        ),
+        note: bi("", ""),
+        image: "",
+      },
+    ],
+  },
+
   cta(
     "tpl_svc_cta",
     { tr: "BİZİMLE ÇALIŞIN", en: "WORK WITH US" },
     {
-      tr: "Ticari Operasyonunuzu Birlikte Tasarlayalım",
-      en: "Let's Design Your Commercial Operation Together",
+      tr: "İhtiyacınıza Uygun Modeli Görüşelim",
+      en: "Let's Discuss the Model That Fits You",
     },
     {
-      tr: "İhtiyacınıza uygun modeli belirlemek ve doğrudan sahada çalışmaya başlamak için bizimle iletişime geçin.",
-      en: "Contact us to determine the model suited to your needs and start working directly on the ground.",
+      tr: "Ürününüzü, hedef pazarınızı ve ihtiyaç duyduğunuz desteği paylaşın. Size uygun çalışma kapsamını birlikte belirleyelim.",
+      en: "Share your product, your target market and the support you need. Let us define the right scope of work together.",
     },
-    { tr: "Projenizi Görüşelim", en: "Discuss Your Project" }
+    { tr: "Talebimi Gönder", en: "Send My Request" }
   ),
-
-  /* ---- Anahtar Teslim İthalat ------------------------------------------------
-     Eski sitedeki "Kullan-at ithalat" hizmetinin güncel adı ve içeriği.
-     Panelden adı ve metinleri değiştirilebilir. ---------------------------- */
-  {
-    ...CARD_GRID_DEFAULTS,
-    id: "tpl_svc_turnkey",
-    columns: 2,
-    heading: bi("Anahtar Teslim İthalat", "Turnkey Import"),
-    sub: bi(
-      "Firmanızın kendi bünyesinde takip edemeyeceği ithalat süreçlerini biz üstleniyoruz. Ürün kaynağından gümrükleme ve depoya ulaşmaya kadar tüm zincir tek elden yönetilir.",
-      "We take over the import processes your company cannot manage in-house. From product sourcing through customs clearance and delivery to your warehouse, the entire chain is handled by us."
-    ),
-    cards: [
-      {
-        id: "tpl_svc_tt1",
-        eyebrow: bi("ÖN ARAŞTIRMA", "FEASIBILITY"),
-        title: bi("Ön araştırma ve fizibilite", "Pre-research and feasibility"),
-        desc: bi(
-          "Sektörünüzün ve ithal etmek istediğiniz ürünün özgün yönlerini analiz ediyor, potansiyel tedarikçi ülkelerin ekonomik ve lojistik koşullarını değerlendiriyor, gümrük uyumluluk gereksinimlerini ve taşıma modlarını ortaya koyuyoruz. Sonuç: ithalatınızın fizibilitesi, riskleri ve faydaları hakkında bilinçli karar verebileceğiniz bir ön rapor.",
-          "We analyse the specifics of your sector and the product you intend to import, evaluate the economic and logistics conditions of potential supplier countries, and lay out customs compliance requirements and shipping options. The result is a pre-research report so you can make an informed decision on feasibility, risk and benefit."
-        ),
-        note: bi("", ""),
-        image: "",
-      },
-      {
-        id: "tpl_svc_tt2",
-        eyebrow: bi("TEKLİF", "SOURCING"),
-        title: bi("Tedarikçi seçimi ve fiyat", "Supplier selection and pricing"),
-        desc: bi(
-          "Yurt içinde fiyat, kalite veya tasarım avantajı sunabilecek ürünler için farklı ülke ve üreticilerden teklif topluyor, ihracatçı firmalarla pazarlıkları yürütüyor, en uygun GTİP numaralarını tespit ediyor ve taşıma masraflarını raporluyoruz.",
-          "For products that offer price, quality or design advantages, we collect quotations from multiple countries and manufacturers, negotiate with exporters, identify the most suitable HS codes, and report freight costs."
-        ),
-        note: bi("", ""),
-        image: "",
-      },
-      {
-        id: "tpl_svc_tt3",
-        eyebrow: bi("OPERASYON", "EXECUTION"),
-        title: bi("Doküman, taşıma ve gümrükleme", "Documentation, freight and customs"),
-        desc: bi(
-          "Aynı ithalatı birden fazla ülkeden denemek zorunda kalmayın. Akreditif yazımı ve açılışından sevkiyat takibine, uluslararası taşıma ve sigortaya, denetim ve kalite uyum testlerinden gümrükleme ile yurt içi taşımacılığa kadar tüm adımları biz yürütüyoruz.",
-          "You no longer have to try the same import from multiple countries. From letter-of-credit issuance and shipment tracking to international freight and insurance, quality compliance testing, customs clearance and domestic delivery, we execute every step."
-        ),
-        note: bi("", ""),
-        image: "",
-      },
-      {
-        id: "tpl_svc_tt4",
-        eyebrow: bi("SONUÇ", "OUTCOME"),
-        title: bi("Depoya ulaşan ürün", "Product delivered to your door"),
-        desc: bi(
-          "Her aşamayı risk minimizasyonu ilkesiyle yönetiyor, ürünün eksiksiz ve hatasız biçimle deponuza ulaşmasını sağlıyoruz. Böylece bürokratik karmaşalarla ve uzun prosedürlerle uğraşmadan ana işinize odaklanıyorsunuz.",
-          "We manage every step with risk minimisation at the centre and ensure your goods arrive at your warehouse complete and correct — so you stay focused on your core business instead of bureaucracy."
-        ),
-        note: bi("", ""),
-        image: "",
-      },
-    ],
-  },
-
-  /* ---- Fotoğraf bandı: operasyon sahada yürüyor ---- */
-  media(
-    "tpl_svc_band",
-    "row",
-    [
-      {
-        url: "/img/services-band-warehouse.webp",
-        tr: "Konteyner yükleme anında operasyon: sevkiyat planlamasından istif ve teslimata kadar zincir birlikte yürür.",
-        en: "Operations at the moment of container loading: from shipment planning to stacking and delivery, the chain moves together.",
-      },
-      {
-        url: "/img/services-card-trade-review.webp",
-        tr: "Dış ticaret ekibiyle masada: hedef pazar, alıcı profili ve sevkiyat takvimi birlikte netleştirilir.",
-        en: "At the desk with the trade team: target market, buyer profile and shipment schedule are clarified together.",
-      },
-      {
-        url: "/img/services-card-audit.webp",
-        tr: "Üretim hattında yerinde denetim: kapasite, kalite ve teknik şartname uyumu sahada doğrulanır.",
-        en: "On-site audit on the production line: capacity, quality and technical specification compliance are verified in the field.",
-      },
-    ],
-    { tr: "Söz değil, operasyon", en: "Not promises, operations" }
-  ),
-
-  /* ---- Nasıl çalışıyoruz: süreç, koşul değil ---- */
-  {
-    ...ARTICLE_LIST_DEFAULTS,
-    id: "tpl_svc_process",
-    heading: bi("Nasıl çalışıyoruz?", "How We Work"),
-    articles: [
-      {
-        id: "tpl_svc_p1",
-        eyebrow: bi("ADIM 01", "STEP 01"),
-        category: bi("TANIMA", "DISCOVERY"),
-        date: bi("", ""),
-        author: bi("", ""),
-        title: bi("Talebi ve kapsamı netleştirme", "Clarifying your need and scope"),
-        body: bi(
-          "Ürününüzü, hedef pazarınızı ve beklentinizi konuşuyoruz. Hangi ülkeye, hangi standartla, ne sıklıkla göndermek istediğinizi anladıktan sonra çalışma kapsamını birlikte tanımlıyoruz.",
-          "We start by understanding your product, your target market and your expectations. Once we are clear on which country, which standards and how often you want to ship, we define the scope of work together."
-        ),
-      },
-      {
-        id: "tpl_svc_p2",
-        eyebrow: bi("ADIM 02", "STEP 02"),
-        category: bi("ANALİZ", "RESEARCH"),
-        date: bi("", ""),
-        author: bi("", ""),
-        title: bi("Pazar ve alıcı analizi", "Market and buyer analysis"),
-        body: bi(
-          "Tescilli ticaret istihbarat ağımız ve veritabanlarımız üzerinden hedef pazardaki gerçek alıcıları, ithalatçıları ve distribütörleri tespit ediyor; teknik şartname ve regülasyon gereksinimlerini çıkarıyoruz.",
-          "Through our proprietary trade intelligence network and databases, we identify real buyers, importers and distributors in your target market, and extract the technical specification and regulatory requirements involved."
-        ),
-      },
-      {
-        id: "tpl_svc_p3",
-        eyebrow: bi("ADIM 03", "STEP 03"),
-        category: bi("UYGULAMA", "EXECUTION"),
-        date: bi("", ""),
-        author: bi("", ""),
-        title: bi("Tedarik, denetim ve müzakere", "Sourcing, auditing and negotiation"),
-        body: bi(
-          "Üretici kapasitesini ve kalite süreçlerini yerinde denetliyor, teklifleri koordine ediyor, müzakereleri bizzat yürütüyor ve sevkiyat planını oluşturuyoruz.",
-          "We audit manufacturer capacity and quality processes on site, coordinate quotations, conduct the negotiations ourselves, and prepare the shipment plan."
-        ),
-      },
-      {
-        id: "tpl_svc_p4",
-        eyebrow: bi("ADIM 04", "STEP 04"),
-        category: bi("SÜREKLİLİK", "CONTINUITY"),
-        date: bi("", ""),
-        author: bi("", ""),
-        title: bi("Kapanış ve uzun vadeli ağ", "Closure and long-term network"),
-        body: bi(
-          "Sevkiyat kapanışına kadar süreci yönetiyor, ardından tek seferlik satış yerine kalıcı distribütörlük ve bayi ağları kurarak büyümeyi sürdürüyoruz.",
-          "We manage the process through to shipment closure, then go beyond one-off sales by building permanent distributor and dealer networks to sustain growth."
-        ),
-      },
-    ],
-  },
-
-  /* ---- Sıkça sorulan sorular ---- */
-  {
-    ...FAQ_DEFAULTS,
-    id: "tpl_svc_faq",
-    heading: bi("Sıkça sorulan sorular", "Frequently asked questions"),
-    sub: bi(
-      "En çok merak edilen dört soru. Yanıtını bulamazsanız iletişim formundan yazabilirsiniz.",
-      "The four questions we are asked most. If your answer is not here, contact us through the form."
-    ),
-    items: [
-      {
-        id: "tpl_svc_fq1",
-        question: bi(
-          "Kendi bünyemizde ihracat departmanı kurmamız gerekiyor mu?",
-          "Do we need to set up our own export department?"
-        ),
-        answer: bi(
-          "Hayır. Dış kaynaklı ihracat departmanı hizmetimiz tam olarak bunun için var: dışarıdan çalışan profesyonel bir ekip, sizin ekibinize ek yük bindirmeden aynı işi yapar. Sonradan kendi ekibinizi kurmak isterseniz bu süreçte de yol gösteriyoruz.",
-          "No. Our outsourced export department service exists precisely for this: a professional team working from outside performs the same job without adding load to your own staff. If you later prefer to build an internal team, we guide you through that transition as well."
-        ),
-      },
-      {
-        id: "tpl_svc_fq2",
-        question: bi(
-          "Çalışma şekliniz ve ücretlendirmeniz nedir?",
-          "How does your working and pricing model look?"
-        ),
-        answer: bi(
-          "Kapsam her proje için farklılaşır; sabit bir paket uygulamıyoruz. İlk görüşmede ürününüzü, pazarınızı ve hedefinizi dinleyip size özel bir kapsam ve öneri hazırlıyoruz.",
-          "Scope differs for every project; we do not run a fixed package. In the first meeting we listen to your product, market and goals, then prepare a scope and proposal tailored to you."
-        ),
-      },
-      {
-        id: "tpl_svc_fq3",
-        question: bi(
-          "Hangi sektörlerde çalışıyorsunuz?",
-          "Which sectors do you work in?"
-        ),
-        answer: bi(
-          "Demir çelik, medikal, denizcilik, tohumculuk, ambalaj ve femtech başta olmak üzere altı ana sektörde özel uzmanlığımız var. Bunların dışındaki sektörler için de aynı metodolojiyle çalışabiliyoruz.",
-          "We have dedicated expertise in six core sectors, led by steel, medical, marine, agriculture, packaging and femtech. We also apply the same methodology in sectors outside these core domains."
-        ),
-      },
-      {
-        id: "tpl_svc_fq4",
-        question: bi(
-          "Sonuç garantisi veriyor musunuz?",
-          "Do you guarantee results?"
-        ),
-        answer: bi(
-          "Pazara giriş sürecinin tamamını birlikte yürütüyor, teknik uygunluğu sahada doğruluyor ve sevkiyatın kapanmasına kadar operasyonu yönetiyoruz. Ticari sonucun garanti edilmesi yerine, sürecin şeffaf ve denetlenebilir ilerlemesini taahhüt ediyoruz.",
-          "We run the full market-entry process together, verify technical compliance on site, and manage operations until the shipment closes. Rather than promising a guaranteed commercial outcome, we commit to a transparent, auditable process."
-        ),
-      },
-    ],
-  },
-
-  footer(),
-];
+];;
 
 /* ========================================================================== *
  *  Sektörler — /industries
  * ========================================================================== */
 
+// /industries sablonu: genel uzmanlik iddialari yerine urun gruplari ve
+// operasyon konulari.
 const industries = [
   nav(),
   header(
     {
-      tr: "Sektörel Yetkinlik ve Uzmanlık",
-      en: "Sectoral Competence & Expertise",
+      tr: "SEKTÖRLER",
+      en: "SECTORS",
     },
     {
-      tr: "Uzmanlaştığımız sektörler",
-      en: "Industries We Specialise In",
+      tr: "Ürününüzün Teknik ve Ticari İhtiyaçlarına Göre Çalışıyoruz",
+      en: "We Work to Your Product's Technical and Commercial Requirements",
     },
     {
-        tr: "GENCO olarak kritik endüstriyel dikey sektörlerde tescilli teknik bilgiye ve yerleşik tedarikçi–alıcı ağlarına sahibiz. Bu altı alanda ithalat ve ihracat operasyonlarını bizzat kendimiz yürütüyoruz.",
-        en: "At GENCO we hold proprietary technical knowledge and established supplier–buyer networks across critical industrial sectors. In these six areas we run the import and export operations ourselves.",
+      tr: "Uluslararası ticarette aynı yöntem her ürüne aynı şekilde uygulanamaz. Teknik şartname, satın alma kanalı, belge ihtiyacı ve sevkiyat koşulları ürün grubuna göre değişir.\n\nGENCO, araştırma ve operasyon kapsamını bu farklılıkları dikkate alarak belirler.",
+      en: "In international trade, the same method cannot be applied to every product in the same way. Technical specifications, purchasing channels, documentation requirements and shipping conditions vary by product group.\n\nGENCO defines the research and operational scope with these differences in mind.",
     }
   ),
   {
@@ -450,87 +387,105 @@ const industries = [
     cards: [
       {
         id: "tpl_ind_1",
-        eyebrow: bi("01 / SEKTÖR", "01 / SECTOR"),
-        title: bi("Vasıflı Çelik Çubuk", "Engineering Steel Bars"),
+        eyebrow: bi("01 / ÇELİK", "01 / STEEL"),
+        title: bi("Vasıflı Çelik", "Engineering Steel"),
         desc: bi(
-          "Vasıflı (engineering) çelik çubuk gruplarında ithalat ve ihracat. EN ve ASTM normlarına uyum, hassas ölçü ve tolerans yönetimi ile tedarikçi ve alıcı koordinasyonu.",
-          "Import and export of engineering steel bar groups. EN and ASTM compliance, precision dimension and tolerance management, and supplier–buyer coordination."
+          "Çelik çubuk ve ilgili endüstriyel malzeme gruplarında üretici, tedarikçi ve alıcı koordinasyonu sağlıyoruz. Çalışmanın başlangıcında çelik kalitesi, referans standart, ölçü, tolerans, teslim durumu ve belge beklentilerini netleştiriyoruz. Tekliflerin aynı teknik kapsam üzerinden karşılaştırılmasını ve açık konuların sipariş öncesinde çözülmesini destekliyoruz.",
+          "We provide manufacturer, supplier and buyer coordination for steel bars and related industrial material groups. At the start of the work we clarify steel quality, reference standards, dimensions, tolerances, delivery condition and documentation expectations. We support the comparison of quotations on the same technical scope and the resolution of open points before ordering."
         ),
-        note: bi("✓ Vasıflı Çelik İthalat & İhracat", "✓ Engineering Steel Import & Export"),
+        note: bi(
+          "Destek alanları: Ürün ve üretici araştırması · Teklif karşılaştırması · Teknik belge takibi · Numune ve sevkiyat koordinasyonu",
+          "Support areas: Product and manufacturer research · Quotation comparison · Technical documentation follow-up · Sample and shipment coordination"
+        ),
         image: "/img/sector-photo-steel.webp",
       },
       {
         id: "tpl_ind_2",
-        eyebrow: bi("02 / SEKTÖR", "02 / SECTOR"),
-        title: bi("Yatçılık & Marine Ekipman", "Yachting & Marine Equipment"),
+        eyebrow: bi("02 / MARINE", "02 / MARINE"),
+        title: bi("Yatçılık ve Marine Ekipmanı", "Yachting & Marine Equipment"),
         desc: bi(
-          "Yatçılık ve marine ekipmanı üzerinden ithalat-ihracat. Aksesuar ve güvenlik ekipmanları, CE ve tescil uyumu, sevkiyat süreçleri.",
-          "Import and export in yachting and marine equipment. Accessories and safety equipment, CE and registration compliance, shipment processes."
+          "Yatçılık ve marine ürünlerinde aksesuar, ekipman ve ilgili ürün grupları için tedarikçi ve alıcı araştırması yapıyoruz. Ürünün kullanım amacı, teknik özellikleri ve hedef pazardaki satış kanalı üzerinden çalışma kapsamını oluşturuyoruz. Gerekli belge ve uygunluk kontrollerini ürün grubuna göre ilgili taraflarla koordine ediyoruz.",
+          "For yachting and marine products we research suppliers and buyers across accessories, equipment and related product groups. We build the scope of work around the product's intended use, technical features and the sales channel in the target market. We coordinate the documentation and conformity checks required for each product group with the relevant parties."
         ),
-        note: bi("✓ Aksesuar & Güvenlik Ekipmanları", "✓ Accessories & Safety Equipment"),
+        note: bi(
+          "Destek alanları: Ürün eşleştirme · Tedarikçi araştırması · Belge takibi · Sipariş koordinasyonu",
+          "Support areas: Product matching · Supplier research · Documentation follow-up · Order coordination"
+        ),
         image: "/img/sector-photo-marine.webp",
       },
       {
         id: "tpl_ind_3",
-        eyebrow: bi("03 / SEKTÖR", "03 / SECTOR"),
+        eyebrow: bi("03 / TOHUMCULUK", "03 / SEED TRADE"),
         title: bi("Tohumculuk", "Seed Trade"),
         desc: bi(
-          "Tohum ithalat ve ihracatı. Ürün izinlerinin alınması, analiz süreçlerinin yönetilmesi, bitki sağlığı ve sertifikasyon gereksinimlerinin takibi.",
-          "Seed import and export. Securing product permits, managing analysis processes, tracking phytosanitary and certification requirements."
+          "Tohum ticaretinde ürün, menşe ve hedef ülkeye bağlı süreçlerin birlikte planlanmasına destek oluyoruz. Tedarikçi iletişimi, ürün bilgilerinin toplanması, gerekli izin ve analiz süreçlerinin ilgili uzmanlarla takibi ile sevkiyat hazırlığını koordine ediyoruz.",
+          "In seed trade we support the joint planning of processes that depend on the product, its origin and the target country. We coordinate supplier communication, the collection of product information, follow-up on the permits and analysis processes with the relevant specialists, and shipment preparation."
         ),
-        note: bi("✓ İzin & Analiz Süreçleri", "✓ Permit & Analysis Processes"),
+        note: bi(
+          "Destek alanları: Tedarikçi ve alıcı araştırması · Belge ve analiz koordinasyonu · Operasyon takibi",
+          "Support areas: Supplier and buyer research · Documentation and analysis coordination · Operational follow-up"
+        ),
         image: "/img/sector-photo-seeds.webp",
       },
       {
         id: "tpl_ind_4",
-        eyebrow: bi("04 / SEKTÖR", "04 / SECTOR"),
-        title: bi("Medikal & Sağlık", "Medical & Healthcare"),
+        eyebrow: bi("04 / MEDİKAL", "04 / MEDICAL"),
+        title: bi("Medikal Ürünler", "Medical Products"),
         desc: bi(
-          "Medikal malzemeler ve cerrahi sarf ürünlerinde ithalat-ihracat. Ürün grubunun regülasyon gereksinimlerine göre tedarikçi, alıcı ve sevkiyat koordinasyonu.",
-          "Import and export of medical supplies and surgical consumables. Supplier, buyer and shipment coordination shaped by each product group's regulatory requirements."
+          "Medikal malzemeler ve cerrahi sarf ürünlerinde teknik beklentileri ve ticari koşulları birlikte değerlendiriyoruz. Ürünün kullanım amacı, ürün tanımı, belge seti ve alıcının şartnamesi üzerinden üretici araştırması yapıyoruz. Teknik ve düzenleyici değerlendirme gerektiren konuları ilgili uzmanlarla koordine ediyoruz.",
+          "We assess the technical expectations and commercial conditions of medical supplies and surgical consumables together. We research manufacturers based on the product's intended use, product definition, documentation set and the buyer's specification. We coordinate matters requiring technical and regulatory assessment with the relevant specialists."
         ),
-        note: bi("✓ Cerrahi Sarf & Medikal Ürünleri", "✓ Surgical & Medical Products"),
+        note: bi(
+          "Destek alanları: Üretici araştırması · Numune koordinasyonu · Teknik belge takibi · Ticari görüşmeler",
+          "Support areas: Manufacturer research · Sample coordination · Technical documentation follow-up · Commercial meetings"
+        ),
         image: "/img/sector-photo-medical.webp",
       },
       {
         id: "tpl_ind_5",
-        eyebrow: bi("05 / SEKTÖR", "05 / SECTOR"),
+        eyebrow: bi("05 / AMBALAJ", "05 / PACKAGING"),
         title: bi("Ambalaj", "Packaging"),
         desc: bi(
-          "Ambalaj tasarımı, baskı öncesi hazırlık ve baskı hizmetleri. Fikirden baskılı ürüne kadar tüm zincir tek elden yürütülür: tasarım, prepress kontrol, kalıp ve plaka, baskı ve sonrası işlemler.",
-          "Packaging design, pre-press preparation and printing. The entire chain is handled end to end, from the initial idea to the printed product: design, prepress checks, tooling and plates, printing and post-press finishing."
+          "Ambalajın tasarım, üretim ve tedarik aşamalarını birlikte ele alıyoruz. Ürün özellikleri, kullanım koşulları, baskı yöntemi, sipariş miktarı ve hedef maliyet üzerinden uygun seçenekleri araştırıyoruz. Tasarım dosyası, ölçü, malzeme ve prova bilgilerinin üreticiyle netleştirilmesini sağlıyoruz.",
+          "We handle the design, production and sourcing stages of packaging together. We research suitable options based on product characteristics, usage conditions, printing method, order quantity and target cost. We ensure that the design file, dimensions, materials and proof details are clarified with the manufacturer."
         ),
-        note: bi("✓ Tasarım · Prepress · Baskı", "✓ Design · Prepress · Printing"),
+        note: bi(
+          "Destek alanları: Ambalaj geliştirme · Baskı öncesi hazırlık · Üretici araştırması · Numune ve üretim koordinasyonu",
+          "Support areas: Packaging development · Pre-press preparation · Manufacturer research · Sample and production coordination"
+        ),
         image: "/img/sector-photo-packaging.webp",
       },
       {
         id: "tpl_ind_6",
-        eyebrow: bi("06 / SEKTÖR", "06 / SECTOR"),
+        eyebrow: bi("06 / FEMTECH", "06 / FEMTECH"),
         title: bi(
-          "Femtech & Sağlık Teknolojileri",
-          "Femtech & Health Tech"
+          "Femtech ve Kadın Sağlığı Ürünleri",
+          "Femtech and Women's Health Products"
         ),
         desc: bi(
-          "Kadın sağlığı ve yenilikçi sağlık teknolojileri alanında ihracat. Hedef pazar analizi, alıcı tespiti, düzenleyici gereksinimlerin takibi ve sevkiyat koordinasyonu.",
-          "Exports in women's health and innovative health technologies. Market analysis, buyer identification, tracking regulatory requirements and shipment coordination."
+          "Kadın sağlığı ürünleri ve sağlık teknolojileri alanındaki markalar için hedef pazar, satış kanalı ve distribütör araştırması sağlıyoruz. Ürünün kullanım amacı ve hedef müşteri grubuna göre uygun ticari kanalları belirliyor; potansiyel iş ortaklarıyla görüşmeleri takip ediyoruz. Ürün sınıflandırması ve pazarlama iddiaları gibi konularda gerekli uzman değerlendirmelerini koordine ediyoruz.",
+          "For brands in women's health products and health technologies, we research target markets, sales channels and distributors. We identify the suitable commercial channels based on the product's intended use and target customer group, and follow up on discussions with potential partners. We coordinate the expert assessments needed on matters such as product classification and marketing claims."
         ),
-        note: bi("✓ Sağlık Ürünleri İhracatı", "✓ Health Product Exports"),
+        note: bi(
+          "Destek alanları: Pazar araştırması · Distribütör geliştirme · Ürün sunumu · İhracat koordinasyonu",
+          "Support areas: Market research · Distributor development · Product presentation · Export coordination"
+        ),
         image: "/img/sector-photo-femtech.webp",
       },
     ],
   },
   cta(
     "tpl_ind_cta",
-    { tr: "Sınırsız Operasyonel Esneklik", en: "Unlimited Operational Flexibility" },
-    { tr: "Uzmanlık Alanlarımız Dışında Mısınız?", en: "Outside Our Core Fields?" },
+    { tr: "FARKLI BİR SEKTÖRDE MİSİNİZ?", en: "WORKING IN A DIFFERENT SECTOR?" },
+    { tr: "Farklı Bir Sektörde Misiniz?", en: "Are You in a Different Sector?" },
     {
-      tr: "GENCO'nun tescilli tedarik ve pazar araştırma metodolojisi, sektörel ayrıcalık gözetmeksizin her türlü ürüne ve hammaddeye uyarlanabilir. Hangi sektörde olursanız olun, ithalat ve ihracat hedefinizi sahada gerçeğe dönüştürüyoruz.",
-      en: "GENCO's proprietary sourcing and market research methodology can adapt to any product or raw material without sectoral limitations. No matter your industry, we turn your import and export goals into reality on the ground.",
+      tr: "Ürününüzü ve ticari hedefinizi paylaşın. İhtiyacın kapsamını, araştırma yöntemini ve birlikte çalışabileceğimiz alanları değerlendirelim.",
+      en: "Share your product and your commercial objective. Let us assess the scope of the need, the research method and the areas where we can work together.",
     },
-    { tr: "Sektörünüzü Görüşelim", en: "Discuss Your Industry" }
+    { tr: "Sektörünüzü Görüşelim", en: "Discuss Your Sector" }
   ),
   footer(),
-];
+];;
 
 /* ========================================================================== *
  *  Vaka Analizleri — /case-studies
