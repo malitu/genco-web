@@ -545,7 +545,7 @@ const caseStudies = [
       en: "What we have done: sector, market and scope",
     },
     {
-      tr: "Bu sayfa **yürüttüğümüz somut operasyonları** gösterir: hangi sektörde, hangi pazarda, ne kapsamda çalıştık. Müşteri ve hacim bilgileri gizlilik nedeniyle paylaşılmamaktadır.\n\nSektörün kendisiyle ilgili teknik ve düzenleyici tartışmaları için Sektör Analizleri sayfasına bakın.",
+      tr: "Bu sayfa yürüttüğümüz somut operasyonları gösterir: hangi sektörde, hangi pazarda, ne kapsamda çalıştık. Müşteri ve hacim bilgileri gizlilik nedeniyle paylaşılmamaktadır.\n\nSektörün kendisiyle ilgili teknik ve düzenleyici tartışmalar için Sektör Analizleri sayfasına bakın.",
       en: "This page shows the concrete operations we have run: in which sector, in which market, and with what scope. Client and volume figures are withheld for confidentiality.\n\nFor technical and regulatory discussion of the sectors themselves, see the Sector Insights page.",
     }
   ),
@@ -753,7 +753,7 @@ const insights = [
       en: "Sector Insights: Notes from the Field",
     },
     {
-      tr: "Bu sayfa **yaptığımız işleri değil, sektörün kendi kurallarını** anlatır: hangi standart, hangi izin, hangi tuzak. Uluslararası ticarette kendi deneyimimizden çıkardığımız stratejik notları burada paylaşıyoruz.\n\nYürüttüğümüz somut operasyonlar için Vaka Analizleri sayfasına bakın.",
+      tr: "Bu sayfa yaptığımız işleri değil, sektörün kendi kurallarını anlatır: hangi standart, hangi izin, hangi tuzak. Uluslararası ticarette kendi deneyimimizden çıkardığımız stratejik notları burada paylaşıyoruz.\n\nYürüttüğümüz somut operasyonlar için Vaka Analizleri sayfasına bakın.",
       en: "This page is not about what we have done, but about how the sector itself works: which standard, which permit, which trap. Here we share the strategic notes drawn from our own experience in international trade.\n\nFor the concrete operations we have run, see the Case Studies page.",
     }
   ),

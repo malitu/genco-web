@@ -2,6 +2,7 @@ import '../globals.css';
 
 import { ORG, PAGES, SITE_URL } from '../../lib/seo';
 import JsonLd from '../../components/JsonLd';
+import Analytics from '../../components/Analytics';
 import { schemaOrganization, schemaWebSite } from '../../components/JsonLd';
 
 /**
@@ -125,7 +126,12 @@ export default function RootLayout({ children }) {
         <JsonLd data={orgSchema} />
         <JsonLd data={siteSchema} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* NEXT_PUBLIC_GA_ID tanımlıysa burada etkinleşir; değilse hiçbir
+            şey basılmaz. Ayrıntı src/components/Analytics.jsx. */}
+        <Analytics />
+      </body>
     </html>
   );
 }

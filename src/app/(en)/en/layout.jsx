@@ -2,6 +2,7 @@ import '../../globals.css';
 
 import { ORG, PAGES, SITE_URL } from '../../../lib/seo';
 import JsonLd from '../../../components/JsonLd';
+import Analytics from '../../../components/Analytics';
 import { schemaOrganization, schemaWebSite } from '../../../components/JsonLd';
 
 /**
@@ -117,7 +118,11 @@ export default function EnLayout({ children }) {
         <JsonLd data={orgSchema} />
         <JsonLd data={siteSchema} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* TR ağacıyla aynı ölçüm: iki dil tek mülkte toplanır. */}
+        <Analytics />
+      </body>
     </html>
   );
 }

@@ -1844,7 +1844,7 @@ function HeroBlock({ block, ctx }) {
               {E("primaryLabel", "span", "", "Buton metni")}
             </a>
             <a
-              href={edit ? undefined : block.secondaryHref}
+              href={edit ? undefined : localeHref(block.secondaryHref || "/services", lang)}
               onClick={(e) => edit && e.preventDefault()}
               className="border-2 border-[#0f172a] text-[#0f172a] px-8 py-4 text-center font-bold rounded hover:bg-[#0f172a] hover:text-white transition"
             >

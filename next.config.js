@@ -68,7 +68,16 @@ const nextConfig = {
       },
 
       // Eski WordPress sitesinden kalan, yeni sitede karşılığı olmayan
-      // adresler. (Eski site: /hizmetlerimiz/ ve /iletisim/)
+      // adresler.
+      //
+      // Kaynak: eski sitenin kendi sitemap'i
+      // (https://www.gencotr.com/sitemap.xml) 3 alt sayfa listeliyordu:
+      //   /hizmetlerimiz/  ->  /services
+      //   /iletisim/       ->  /contact
+      //   /2025/01/09/hello-world/  ->  ana sayfa
+      // Sonuncusu WordPress'in varsayılan "Hello world!" yazısıydı; içeriği
+      // olmayan bir adres olduğu için ana sayfaya yönlendirildi (404 yerine —
+      // Google'a "bu sayfa taşındı" sinyali vermek daha doğru).
       {
         source: "/hizmetlerimiz",
         destination: "/services",
@@ -77,6 +86,16 @@ const nextConfig = {
       {
         source: "/iletisim",
         destination: "/contact",
+        permanent: true,
+      },
+      {
+        source: "/hello-world",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/2025/01/09/hello-world",
+        destination: "/",
         permanent: true,
       },
     ];
