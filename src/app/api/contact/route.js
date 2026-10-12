@@ -8,16 +8,24 @@ import { NextResponse } from "next/server";
  *   2. Cloudflare Turnstile CAPTCHA'sı sunucu tarafında doğrulanır.
  *      (Tarayıcıda doğrulama yapılsa botlar taklit edebilirdi.)
  *   3. Kaba kuvvet (rate limit) engellenir.
- *   4. Mesaj Web3Forms aracılığıyla info@gencotr.com adresine gönderilir.
+ *   4. Mesaj Titan SMTP üzerinden info@gencotr.com adresine gönderilir.
+ *      (Web3Forms, Cloudflare bot koruması nedeniyle sunucudan istek
+ *      reddediyor; ölçüm: 403. Web3Forms yedek yol olarak durur.)
  *
  * Gerekli ortam değişkenleri (Vercel → Settings → Environment Variables):
- *   WEB3FORMS_KEY           Web3Forms erişim anahtarı   (sunucuda gizli kalır)
- *   TURNSTILE_SECRET_KEY    Turnstile gizli anahtarı
+ *   SMTP_USER                 info@gencotr.com
+ *   SMTP_PASS                 kovanın giriş şifresi   (sunucuda gizli kalır)
+ *   SMTP_HOST                 varsayılan: smtp0101.titan.email
+ *   SMTP_PORT                 varsayılan: 465
+ *   WEB3FORMS_KEY             yedek yol (sunucudan 403 alıyor)
+ *   TURNSTILE_SECRET_KEY      Turnstile gizli anahtarı
  *   NEXT_PUBLIC_TURNSTILE_SITE_KEY  Turnstile site anahtarı (istemciye gider)
  *
  * CAPTCHA anahtarı tanımlı değilse doğrulama atlanır ve mesaj gönderilir;
  * yalnızca gizli bot tuzağı (honeypot) koruma sağlar.
  */
+
+import { mailGonder, smtpHazirMi } from "../../../lib/mailGonder";
 
 export const runtime = "nodejs";
 
@@ -166,6 +174,47 @@ export async function POST(request) {
   }
 
   // --- E-posta gönderimi --------------------------------------------------
+  // Öncelik Titan SMTP (kendi altyapımız). Web3Forms yedek olarak durur:
+  // api.web3forms.com Cloudflare arkasında ve sunucudan gelen istekleri
+  // 403 ile reddediyor. Ayrıntı: docs/iletisim-formu-sorunu.md
+
+  const konu = captchaVerified
+    ? "GENCO web sitesi — iletişim formu"
+    : "GENCO web sitesi — iletişim formu (CAPTCHA doğrulanmadı)";
+
+  // Bağlama alanları — teklif hazırlarken doğrudan kullanılır.
+  const govde = [
+    data.message,
+    "",
+    "---",
+    `Telefon: ${data.phone}`,
+    `Gönderen: ${data.name} <${data.email}>`,
+    data.company ? `Şirket / web sitesi: ${data.company}` : null,
+    data.service ? `İhtiyaç duyulan hizmet: ${data.service}` : null,
+    data.country ? `Hedef ülke: ${data.country}` : null,
+    "Kaynak: genco web sitesi iletişim formu",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  // --- 1) Titan SMTP -------------------------------------------------------
+  if (smtpHazirMi()) {
+    const sonuc = await mailGonder({
+      konu,
+      metin: govde,
+      yanitAdresi: data.email,
+      yanitAdi: data.name,
+    });
+
+    if (sonuc.ok) {
+      return NextResponse.json({ ok: true, yontem: "smtp" });
+    }
+
+    // Bağlantı sorunu olabilir: ağ hatası ya da kova şifresi değişmiş olabilir.
+    console.error("Titan SMTP gönderimi başarısız:", sonuc.hata);
+  }
+
+  // --- 2) Web3Forms yedeği -------------------------------------------------
   const accessKey = process.env.WEB3FORMS_KEY;
   if (!accessKey) {
     console.error("WEB3FORMS_KEY tanımlı değil; mesaj gönderilemedi.");
@@ -196,9 +245,7 @@ export async function POST(request) {
       },
       body: JSON.stringify({
         access_key: accessKey,
-        subject: captchaVerified
-          ? "GENCO web sitesi — iletişim formu"
-          : "GENCO web sitesi — iletişim formu (CAPTCHA doğrulanmadı)",
+        subject: konu,
         from_name: `GENCO — ${data.name}`,
         // Gelen e-postada "Yanıtla" düğmesi ziyaretçiye gider.
         replyto: data.email,
@@ -226,7 +273,7 @@ export async function POST(request) {
     const json = await res.json().catch(() => ({}));
 
     if (json?.success) {
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true, yontem: "web3forms" });
     }
 
     console.error("Web3Forms reddetti:", json?.message || res.status);
