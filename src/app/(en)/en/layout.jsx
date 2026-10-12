@@ -4,6 +4,7 @@ import { ORG, PAGES, SITE_URL } from '../../../lib/seo';
 import JsonLd from '../../../components/JsonLd';
 import Analytics from '../../../components/Analytics';
 import CerezOnay from "../../../components/CerezOnay";
+import YukariCik from "../../../components/YukariCik";
 import { schemaOrganization, schemaWebSite } from '../../../components/JsonLd';
 
 /**
@@ -133,6 +134,8 @@ export default function EnLayout({ children }) {
         {/* Çerez izni bandı: analiz yalnızca onaydan sonra yüklenir. */}
 
         <CerezOnay lang="EN" />
+        {/* Kaydırınca beliren başa dön düğmesi. */}
+        <YukariCik lang="EN" />
       </body>
     </html>
   );

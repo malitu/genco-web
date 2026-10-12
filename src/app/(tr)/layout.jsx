@@ -4,6 +4,7 @@ import { ORG, PAGES, SITE_URL } from '../../lib/seo';
 import JsonLd from '../../components/JsonLd';
 import Analytics from '../../components/Analytics';
 import CerezOnay from "../../components/CerezOnay";
+import YukariCik from "../../components/YukariCik";
 import { schemaOrganization, schemaWebSite } from '../../components/JsonLd';
 
 /**
@@ -142,6 +143,8 @@ export default function RootLayout({ children }) {
         {/* Çerez izni bandı: analiz yalnızca onaydan sonra yüklenir. */}
 
         <CerezOnay lang="TR" />
+        {/* Kaydırınca beliren başa dön düğmesi. */}
+        <YukariCik lang="TR" />
       </body>
     </html>
   );
