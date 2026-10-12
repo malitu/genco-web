@@ -3,6 +3,7 @@ import '../../globals.css';
 import { ORG, PAGES, SITE_URL } from '../../../lib/seo';
 import JsonLd from '../../../components/JsonLd';
 import Analytics from '../../../components/Analytics';
+import CerezOnay from "../../../components/CerezOnay";
 import { schemaOrganization, schemaWebSite } from '../../../components/JsonLd';
 
 /**
@@ -122,6 +123,10 @@ export default function EnLayout({ children }) {
         {children}
         {/* TR ağacıyla aynı ölçüm: iki dil tek mülkte toplanır. */}
         <Analytics />
+
+        {/* Çerez izni bandı: analiz yalnızca onaydan sonra yüklenir. */}
+
+        <CerezOnay lang="EN" />
       </body>
     </html>
   );

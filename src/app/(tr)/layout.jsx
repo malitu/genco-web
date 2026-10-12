@@ -3,6 +3,7 @@ import '../globals.css';
 import { ORG, PAGES, SITE_URL } from '../../lib/seo';
 import JsonLd from '../../components/JsonLd';
 import Analytics from '../../components/Analytics';
+import CerezOnay from "../../components/CerezOnay";
 import { schemaOrganization, schemaWebSite } from '../../components/JsonLd';
 
 /**
@@ -131,6 +132,10 @@ export default function RootLayout({ children }) {
         {/* NEXT_PUBLIC_GA_ID tanımlıysa burada etkinleşir; değilse hiçbir
             şey basılmaz. Ayrıntı src/components/Analytics.jsx. */}
         <Analytics />
+
+        {/* Çerez izni bandı: analiz yalnızca onaydan sonra yüklenir. */}
+
+        <CerezOnay lang="TR" />
       </body>
     </html>
   );
