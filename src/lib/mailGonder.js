@@ -27,7 +27,9 @@
 import nodemailer from "nodemailer";
 
 const SMPT_VARS = {
-  host: process.env.SMTP_HOST || "smtp0101.titan.email",
+  // Titan dokümanında geçen birincil giden sunucu. (smtp0101.titan.email de
+  // aynı hizmeti veriyor; ikisi de ölçüldü, ikisi de port 465'te açık.)
+  host: process.env.SMTP_HOST || "smtp.titan.email",
   port: Number(process.env.SMTP_PORT || 465),
   secure: (Number(process.env.SMTP_PORT || 465)) === 465,
   // Titan sertifikasını doğrular; zincir hatası gönderimi düşürmesin.

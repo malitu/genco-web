@@ -49,6 +49,23 @@ const nextConfig = {
 
   async redirects() {
     return [
+      /* Vercel'in verdiği geçici adres -> kalıcı alan adı.
+       *
+       * Neden gerekli: genco-web.vercel.app hala 200 ile açılıyor, yani aynı
+       * sayfanın İKİ adresi oluşuyor. Canonical doğru yazılmış olsa bile
+       * arama motoru ikisini de tarayabiliyor. 308 yönlendirme adresi ve tarama
+       * bütçesini tek yöne bağlar:
+       *   genco-web.vercel.app/<yol>  ->  https://www.gencotr.com/<yol>
+       *
+       * "has" koşulu sunucu adına göre daraltır; aksi halde bu kural her adres
+       * için eşleşirdi ve canlı alan adını da yakalardı. */
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "genco-web.vercel.app" }],
+        destination: "https://www.gencotr.com/:path*",
+        permanent: true,
+      },
+
       // Türkçe "gizlilik" adresinin İngilizce karşılığı daha okunabilir bir
       // adreste yayınlanıyor. Blok motoru iç bağlantıyı /en/gizlilik olarak
       // üretebildiği için eski adres buraya yönlendirilir.
