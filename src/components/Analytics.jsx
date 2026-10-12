@@ -1,35 +1,41 @@
-import Script from 'next/script';
+import Script from "next/script";
 
 /**
- * Google Analytics 4 (GA4) — yayın öncesi ölçüm.
+ * Google Analytics 4 - yayın ölçümü.
  * ---------------------------------------------------------------------------
- * Neden bu dosya var: Analitik kodu doğrudan layout'a yazmak yerine tek bir
- * yerden yönetiliyor. İki kök düzeni (app/(tr) ve app/(en)/en) var ve ikisi de
- * aynı ölçümü yapmalı; aksi halde EN trafiği raporda görünmez.
+ * İki kök düzen (app/(tr) ve app/(en)/en) var ve ikisi de aynı ölçümü yapar;
+ * aksi halde İngilizce trafik raporda görünmez.
  *
- * NASIL AÇILIR (5 dakika, ücretsiz):
+ * NASIL AÇILIR:
  *   1. analytics.google.com -> Yönetici -> Mülk oluştur -> Web
  *   2. Mülk adı ve web sitesi adresi girin
  *   3. "Ölçüm Kimliği" (Measurement ID) kopyalayın; G-XXXXXXX biçimindedir
+ *      (Dikkat: "Mülk Kimliği" (UA-…) değil, "Ölçüm Kimliği"dir.)
  *   4. Vercel -> proje -> Settings -> Environment Variables
  *      NEXT_PUBLIC_GA_ID = G-XXXXXXX   (Production ve Preview için ekleyin)
- *   5. Yeniden dağıtın. Ölçüm otomatik başlar.
+ *   5. Yeniden dağıtın. Ölçüm otomatik bağlanır.
  *
- * Değişken tanımlı değilse bileşek hiçbir şey basmaz — site normal çalışır,
+ * Değişken tanımlı değilse hiçbir şey basılmaz - site normal çalışır,
  * yalnızca trafiğin kaydı tutulmaz. Bu, "kod bozuk" riskini sıfırlar.
  *
  * Yönetim paneli (/admin) ve 404 sayfası bilerek ÖLÇÜLMEZ: panel trafiği
- * raporu kirlendirir, hata sayfası ise zaten tek seferlik bir görüntülenmedir.
+ * raporu kirlendirir, hata sayfası ise zaten tek seferlik bir görüntülemedir.
+ *
+ * Tek seferlik olaylar (ör. form gönderimi) bu dosyadan değil,
+ * src/lib/olayGonder.js üzerinden gönderilir; oradaki gerekçe o fonksiyonun
+ * yalnızca istemcide çalışabilmesiyle ilgilidir.
  */
 
+/** Ölçüm kimliği. Tanımlı değilse bileşe hiçbir şey basmaz. */
+const ID = process.env.NEXT_PUBLIC_GA_ID;
+
 export default function Analytics() {
-  const id = process.env.NEXT_PUBLIC_GA_ID;
-  if (!id) return null;
+  if (!ID) return null;
 
   return (
     <>
       <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${id}`}
+        src={`https://www.googletagmanager.com/gtag/js?id=${ID}`}
         strategy="afterInteractive"
       />
       <Script id="genco-ga4" strategy="afterInteractive">
@@ -37,7 +43,7 @@ export default function Analytics() {
           window.dataLayer = window.dataLayer || [];
           function gtag(){ dataLayer.push(arguments); }
           gtag('js', new Date());
-          gtag('config', '${id}', { anonymize_ip: true });
+          gtag('config', '${ID}', { anonymize_ip: true });
         `}
       </Script>
     </>

@@ -13,6 +13,8 @@
  * uygulaması hazır metinle açılır.
  */
 
+import { olayGonder } from "./olayGonder";
+
 const API_URL = "/api/contact";
 export const CONTACT_EMAIL = "info@gencotr.com";
 
@@ -40,7 +42,14 @@ export async function sendContactMessage(data) {
     };
   }
 
-  if (json?.ok) return { ok: true };
+  if (json?.ok) {
+    // Yalnızca sunucu onayladığında ölçüyoruz: e-posta gerçekten gitti.
+    olayGonder("generate_lead", {
+      hizmet: data.service || "belirtilmedi",
+      method: json.yontem || "bilinmiyor",
+    });
+    return { ok: true };
+  }
 
   // Sunucu doğrulamayı geçti ama e-posta servisine ulaşamadıysa tarayıcıdan
   // göndermeyi dene (Cloudflare sunucu isteklerini engelleyebiliyor).
