@@ -97,6 +97,12 @@ export const metadata = {
     },
   },
 
+  // Search Console site dogrulamasi (https://gencotr.com).
+  // Google etiketi dogruladiktan sonra kaldirilabilir.
+  other: {
+    "google-site-verification": "4Hy91J0hXM1Uz6tDQRBu1q2e6T_QK2RtSTEg9sQSc_w",
+  },
+
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',
