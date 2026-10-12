@@ -252,6 +252,47 @@ export function schemaArticle(pathname, locale, bilgi) {
 }
 
 /**
+ * Vaka analizi şeması — /case-studies/<slug> sayfaları.
+ *
+ * Bir vaka, şirketin kendi deneyimidir. Makine tarafında en işe yarayan
+ * bağlama, okuyucuya üç somut alanı (sektör, ürün grubu, pazar) `about`
+ * üzerinden bağlamaktır: "çelik çubuk ihracatı vakası" diye arayan bir
+ * asistanın eşleşebilmesi bu alanlara bağlıdır.
+ *
+ * @param {string} pathname  /case-studies/<slug>
+ * @param {"TR"|"EN"} locale
+ * @param {object} vaka      src/lib/vaka.js kaydı
+ */
+export function schemaCaseStudy(pathname, locale, vaka) {
+  const en = locale === "EN";
+  const url = pageUrl(pathname);
+  const metin = (b) => (b ? (en ? b.en || b.tr : b.tr || b.en) || "" : "");
+
+  const anahtarlar = [vaka.sektor, vaka.urun, vaka.ulke].filter(Boolean);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": `${url}#article`,
+    url,
+    headline: metin(vaka.baslik || vaka.urun),
+    description: metin(vaka.giris || vaka.zorluk).slice(0, 300) || undefined,
+    inLanguage: inLang(locale),
+    datePublished: vaka.tarih || undefined,
+    dateModified: vaka.tarih || undefined,
+    about: anahtarlar.map((k) => ({ "@type": "Thing", name: metin(k) })),
+    author: {
+      // Yazılarla aynı: yazar kurum, iki dilde de aynı kimliğe bağlı.
+      "@type": "Organization",
+      "@id": `${ORG.url}/#organization`,
+      name: en ? ORG.shortName : ORG.legalName,
+    },
+    publisher: { "@id": `${ORG.url}/#organization` },
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+  };
+}
+
+/**
  * Sayfa meta verisi için yol haritası (breadcrumb) şeması.
  * /en/... adreslerinde de Türkçe karşılığı gösterilir; böylece iki dil aynı
  * şirketin aynı bölümü olarak makine tarafından eşleşir.

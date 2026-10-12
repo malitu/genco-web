@@ -26,8 +26,8 @@ import {
 
 const bi = (tr, en) => ({ tr, en });
 
-const nav = () => ({ ...NAV_DEFAULTS, id: "tpl_nav" });
-const footer = () => ({ ...FOOTER_DEFAULTS, id: "tpl_footer" });
+export const nav = () => ({ ...NAV_DEFAULTS, id: "tpl_nav" });
+export const footer = () => ({ ...FOOTER_DEFAULTS, id: "tpl_footer" });
 
 const header = (badge, heading, sub) => ({
   ...PAGE_HEADER_DEFAULTS,
@@ -495,14 +495,14 @@ const industries = [
 const caseStudies = [
   nav(),
   header(
-    { tr: "Vaka Analizleri — Sahadaki İcraatlarımız", en: "Case Studies — Our Field Execution" },
+    { tr: "Sektör Deneyimi", en: "Sector Experience" },
     {
-      tr: "Yaptığımız işler: sektör, pazar ve kapsam",
-      en: "What we have done: sector, market and scope",
+      tr: "Altı ana sektörde yürüttüğümüz operasyonların kapsamı",
+      en: "The scope of the operations we run across six sectors",
     },
     {
-      tr: "Bu sayfa yürüttüğümüz somut operasyonları gösterir: hangi sektörde, hangi pazarda, ne kapsamda çalıştık. Müşteri ve hacim bilgileri gizlilik nedeniyle paylaşılmamaktadır.\n\nSektörün kendisiyle ilgili teknik ve düzenleyici tartışmalar için Sektör Analizleri sayfasına bakın.",
-      en: "This page shows the concrete operations we have run: in which sector, in which market, and with what scope. Client and volume figures are withheld for confidentiality.\n\nFor technical and regulatory discussion of the sectors themselves, see the Sector Insights page.",
+      tr: "Bu sayfa altı ana sektörde hangi kapsamda çalıştığımızı gösterir; proje anlatımı değildir. Paylaşılabilen proje detayları ayrı vaka sayfalarında yayımlanır.\n\nSektörün kendisiyle ilgili teknik ve düzenleyici tartışmalar için Sektör Analizleri sayfasına bakın.",
+      en: "This page shows the scope we work in across six main sectors; it is not a set of project accounts. Shareable project details are published as separate case pages.\n\nFor technical and regulatory discussion of the sectors themselves, see the Sector Insights page.",
     }
   ),
   media(
@@ -519,7 +519,7 @@ const caseStudies = [
   ),
   feature(
     "tpl_cs_1",
-    { tr: "VAKA / 01", en: "CASE / 01" },
+    { tr: "01 / ÇELİK", en: "01 / STEEL" },
     {
       tr: "Vasıflı Çelik Çubuk İthalat ve İhracatı",
       en: "Engineering Steel Bar Import and Export",
@@ -548,7 +548,7 @@ const caseStudies = [
   ),
   feature(
     "tpl_cs_2",
-    { tr: "VAKA / 02", en: "CASE / 02" },
+    { tr: "02 / DENİZCİLİK", en: "02 / MARINE" },
     {
       tr: "Yat ve Marine Ekipman İthalat-İhracatı",
       en: "Yacht and Marine Equipment Import-Export",
@@ -574,7 +574,7 @@ const caseStudies = [
   ),
   feature(
     "tpl_cs_3",
-    { tr: "VAKA / 03", en: "CASE / 03" },
+    { tr: "03 / TOHUM", en: "03 / SEED" },
     {
       tr: "Tohum İthalat-İhracatı ve İzin Süreçleri",
       en: "Seed Import-Export and Permit Processes",
@@ -600,7 +600,7 @@ const caseStudies = [
   ),
   feature(
     "tpl_cs_4",
-    { tr: "VAKA / 04", en: "CASE / 04" },
+    { tr: "04 / MEDİKAL", en: "04 / MEDICAL" },
     {
       tr: "Cerrahi Sarf Ürünleri İthalat-İhracatı",
       en: "Surgical Consumables Import-Export",
@@ -626,7 +626,7 @@ const caseStudies = [
   ),
   feature(
     "tpl_cs_5",
-    { tr: "VAKA / 05", en: "CASE / 05" },
+    { tr: "05 / AMBALAJ", en: "05 / PACKAGING" },
     {
       tr: "Ambalaj Tasarımından Baskılı Ürüne Uçtan Uca Hizmet",
       en: "End-to-End Service from Packaging Design to Printed Product",
@@ -653,7 +653,7 @@ const caseStudies = [
   ),
   feature(
     "tpl_cs_6",
-    { tr: "VAKA / 06", en: "CASE / 06" },
+    { tr: "06 / FEMTECH", en: "06 / FEMTECH" },
     {
       tr: "Femtech ve Sağlık Ürünleri İhracatı",
       en: "Femtech and Health Product Exports",

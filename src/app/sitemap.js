@@ -1,5 +1,6 @@
 import { SITE_URL, enPagePath, localeHreflang } from "../lib/seo";
 import { ozelSayfaSluglari as ozelSluglari } from "../lib/ozelSayfa";
+import { VAKALAR, vakaEksikAlanlar } from "../lib/vaka";
 
 /**
  * Sitemap — arama motorlarına tüm sayfaları duyurur.
@@ -36,6 +37,27 @@ const STATIK = [
 
 const statikYollar = new Set(STATIK.map((r) => r.path));
 
+/**
+ * Vaka analizi detay sayfaları (/case-studies/<slug>).
+ *
+ * Kayıt listesi boşken hiçbir şey eklenmez — henüz yayımlanmamış bir vaka
+ * adresi sitemap'e girmez. Eksik alanı olan kayıt da atlanır: yarım
+ * kalmış bir vaka indekslenmemeli.
+ *
+ * `key` alanı önemlidir: yol üretimi `enPagePath(key)` ile yapılır ve
+ * vaka anahtarı site haritasındaki karşılığı olmadığı için doğrudan
+ * "/en" öneki eklenir.
+ */
+function vakaKayitlari() {
+  return VAKALAR.filter((v) => vakaEksikAlanlar(v).length === 0).map((v) => ({
+    path: `/case-studies/${v.slug}`,
+    key: "",
+    enYol: `/en/case-studies/${v.slug}`,
+    priority: 0.7,
+    freq: "monthly",
+  }));
+}
+
 export default async function sitemap() {
   const sluglar = await ozelSluglari();
 
@@ -43,14 +65,15 @@ export default async function sitemap() {
     .filter((slug) => typeof slug === "string" && slug.length > 0 && !statikYollar.has(`/${slug}`))
     .map((slug) => ({ path: `/${slug}`, key: slug, priority: 0.6, freq: "monthly" }));
 
-  const tumu = [...STATIK, ...ozel];
+  const tumu = [...STATIK, ...ozel, ...vakaKayitlari()];
 
   // Sitemap çiftleri: her Türkçe adres için bir TR, bir EN kaydı.
   const kayitlar = [];
 
   for (const r of tumu) {
     const trYol = r.path;
-    const enYol = r.key ? enPagePath(r.key) : enPagePath(r.path.slice(1));
+    // Vaka kayıtlarında enYol doğrudan verilir; diğerlerinde anahtardan türetilir.
+    const enYol = r.enYol ? r.enYol : r.key ? enPagePath(r.key) : enPagePath(r.path.slice(1));
     const diller = {
       [localeHreflang("TR")]: trYol,
       [localeHreflang("EN")]: enYol,
