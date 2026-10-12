@@ -24,7 +24,7 @@
 const ANAHTAR = "genco-ceerez-onayi";
 
 /** Onay durumu değişince yayınlanan olay adı. */
-export const IZIN_DEGISTI = "genco:izin-degisti";
+export const izinDegisti = "genco:izin-degisti";
 
 /** @returns {"kabul"|"red"|null} */
 export function izinOku() {
@@ -49,7 +49,7 @@ function kaydet(deger) {
   } catch {
     /* yazılamıyorsa da band kapatılır, oturum boyunca geçerli sayılır */
   }
-  window.dispatchEvent(new CustomEvent(IZIN_DEGISTI, { detail: deger }));
+  window.dispatchEvent(new CustomEvent(izinDegisti, { detail: deger }));
 }
 
 /** Ziyaretçi analiz çerezlerini kabul etti. */
@@ -69,5 +69,5 @@ export function izinSifirla() {
   } catch {
     /* yok sayılır */
   }
-  window.dispatchEvent(new CustomEvent(IZIN_DEGISTI, { detail: null }));
+  window.dispatchEvent(new CustomEvent(izinDegisti, { detail: null }));
 }

@@ -14,6 +14,8 @@
  * gtag'ı engellediyse sessizce vazgeçer — form çalışmaya devam eder.
  */
 
+import { izinVar } from "./ceerez";
+
 /** Ölçüm kimliği. Tanımlı değilse hiçbir şey gönderilmez. */
 const ID = process.env.NEXT_PUBLIC_GA_ID;
 
@@ -32,5 +34,7 @@ export function olayGonder(olay, detay = {}) {
   if (typeof window === "undefined") return;
   if (!ID) return;
   if (typeof window.gtag !== "function") return;
+  // Onay verilmeden olay gönderilmez; GA4 yine de boş ping yollar, veri tutmaz.
+  if (!izinVar()) return;
   window.gtag("event", olay, detay);
 }

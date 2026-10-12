@@ -1,64 +1,96 @@
 "use client";
 
 /**
- * Google Analytics 4 - yayın ölçümü (çerez iznine bağlı).
+ * Google Analytics 4 - yayın ölçümü (Google Consent Mode v2).
  * ---------------------------------------------------------------------------
  * İki kök düzen (app/(tr) ve app/(en)/en) var ve ikisi de aynı ölçümü yapar;
  * aksi halde İngilizce trafik raporda görünmez.
  *
- * ÖNEMLİ — ölçüm, ziyaretçinin çerez iznine bağlıdır:
- *   Betik, izin "kabul" edilene kadar HİÇ yüklenmez. Türkiye Avrupa Ekonomik
- *   Alanı içindedir ve Google, onaysız mülklerde veri toplamayı kısıtlar.
- *   Ölçüm: onay yokken istek gidiyordu (HTTP 204) ama rapor "veri yok"
- *   gösteriyordu. İzin gelince doğru şekilde işlemeye başlar.
- *   İzin reddedilirse ölçüm hiç kurulmaz; site tamamen çalışmaya devam eder.
+ * ---------------------------------------------------------------------------
+ * NEN SCRIPT KENDISI HER ZAMAN YUKLENIYOR (izne bagli degil)
+ * ---------------------------------------------------------------------------
+ * Google, Avrupa Ekonomik Alanı'ndaki mülklerde yalnızca "onay sinyali"
+ * gönderilmiş veriyi kabul ediyor. Betik onaydan önce de yüklenir; ancak
+ * hemen şu sinyal gönderilir:
  *
- * NASIL AÇILIR:
+ *     gtag('consent','default', { analytics_storage: 'denied', ... })
+ *
+ * Ziyaretçi "Kabul et" derse:
+ *
+ *     gtag('consent','update', { analytics_storage: 'granted', ... })
+ *
+ * Ölçülen sorun: onay beklenirken betik hiç yüklenmiyordu; istekler gidiyor
+ * (HTTP 204) ama rapor "veri yok" diyordu. Sebep, Google'ın EEA'da onay
+ * sinyali olmayan veriyi işlememesiydi. Consent Mode ile sinyal gönderilir
+ * ve veri işlenmeye başlar.
+ *
+ * "Reddet" seçilirse sinyal 'denied' kalır: yalnızca çerez tutulmaz,
+ * boş ping gönderilir. Gizlilik açısından en doğru davranış budur.
+ *
+ * Bu davranış KVKK içindir: analiz çerezleri kişisel veridir ve onaysız
+ * saklanamaz.
+ *
+ * ---------------------------------------------------------------------------
+ * NASIL AÇILIR
+ * ---------------------------------------------------------------------------
  *   1. analytics.google.com -> Yönetici -> Mülk oluştur -> Web
- *   2. Mülk adı ve web sitesi adresi girin
- *   3. "Ölçüm Kimliği" (Measurement ID) kopyalayın; G-XXXXXXX biçimindedir
+ *   2. "Ölçüm Kimliği" (Measurement ID) kopyalayın; G-XXXXXXX biçimindedir
  *      (Dikkat: "Mülk Kimliği" (UA-…) değil, "Ölçüm Kimliği"dir.)
- *   4. Vercel -> proje -> Settings -> Environment Variables
+ *   3. Vercel -> proje -> Settings -> Environment Variables
  *      NEXT_PUBLIC_GA_ID = G-XXXXXXX   (Production ve Preview için ekleyin)
- *   5. Yeniden dağıtın.
+ *   4. Yeniden dağıtın.
  *
  * Yönetim paneli (/admin) ve 404 sayfası bilerek ÖLÇÜLMEZ: panel trafiği
  * raporu kirlendirir, hata sayfası ise tek seferlik bir görüntülemedir.
- *
- * Tek seferlik olaylar (ör. form gönderimi) src/lib/olayGonder.js üzerinden
- * gönderilir; oradaki gerekçe o fonksiyonun yalnızca istemcide çalışmasıyla
- * ilgilidir.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Script from "next/script";
-import { izinVar, IZIN_DEGISTI } from "../lib/ceerez";
+import { izinVar, izinDegisti } from "../lib/ceerez";
 
 /** Ölçüm kimliği. Tanımlı değilse bileşe hiçbir şey basmaz. */
 const ID = process.env.NEXT_PUBLIC_GA_ID;
 
+/**
+ * Onay durumunun ilk değeri.
+ *
+ * Sunucuda localStorage okunamaz; ilk değer 'denied' olmak zorundayız
+ * (aksi halde sunucu çiziminde izin varmış gibi görünür ve hydration
+ * uyuşmazlığı olur). Gerçek değer useEffect içinde okunur.
+ */
+const VARSAYILAN = {
+  analytics_storage: "denied",
+  ad_storage: "denied",
+  ad_user_data: "denied",
+  ad_personalization: "denied",
+  functionality_storage: "denied",
+  security_storage: "granted", // güvenlik çerezi (CSRF vb.) gerekli değil ama izinsiz de sorun değil
+  wait_for_update: 500,
+};
+
 export default function Analytics() {
-  // null = henüz bilinmiyor (sunucu ve ilk render). false = izin yok.
-  const [izin, setIzin] = useState(null);
-
+  /* Google'a gönderilecek onay sinyali.
+     'granted' = analiz açık, 'denied' = analiz kapalı. */
   useEffect(() => {
-    if (!ID) return;
+    if (!ID || typeof window === "undefined") return;
+    if (typeof window.gtag !== "function") return;
 
-    const uygula = () => setIzin(izinVar());
-    uygula();
+    const sinyal = () => {
+      window.gtag("consent", "update", {
+        analytics_storage: izinVar() ? "granted" : "denied",
+      });
+    };
 
-    // Onay bandında karar verildiğinde anında yüklemeye başla; kullanıcı
-    // sayfayı yenilemek zorunda kalmasın.
-    window.addEventListener(IZIN_DEGISTI, uygula);
-    window.addEventListener("storage", uygula);
+    sinyal();
+    window.addEventListener(izinDegisti, sinyal);
+    window.addEventListener("storage", sinyal);
     return () => {
-      window.removeEventListener(IZIN_DEGISTI, uygula);
-      window.removeEventListener("storage", uygula);
+      window.removeEventListener(izinDegisti, sinyal);
+      window.removeEventListener("storage", sinyal);
     };
   }, []);
 
   if (!ID) return null;
-  if (izin !== true) return null;
 
   return (
     <>
@@ -66,10 +98,12 @@ export default function Analytics() {
         src={`https://www.googletagmanager.com/gtag/js?id=${ID}`}
         strategy="afterInteractive"
       />
-      <Script id="genco-ga4" strategy="afterInteractive">
+      <Script id="genco-consent-default" strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){ dataLayer.push(arguments); }
+          // ÖNCE varsayılan onay sinyali: henüz izin verilmedi.
+          gtag('consent', 'default', ${JSON.stringify(VARSAYILAN)});
           gtag('js', new Date());
           gtag('config', '${ID}', { anonymize_ip: true });
         `}
