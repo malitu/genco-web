@@ -1,15 +1,30 @@
 # Yayın Öncesi Kontrol Listesi — GENCO
 
-**Son güncelleme:** 2026-07-11
-**Durum:** Site teknik olarak hazır. Aşağıdaki 3 kalem kullanıcıya bağlı.
+**Son güncelleme:** 2026-10-12
+**Durum:** **SİTE YAYINDA** — `https://www.gencotr.com` (52 kontrol · 0 hata).
+NS kayıtları Vercel'e taşındı, MX (Titan e-posta) korundu. Aşağıdaki kalemler
+kullanıcıya bağlı. Tam talimat: `docs/vercel-ortam-degistirenleri.md`
 
 > Bu dosya her oturumun başında kontrol edilir. Kullanıcı "kontrol listesine bak"
 > derse veya yeni bir iş başlatıldığında güncellenir.
 
 ---
 
-## ⏳ Bekleyen 3 kalem
+## ⏳ Bekleyen kalemler
 
+
+### 0. NEXT_PUBLIC_SITE_URL (Vercel ortam değişkeni)
+
+**Neden:** Site adresi şu an `src/lib/seo.js` içindeki geri düşüş sabitine
+bağlı. Canlıda doğru çalışıyor ama Vercel'de tanımlı değil; adres koda
+gömülü durumda. Vercel'de tanımlanınca tek yerden değiştirilebilir olur.
+
+**Değer:** `https://www.gencotr.com` (sonunda eğik çizgi OLMAMALI)
+
+**Etkisi:** canonical, hreflang, sitemap.xml, robots.txt, Open Graph,
+JSON-LD `@id` adresleri.
+
+**Durum:** Tanımlı değil — geri düşüş sabiti devrede, site doğru çalışıyor.
 ### 1. GA4 (Google Analytics 4) ölçüm kimliği
 
 **Neden:** Trafik ölçümü kurulmadan "hangi sayfa işe yarıyor", "AI aramalarından
