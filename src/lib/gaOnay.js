@@ -47,12 +47,24 @@ export const VARSAYILAN = {
  * Not: Bu metin doğrudan HTML'e yazıldığı için kullanıcı girdisi içermez;
  * yalnızca derleme zamanında sabitlenmiş ölçüm kimliği geçer.
  */
+/**
+ * `<head>` içine basılacak satır içi snippet.
+ *
+ * `gtag('config', ID)` çağrısı Google'ın kanonik biçimiyle BİREBİR aynı
+ * olacak şekilde yazıldı: ek seçenek nesnesi verilmiyor. `anonymize_ip`
+ * kaldırıldı — GA4'te IP maskelemesi varsayılandır ve bu seçenek ölü
+ * koddu; ayrıca Google'ın etiket doğrulayıcısı `gtag('config', ID)`
+ * biçimini bekliyor, sondaki `, { ... }` eklendiğinde eşleşmiyor.
+ *
+ * Not: Bu metin doğrudan HTML'e yazıldığı için kullanıcı girdisi içermez;
+ * yalnızca derleme zamanında sabitlenmiş ölçüm kimliği geçer.
+ */
 export const GA_SNIPPET = `
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('consent', 'default', ${JSON.stringify(VARSAYILAN)});
 gtag('js', new Date());
-gtag('config', '${GA_ID}', { anonymize_ip: true });
+gtag('config', '${GA_ID}');
 `.trim();
 /**
  * NOT - Google Tag Assistant ve `async=""` denemesi
