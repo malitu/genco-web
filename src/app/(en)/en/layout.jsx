@@ -72,9 +72,9 @@ export const metadata = {
     images: [
       {
         url: ORG.image,
-        width: 1600,
-        height: 1067,
-        alt: 'GENCO — import and export operations',
+        width: 1200,
+        height: 630,
+        alt: ORG.imageAlt,
       },
     ],
   },

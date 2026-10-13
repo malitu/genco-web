@@ -21,7 +21,16 @@ export const ORG = {
   foundingDate: "2008",
   url: SITE_URL,
   logo: `${SITE_URL}/logo.png`,
-  image: `${SITE_URL}/img/home-port.webp`,
+  /**
+   * Paylaşım kartı görseli (og:image / twitter:image).
+   *
+   * LinkedIn, WhatsApp ve X standart olarak 1200x630 JPEG bekler; WebP
+   * LinkedIn'de güvenilir görünmediği için ayrı bir görsel üretildi.
+   * public/img/og-genco.jpg — 1200x630, ~66 KB.
+   */
+  image: `${SITE_URL}/img/og-genco.jpg`,
+  imageAlt:
+    "GENCO — İzmir merkezli ithalat ve ihracat operasyonları. Liman ve operasyon ekibi görseli üzerinde marka adı.",
   email: "info@gencotr.com",
   phone: "+90 505 926 12 51",
   phoneRaw: "+905059261251",
@@ -303,19 +312,28 @@ export function pageMetadata(pageKey, locale) {
         "x-default": trAdres,
       },
     },
-    openGraph: {
-      title,
-      description,
-      url: pageUrl(yol),
-      locale: localeOg(locale),
-      siteName: ORG.shortName,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [ORG.image],
-    },
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: pageUrl(yol),
+      siteName: ORG.shortName,
+      locale: localeOg(locale),
+      images: [
+        {
+          url: ORG.image,
+          width: 1200,
+          height: 630,
+          alt: ORG.imageAlt,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ORG.image],
+    },
   };
 }
 

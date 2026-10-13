@@ -74,9 +74,9 @@ export const metadata = {
     images: [
       {
         url: ORG.image,
-        width: 1600,
-        height: 1067,
-        alt: 'GENCO — ithalat ve ihracat operasyonları',
+        width: 1200,
+        height: 630,
+        alt: ORG.imageAlt,
       },
     ],
   },

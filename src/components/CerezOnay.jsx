@@ -40,6 +40,10 @@ const METIN = {
     reddet: "Reddet",
     degistir: "Çerez tercihlerimi değiştir",
     politika: "Gizlilik Politikası",
+    /* Ekran okuyucu duyurusu: karar ne olursa olsun doğru cümleyi söylemeli.
+       Ölçülen hata: "Reddet" seçildiğinde de "kabul edildi" deniyordu. */
+    onayBildirimi: "Analytics çerezleri kabul edildi.",
+    retBildirimi: "Analytics çerezleri reddedildi.",
   },
   EN: {
     baslik: "Cookie use",
@@ -52,6 +56,8 @@ const METIN = {
     reddet: "Decline",
     degistir: "Change cookie preferences",
     politika: "Privacy Policy",
+    onayBildirimi: "Analytics cookies accepted.",
+    retBildirimi: "Analytics cookies declined.",
   },
 };
 
@@ -82,14 +88,16 @@ export default function CerezOnay({ lang = "TR" }) {
     setGizli(false);
   }
 
-  /* Karar verilmişse sabit bir bağlantı kalır — ziyaretçi sonradan
-     değiştirebilir. Gizlilik Politikası sayfasında bu bağlantı yer alır. */
+  /* Karar verilmişse yalnızca ekran okuyucu duyurusu kalır.
+     Duyuru, kararın kendisinden türetilir: "kabul" dışındaki her durum
+     (yani "red") reddedildi olarak bildirilir. Ölçülen hata: "Reddet"
+     seçildiğinde de "kabul edildi" yazıyordu. */
   if (durum !== null) {
     return (
       <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
         {gizli ? (
           <div className="sr-only" aria-live="polite">
-            {t.kabul === "Accept" ? "Analytics cookies accepted." : "Analytics çerezleri kabul edildi."}
+            {durum === "kabul" ? t.onayBildirimi : t.retBildirimi}
           </div>
         ) : null}
       </div>
@@ -146,14 +154,25 @@ export default function CerezOnay({ lang = "TR" }) {
   );
 }
 
-/** Gizlilik sayfasındaki "tercihlerimi değiştir" bağlantısı için. */
+/**
+ * Gizlilik sayfasındaki "tercihlerimi değiştir" bağlantısı için.
+ *
+ * Ölçülen hata: `onClick={sifirla}` yazılmıştı, ancak `sifirla` bir üst
+ * bileşenin (CerezOnay) içinde tanımlıydı ve buraya kapsam dışıydı —
+ * tıklandığında ReferenceError. Bu bileşen bağımsız olmalı: kararı
+ * sıfırlar ve bandın yeniden görünmesi için sayfayı yeniler.
+ */
 export function CerezTercihBaglantisi({ lang = "TR" }) {
   const en = lang === "EN";
   const t = en ? METIN.EN : METIN.TR;
   return (
     <button
       type="button"
-      onClick={sifirla}
+      onClick={() => {
+        izinSifirla();
+        // Bandın anında geri gelmesi için sayfayı yeniden çiz.
+        window.location.reload();
+      }}
       className="font-medium text-orange-600 underline underline-offset-2 hover:text-orange-700"
     >
       {t.degistir}
