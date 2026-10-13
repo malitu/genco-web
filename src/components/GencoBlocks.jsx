@@ -21,7 +21,8 @@ import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { sendContactMessage, openMailFallback } from "../lib/contact";
 import { dileGore } from "../lib/localeYol";
-import Turnstile from "./Turnstile";
+import Turnstile from "./Turnstile";
+import HareketliSayaci from "./HareketliSayaci";
 
 /* ========================================================================== *
  *  Dil yardımcıları
@@ -3064,14 +3065,21 @@ function StatsBandBlock({ block, ctx }) {
           {items.map((it) =>
             !edit && !L(it.value, lang).trim() ? null : (
             <div key={it.id} className="relative">
-              <div className="text-4xl font-extrabold text-[#f97316]">
-                <EditableText
-                  as="div"
-                  editable={edit}
-                  value={L(it.value, lang)}
-                  onChange={(v) => update(it.id, { value: mergeLang(it.value, lang, v) })}
-                  placeholder="00"
-                />
+              <div className="text-4xl font-extrabold text-[#f97316]">
+                {/* Stüdyoda düzenlenebilir kalsın; canlıda sayı görüntüye
+                    girerken yukarı doğru aksın. Sunucu HTML'i her zaman son
+                    değeri yazar, animasyon yalnızca JavaScript'le olur. */}
+                {edit ? (
+                  <EditableText
+                    as="div"
+                    editable={edit}
+                    value={L(it.value, lang)}
+                    onChange={(v) => update(it.id, { value: mergeLang(it.value, lang, v) })}
+                    placeholder="00"
+                  />
+                ) : (
+                  <HareketliSayaci value={L(it.value, lang)} />
+                )}
               </div>
               <div className="mt-2 text-sm text-gray-300">
                 <EditableText
