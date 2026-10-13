@@ -5,7 +5,9 @@ import JsonLd from '../../components/JsonLd';
 import Analytics from '../../components/Analytics';
 import CerezOnay from "../../components/CerezOnay";
 import YukariCik from "../../components/YukariCik";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { schemaOrganization, schemaWebSite } from '../../components/JsonLd';
+import { GA_ID, GA_SNIPPET } from "../../lib/gaOnay";
 
 /**
  * Kök düzen.
@@ -133,6 +135,19 @@ export default function RootLayout({ children }) {
             bağımlılık oluşturuyordu. */}
         <JsonLd data={orgSchema} />
         <JsonLd data={siteSchema} />
+
+        {/* GA4 etiketi sunucu HTML'inde yer alir; Google'in istediği
+            sıra: önce consent default (hepsi denied), sonra config.
+            Ayrıntı src/lib/gaOnay.js. */}
+        {GA_ID && (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+            />
+            <script dangerouslySetInnerHTML={{ __html: GA_SNIPPET }} />
+          </>
+        )}
       </head>
       <body>
         {children}
@@ -145,6 +160,8 @@ export default function RootLayout({ children }) {
         <CerezOnay lang="TR" />
         {/* Kaydırınca beliren başa dön düğmesi. */}
         <YukariCik lang="TR" />
+        {/* Vercel Web Analytics - çerezsiz; onay gerektirmez. */}
+        <VercelAnalytics />
       </body>
     </html>
   );

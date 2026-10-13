@@ -1,11 +1,13 @@
-import '../../globals.css';
+﻿import '../../globals.css';
 
 import { ORG, PAGES, SITE_URL } from '../../../lib/seo';
 import JsonLd from '../../../components/JsonLd';
 import Analytics from '../../../components/Analytics';
 import CerezOnay from "../../../components/CerezOnay";
 import YukariCik from "../../../components/YukariCik";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { schemaOrganization, schemaWebSite } from '../../../components/JsonLd';
+import { GA_ID, GA_SNIPPET } from "../../../lib/gaOnay";
 
 /**
  * İNGİLİZCE kök düzeni (route group: app/(en)/en).
@@ -125,6 +127,19 @@ export default function EnLayout({ children }) {
       <head>
         <JsonLd data={orgSchema} />
         <JsonLd data={siteSchema} />
+
+        {/* GA4 etiketi sunucu HTML'inde yer alir; Google'in istediği
+            sıra: önce consent default (hepsi denied), sonra config.
+            Ayrıntı src/lib/gaOnay.js. */}
+        {GA_ID && (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+            />
+            <script dangerouslySetInnerHTML={{ __html: GA_SNIPPET }} />
+          </>
+        )}
       </head>
       <body>
         {children}
@@ -136,6 +151,8 @@ export default function EnLayout({ children }) {
         <CerezOnay lang="EN" />
         {/* Kaydırınca beliren başa dön düğmesi. */}
         <YukariCik lang="EN" />
+        {/* Vercel Web Analytics - çerezsiz; onay gerektirmez. */}
+        <VercelAnalytics />
       </body>
     </html>
   );

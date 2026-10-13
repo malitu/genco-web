@@ -32,3 +32,8 @@ yarn-error.log*
 .idea/
 .vscode/
 .env*
+
+# proje disi belgeler (git'e girmez)
+AGENTS.md
+CLAUDE.md
+docs/

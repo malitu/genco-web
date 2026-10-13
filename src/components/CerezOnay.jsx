@@ -32,8 +32,10 @@ const METIN = {
   TR: {
     baslik: "Çerez kullanımı",
     govde:
-      "Sitede hangi sayfaların okunduğunu anlamak için Google Analytics kullanıyoruz. " +
-      "Bu çerezler yalnızca onay verirseniz çalışır; onay vermezseniz hiçbir veri toplanmaz.",
+      "Hangi sayfaların okunduğunu anlamak için Google Analytics kullanıyoruz. " +
+      "Bu çerezler yalnızca onay verirseniz çalışır; onay vermezseniz Google " +
+      "Analytics veri toplamaz. Vercel Web Analytics ise çerezsiz çalışır, IP " +
+      "adresi kısaltılır ve her zaman etkindir.",
     kabul: "Kabul et",
     reddet: "Reddet",
     degistir: "Çerez tercihlerimi değiştir",
@@ -43,7 +45,9 @@ const METIN = {
     baslik: "Cookie use",
     govde:
       "We use Google Analytics to understand which pages are read. These cookies " +
-      "only work if you accept them; if you decline, no data is collected.",
+      "only work if you accept them; if you decline, Google Analytics collects " +
+      "nothing. Vercel Web Analytics is cookieless, truncates the IP address and " +
+      "is always active.",
     kabul: "Accept",
     reddet: "Decline",
     degistir: "Change cookie preferences",
