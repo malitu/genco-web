@@ -186,8 +186,8 @@ export const ROUTES_DEFAULTS = {
   type: "routes",
   heading: bi("Ticari Hedefinizi Seçin", "Choose Your Commercial Goal"),
   subheading: bi(
-    "İster küresel pazarlarda büyümek isteyen bir üretici, ister Türkiye'den nitelikli tedarik arayan bir marka olun; operasyonunuzu uçtan uca yönetiyoruz.",
-    "Whether you're a manufacturer expanding globally or a brand seeking reliable supply from Turkey, we manage your operations end-to-end."
+    "İster küresel pazarlarda büyümek isteyen bir üretici, ister Türkiye'den nitelikli tedarik arayan bir marka olun; operasyonunuzun koordinasyonunu üstleniyoruz.",
+    "Whether you're a manufacturer expanding globally or a brand seeking reliable supply from Turkey, we take on the coordination of your operations."
   ),
   cards: [
     {
@@ -989,8 +989,8 @@ export const FOOTER_DEFAULTS = {
   /* --- 1. sütun: marka --- */
   brandTitle: bi("GENCO", "GENCO"),
   brandText: bi(
-    "İthalat ve ihracat operasyonlarınızı uçtan uca yürütüyoruz: ürün kaynağından gümrükleme ve teslimata kadar tüm zincir bizim sorumluluğumuzda.",
-    "We run your import and export operations end to end: from product sourcing through customs clearance to delivery, the entire chain is our responsibility."
+    "İthalat ve ihracat operasyonlarınızı yürütüyoruz: araştırmadan sipariş ve sevkiyat takibine kadar koordinasyon sağlıyoruz.",
+    "We run your import and export operations: we provide coordination from research through order and shipment tracking."
   ),
   brandCtaLabel: bi("Görüşelim", "Let's Talk"),
   brandCtaHref: "/contact",
@@ -1100,8 +1100,8 @@ const GENCO_FAQ = {
         "What does turnkey import include?"
       ),
       answer: bi(
-        "Firmanızın kendi bünyesinde takip edemeyeceği ithalat süreçlerini üstleniyoruz: ön araştırma ve fizibilite, farklı ülkelerden tedarikçi seçimi ve GTİP tespiti, akreditif ve dokümantasyon, uluslararası taşıma ve sigorta, kalite uyum testleri, gümrükleme ve yurt içi teslimat. Zincirin tamamı tek elden yürütülür.",
-        "We take over the import processes your company cannot manage in-house: pre-research and feasibility, supplier selection across countries and HS code determination, letter of credit and documentation, international freight and insurance, quality compliance testing, customs clearance and domestic delivery. The entire chain is handled end to end."
+        "Firmanızın kendi bünyesinde takip edemeyeceği ithalat süreçlerini üstleniyoruz: ön araştırma ve fizibilite, farklı ülkelerden tedarikçi seçimi ve GTİP tespiti, akreditif ve dokümantasyon, uluslararası taşıma ve sigorta, kalite uyum testleri, gümrükleme ve yurt içi teslimat. Bu aşamalar arasındaki koordinasyonu tek noktadan yürütürüz.",
+        "We take over the import processes your company cannot manage in-house: pre-research and feasibility, supplier selection across countries and HS code determination, letter of credit and documentation, international freight and insurance, quality compliance testing, customs clearance and domestic delivery. We coordinate between these stages from a single point."
       ),
     },
     {

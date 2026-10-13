@@ -42,9 +42,9 @@ export const ORG = {
     "https://www.instagram.com/gencoithalat/",
   ],
   description:
-    "İzmir merkezli ithalat ve ihracat operasyon firması. Vasıflı çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal, ambalaj ve femtech sektörlerinde ürün kaynağından gümrükleme ve teslimata kadar uçtan uca operasyon yönetimi.",
-  descriptionEn:
-    "Izmir-based import and export operations company. We manage the entire chain from product sourcing through customs clearance to delivery across engineering steel, yachting and marine equipment, seed trade, medical, packaging and femtech sectors.",
+    "İzmir merkezli ithalat ve ihracat operasyon firması. Vasıflı çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal, ambalaj ve femtech sektörlerinde araştırmadan sipariş ve sevkiyat takibine kadar operasyon koordinasyonu.",
+  descriptionEn:
+    "Izmir-based import and export operations company. We provide operation coordination from research through order and shipment tracking across engineering steel, yachting and marine equipment, seed trade, medical, packaging and femtech sectors.",
   slogan: "Rotanızı dünyaya çevirin, biz pusulanız olalım.",
   sloganEn: "Take your business around the world — we'll be your compass.",
   areasServed: ["Türkiye", "Avrupa", "Orta Doğu", "Afrika", "Asya", "Amerika"],
@@ -59,9 +59,9 @@ export const PAGES = {
     title: "Türkiye'deki Uluslararası Ticaret Ekibiniz | GENCO",
     titleEn: "GENCO — Your International Trade Team in Turkey",
     description:
-      "2008'den beri İzmir'den ithalat ve ihracat operasyonlarını yürütüyoruz. Çelik, denizcilik, medikal, tohumculuk, ambalaj ve femtech sektörlerinde ürün kaynağından gümrükleme ve teslimata kadar tüm zincir bizim sorumluluğumuzda.",
-    descriptionEn:
-      "Since 2008 we have run import and export operations from Izmir. Across steel, marine, medical, seed trade, packaging and femtech sectors, the entire chain from sourcing to delivery is our responsibility.",
+      "2008'den beri İzmir'den ithalat ve ihracat operasyonlarını yürütüyoruz. Çelik, denizcilik, medikal, tohumculuk, ambalaj ve femtech sektörlerinde araştırmadan sipariş ve sevkiyat takibine kadar koordinasyon sağlıyoruz.",
+    descriptionEn:
+      "Since 2008 we have run import and export operations from Izmir. Across steel, marine, medical, seed trade, packaging and femtech sectors, we provide coordination from research through order and shipment tracking.",
   },
   services: {
     title: "İthalat & İhracat Hizmetleri — Anahtar Teslim Operasyon",
@@ -99,9 +99,9 @@ export const PAGES = {
     title: "Hakkımızda — 2008'den beri İzmir'de İthalat-İhracat",
     titleEn: "About Us — Import & Export in Izmir Since 2008",
     description:
-      "Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. 2008'de İzmir Bornova'da kuruldu. Dış ticaret süreçlerinin en başından gümrükleme işlemlerinin tamamlanmasına kadar tüm süreci yönetiyoruz.",
-    descriptionEn:
-      "Founded in 2008 in Bornova, Izmir, we manage every step of foreign trade from initial research through to completion of customs clearance.",
+      "Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. 2008'de İzmir Bornova'da kuruldu. Araştırmadan sipariş ve sevkiyat takibine kadar dış ticaret süreçlerinin koordinasyonunu yürütüyoruz.",
+    descriptionEn:
+      "Founded in 2008 in Bornova, Izmir, we provide coordination of foreign trade processes from research through order and shipment tracking.",
   },
   contact: {
     title: "İletişim — Teklif ve Proje Talebi",
@@ -214,8 +214,8 @@ export const SERVICES = [
   {
     tr: "Anahtar Teslim İthalat",
     en: "Turnkey Import",
-    desc: "Ön araştırmadan gümrükleme ve depoya teslimata kadar tüm zincir.",
-    descEn: "The entire chain from pre-research through customs to delivery.",
+    desc: "Ön araştırmadan sipariş takibine kadar koordinasyon.",
+    descEn: "Coordination from pre-research through order tracking.",
   },
   {
     tr: "Ambalaj Tasarımı, Baskı Öncesi Destek ve Baskı",
