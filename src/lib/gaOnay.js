@@ -54,3 +54,30 @@ gtag('consent', 'default', ${JSON.stringify(VARSAYILAN)});
 gtag('js', new Date());
 gtag('config', '${GA_ID}', { anonymize_ip: true });
 `.trim();
+/**
+ * NOT - Google Tag Assistant ve `async=""` denemesi
+ * ---------------------------------------------------------------------------
+ * JSX icinde `<script async src={...}>` yazildiginda React, boolean `async`
+ * ozniteligini `async=""` olarak serilestirir:
+ *
+ *     <script async="" src="https://www.googletagmanager.com/gtag/js?id=...">
+ *
+ * Bu HTML'de gecerlidir; tarayici etiketi sorunsuz yukler ve olcum calisir
+ * (dogrulandi: gtag.js HTTP 200, /g/collect HTTP 204).
+ *
+ * Denedigimiz cozum: etiketi `dangerouslySetInnerHTML` ile ham metin olarak
+ * basmak. CALISMADI. React, `<script>` ogesinin icerigini "script data"
+ * olarak isler; icindeki `<script ...>` etiketi metne donusur:
+ *
+ *     <script><script async src="..."></script></script>
+ *
+ * Bu bicimde gtag.js HIC yuklenmedi (tarayicida olculdu). Bu yuzden geri
+ * alindi; etiket JSX ogesi olarak basilir ve olculmus calisan hali budur.
+ *
+ * Sonuc: `async=""` bir hata degil, React'in dogal davranisi. Tag
+ * Assistant'in "Test Et" dugmesi sunucu HTML'ini indirip taradigi icin
+ * bazi kurgularda etiketi gormeyebilir; bu bir GORUNTULEME sorunudur,
+ * olcum degildir. Etiket calistigini dogrulayan yer: canli sayfada
+ * dataLayer'da `consent,default` -> `js` -> `config` sirasi ve
+ * `/g/collect` istegi.
+ */
