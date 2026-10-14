@@ -137,6 +137,29 @@ console.log("\n5) Kırık iç bağlantılar");
   }
 }
 
+/* --- 5b) robots.txt ------------------------------------------------------ */
+console.log("\n5b) robots.txt");
+{
+  const { html } = await get("/robots.txt");
+
+  /* Ölçülen uyarı (Search Console → Ayarlar → robots.txt):
+       "Uyarı · Kural Googlebot tarafından yok sayıldı (line 6)"
+       6 | Host: https://www.gencotr.com
+
+     `Host:` yalnızca Yandex/Bing/Baidu destekler; Google tanımaz ve sarı
+     uyarı bırakır. Zararsız ama gerçek sorunlar arasında kaybolur. */
+  basari("Host: direktifi yok (Google desteklemez)",
+    !/^Host:/im.test(html), "Search Console sarı uyarı verir");
+
+  /* Sitemap bildirimi kaldırılmamalı; Google site haritasını buradan da bulur. */
+  basari("sitemap bildirimi var",
+    /Sitemap:\s*https?:\/\/[^\s]+/i.test(html));
+
+  /* /admin dizinlenmemeli; panel içeriğinin indekslenmesi kastedilen değil. */
+  basari("/admin engelli",
+    /Disallow:\s*\/admin/i.test(html));
+}
+
 /* --- 6) Sitemap ---------------------------------------------------------- */
 console.log("\n6) Sitemap");
 {
