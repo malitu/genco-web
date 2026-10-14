@@ -145,6 +145,22 @@ console.log("\n6) Sitemap");
   basari(`en az 28 adres (bulunan ${adresler})`, adresler >= 28);
   basari("tüm kayıtlar hreflang içeriyor",
     (html.match(/<url>[\s\S]*?<\/url>/g) || []).every((u) => u.includes("xhtml:link")));
+
+  /* Ölçülen hata (Search Console'da "84 hata"): xhtml:link/@href göreli
+     adresti ("/en/services") yazılınca Google alternatifi çözemiyor ve her
+     <url> bloğundaki 3 alternatifi ayrı hata sayıyordu (28 × 3 = 84).
+     Google href'in mutlak URL olmasını şart koşar. */
+  const linkler = html.match(/<xhtml:link[^>]*>/g) || [];
+  const goresel = linkler.filter((l) => /href="(?!https?:\/\/)/.test(l));
+  basari(`hreflang adresleri mutlak (göreli: ${goresel.length})`, goresel.length === 0);
+  if (goresel.length) {
+    console.log(`      örnek: ${goresel[0]}`);
+  }
+
+  /* <loc> ve xhtml:link aynı alan adını kullanmalı; karışık www/http
+     kullanımı protokol uyuşmazlığı hatası verir. */
+  const yanlisAlan = (html.match(/<loc>http:\/\/gencotr\.com/g) || []).length;
+  basari("tüm adresler https://www.gencotr.com", yanlisAlan === 0);
 }
 
 /* --- 7) Bilinen yazım hatası sızıntısı ---------------------------------- */

@@ -74,14 +74,29 @@ export default async function sitemap() {
     const trYol = r.path;
     // Vaka kayıtlarında enYol doğrudan verilir; diğerlerinde anahtardan türetilir.
     const enYol = r.enYol ? r.enYol : r.key ? enPagePath(r.key) : enPagePath(r.path.slice(1));
+    // hreflang değerleri MUTLAKA tam adres olmalı.
+    //
+    // Ölçülen hata: buraya çıplak yol ("/services") yazılınca Next.js bunu
+    // `metadataBase` ile birleştirip sitemap'e göreli adres olarak yazıyordu:
+    //
+    //     <xhtml:link rel="alternate" hreflang="en-GB" href="/en/services" />
+    //
+    // Google göreli adresi çözemiyor ve her <url> bloğundaki 3 alternatifi
+    // ayrı ayrı hata sayıyordu: 28 sayfa × 3 = 84 hata. Search Console'da
+    // "84 hata" olarak görünen şey tam olarak buydu.
+    //
+    // Google'ın kuralı açık: xhtml:link/@href mutlak URL olmalıdır.
+    // Aşağıdaki tam() yardımcısı bunu garanti eder.
+    const tam = (yol) => `${SITE_URL}${yol === "/" ? "" : yol}`;
+
     const diller = {
-      [localeHreflang("TR")]: trYol,
-      [localeHreflang("EN")]: enYol,
-      "x-default": trYol,
+      [localeHreflang("TR")]: tam(trYol),
+      [localeHreflang("EN")]: tam(enYol),
+      "x-default": tam(trYol),
     };
 
     kayitlar.push({
-      url: `${SITE_URL}${trYol === "/" ? "" : trYol}`,
+      url: tam(trYol),
       lastModified: new Date(),
       changeFrequency: r.freq,
       priority: r.priority,
@@ -89,7 +104,7 @@ export default async function sitemap() {
     });
 
     kayitlar.push({
-      url: `${SITE_URL}${enYol}`,
+      url: tam(enYol),
       lastModified: new Date(),
       changeFrequency: r.freq,
       priority: r.priority,
