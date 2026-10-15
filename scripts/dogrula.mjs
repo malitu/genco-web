@@ -178,12 +178,15 @@ console.log("\n5c) llms.txt");
   /* Dosya Markdown olmalı ve en az bir H1 başlığı taşımalı. */
   basari("H1 başlığı var (/^# )", /^# .+/m.test(html));
 
-  /* Düz metin bırakılmış adres kalmamalı: "Yazı: https://..." */
-  const duz = (html.match(/[^-|\[]https?:\/\/[^\s)>\]]+/g) || []).length;
+  /* Düz metin bırakılmış adres kalmamalı: "Yazı: https://..." biçimi.
+     Markdown bağlantısının içindeki URL'ler sayılmaz; önce onlar
+     maskelenir, kalanlar gerçekten düz metindir. */
+  const maskeli = html.replace(/\[[^\]]+\]\((https?:\/\/[^)]+)\)/g, "");
+  const duz = (maskeli.match(/https?:\/\/[^\s)>\]]+/g) || []).length;
   basari(`düz metin adres yok (${duz})`, duz === 0);
   if (duz) {
-    const ornek = html.match(/[^-|\[]https?:\/\/[^\s)>\]]+/g) || [];
-    console.log(`      örnek: ${ornek[0]}`);
+    const ornek = (maskeli.match(/https?:\/\/[^\s)>\]]+/g) || []).slice(0, 3);
+    console.log(`      örnek: ${ornek.join(", ")}`);
   }
 
   /* Abartılı kapsam ifadeleri llms.txt'de de düzeltildi; aynı dil
