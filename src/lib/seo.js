@@ -133,8 +133,8 @@ export const PAGES = {
   yaziSartname: {
     title: "Teklif Öncesi Teknik Şartnameyi Netleştirmek",
     titleEn: "Clarifying the Technical Specification Before Requesting Quotes",
-    description:
-      "Aynı ürün adıyla sunulan teklifler farklı kapsamda olabilir. Teklif talebinde bulunması gereken bilgiler, farklılıkları görünür kılma ve sipariş öncesi açık konuları kapatma yöntemi.",
+    description:
+      "Aynı ürün adıyla sunulan teklifler farklı kapsamda olabilir. Teklif talebinde bulunması gereken bilgiler ve sipariş öncesi açık konuları kapatma yöntemi.",
     descriptionEn:
       "Quotations offered under the same product name may cover different scopes. What a request for quotation should include, how to make differences visible, and how to close open points before ordering.",
   },
