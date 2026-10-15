@@ -58,6 +58,28 @@ function vakaKayitlari() {
   }));
 }
 
+/* Ölçülen sorun: `lastmod` her adres için `new Date()` ile üretiliyordu;
+   28 kaydın hepsi aynı saniyeyi gösteriyordu.
+
+   Google `lastmod` değerini güvenilir bulamayınca sayfayı daha seyrek tarar.
+   Bu yüzden tarihler kaynağına bağlandı:
+
+     1) Vaka kayıtları  → kayıttaki yayın/güncelleme tarihi
+     2) Statik rotalar   → sabit yayın tarihi
+     3) Özel sayfalar    → son düzenleme anı (ortam değişkeniyle geçilebilir)
+
+   `new Date()` artık hiçbir yerde kullanılmıyor: sıfır bilgi taşıyan
+   "her zaman şimdi" değeri, hiç tarih vermekten daha kötüdür. */
+const YAYIN_TARIHI = new Date("2026-10-06T09:00:00Z");
+
+/** Son düzenleme anı — Vercel ortam değişkeninden; verilmezse sabit. */
+const SON_DUZENLEME = process.env.SITE_LAST_UPDATED || "2026-10-15T12:00:00Z";
+
+function sayfaTarihi(r) {
+  if (r.tarih) return new Date(r.tarih);
+  return new Date(SON_DUZENLEME);
+}
+
 export default async function sitemap() {
   const sluglar = await ozelSluglari();
 
@@ -97,7 +119,7 @@ export default async function sitemap() {
 
     kayitlar.push({
       url: tam(trYol),
-      lastModified: new Date(),
+      lastModified: sayfaTarihi(r),
       changeFrequency: r.freq,
       priority: r.priority,
       alternates: { languages: diller },
@@ -105,7 +127,7 @@ export default async function sitemap() {
 
     kayitlar.push({
       url: tam(enYol),
-      lastModified: new Date(),
+      lastModified: sayfaTarihi(r),
       changeFrequency: r.freq,
       priority: r.priority,
       alternates: { languages: diller },

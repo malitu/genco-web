@@ -3,6 +3,10 @@
 > Yapay zekâ arama asistanları (ChatGPT Search, Perplexity, Gemini, Claude)
 > ve diğer araçlar için hazırlanmış özet. Ticari kullanıma kapalıdır.
 
+> **English version:** https://www.gencotr.com/llms-en.txt
+> (İngilizce sorularda bu dosya tercih edilmelidir. Adresi ayrıca
+> /en/llms.txt olarak da erişilebilirdir ve oraya yönlendirilir.)
+
 ## Şirket
 
 - **Unvan:** Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti.

@@ -527,16 +527,24 @@ function MediaItem({ block, item, ctx, index, total }) {
             setLightbox(true);
           }}
         >
-          <img
-            src={item.url}
-            alt={caption || ""}
-            className={`w-full object-cover ${
-              // Sıra halinde dizilince tüm görseller aynı yükseklikte
-              // dursun; aksi halde farklı en-boy oranları hizayı bozar.
-              block.layout === "row" ? "aspect-[3/2]" : ""
-            } ${edit ? "" : "cursor-zoom-in"}`}
-            draggable={false}
-          />
+          <img
+            src={item.url}
+            alt={caption || ""}
+            width={1200}
+            height={800}
+            /* Bu blok ana sayfanın üst kısmında yer alıyor; ilk görsel
+               LCP ölçümüne girer ve hemen yüklenmelidir. Sonrakiler
+               ekrana girince. */
+            loading={index === 0 ? "eager" : "lazy"}
+            fetchPriority={index === 0 ? "high" : "auto"}
+            decoding="async"
+            className={`w-full object-cover ${
+              // Sıra halinde dizilince tüm görseller aynı yükseklikte
+              // dursun; aksi halde farklı en-boy oranları hizayı bozar.
+              block.layout === "row" ? "aspect-[3/2]" : ""
+            } ${edit ? "" : "cursor-zoom-in"}`}
+            draggable={false}
+          />
 
           {/* Görselin üstüne yazı */}
           {overlay && (
@@ -1484,16 +1492,36 @@ function EditableText({
  * @param {Function} onPick   medya kütüphanesini açan geri çağrım
  * @param {string}   label    boşken gösterilen ipucu
  */
-function ImageField({ value, onChange, onPick, edit, label = "Görsel Ekle", className = "", imgClass = "", fit = "cover", alt = "" }) {
-  // "contain" görseli kutuya sığdırır (kırpma yok). Farklı en-boy oranına
-  // sahip çizimlerde kart yüksekliklerinin eşit kalmasını sağlar.
-  const fitClass = fit === "contain" ? "object-contain" : "object-cover";
-
-  if (!edit) {
-    if (!value) return null;
-    const cls = className || imgClass;
-    return <img src={value} alt={alt} className={`${cls} ${fitClass}`} draggable={false} />;
-  }
+function ImageField({ value, onChange, onPick, edit, label = "Görsel Ekle", className = "", imgClass = "", fit = "cover", alt = "", onermi = false }) {
+  // "contain" görseli kutuya sığdırır (kırpma yok). Farklı en-boy oranına
+  // sahip çizimlerde kart yüksekliklerinin eşit kalmasını sağlar.
+  const fitClass = fit === "contain" ? "object-contain" : "object-cover";
+
+  if (!edit) {
+    if (!value) return null;
+    const cls = className || imgClass;
+    /* width/height zorunlu. Görselin boyutu bilinmeden tarayıcı sayfayı
+       çizerken yer değiştirir (CLS) ve geç yükleme kararını yanlış verir.
+       Bu etiketler olmadan Chrome ana sayfadaki 9 görselin tamamını preload
+       ediyordu — performans uyarısının kaynağı buydu.
+       Değerler en-boy oranını zorlamaz; tarayıcı yalnızca yer ayırır.
+
+       `onermi` (hero görseli) ilk ekrandadır: LCP ölçümünün konusu olduğu
+       için hemen yüklenir, diğerleri ekrana girince. */
+    return (
+      <img
+        src={value}
+        alt={alt}
+        width={1200}
+        height={800}
+        loading={onermi ? "eager" : "lazy"}
+        fetchPriority={onermi ? "high" : "auto"}
+        decoding="async"
+        className={`${cls} ${fitClass}`}
+        draggable={false}
+      />
+    );
+  }
 
   if (!value) {
     return (
@@ -2092,12 +2120,16 @@ function MethodBlock({ block, ctx }) {
             </div>
           ) : (
             block.image && (
-              <img
-                src={block.image}
-                alt=""
-                className="mt-8 w-full h-56 object-cover rounded-lg"
-                draggable={false}
-              />
+              <img
+                src={block.image}
+                alt=""
+                width={1200}
+                height={350}
+                loading="lazy"
+                decoding="async"
+                className="mt-8 w-full h-56 object-cover rounded-lg"
+                draggable={false}
+              />
             )
           )}
         </div>
@@ -2171,7 +2203,19 @@ function SliderBlock({ block, ctx }) {
         <div className="relative rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-gray-100 h-[280px] sm:h-[420px] lg:h-[500px]">
           {images.length > 0 ? (
             <>
-              <img src={images[Math.min(slide, images.length - 1)]} alt="" className="w-full h-full object-cover transition-all duration-700" />
+              {/* Slayt ana sayfanın ilk ekranındadır: LCP ölçümünün konusu
+                  olduğu için hemen yüklenir. width/height yer ayırması için
+                  gerekli — yoksa sayfa çizilirken zıplar. */}
+              <img
+                src={images[Math.min(slide, images.length - 1)]}
+                alt=""
+                width={1200}
+                height={800}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="w-full h-full object-cover transition-all duration-700"
+              />
               {images.length > 1 && (
                 <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
                   {images.map((_, i) => (
@@ -2969,7 +3013,15 @@ function CtaBandBlock({ block, ctx }) {
   return (
     <section className="py-16 sm:py-20 text-white relative overflow-hidden bg-[#0f172a]">
       {block.image ? (
-        <img src={block.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20" />
+        <img
+        src={block.image}
+        alt=""
+        width={1200}
+        height={400}
+        loading="lazy"
+        decoding="async"
+        className="absolute inset-0 h-full w-full object-cover opacity-20"
+      />
       ) : null}
       {edit && !block.image && (
         <button

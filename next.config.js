@@ -112,6 +112,19 @@ const nextConfig = {
         destination: "/contact",
         permanent: true,
       },
+      /* Yapay zekâ arama araçları (ChatGPT Search, Perplexity, Gemini)
+       * İngilizce sorularda site kökündeki /llms.txt'yi arar. İngilizce
+       * içerik /en/ altında olduğu için /en/llms.txt olmazsa bu araçlar
+       * Türkçe dosyayı bulur ve İngilizce içerik yanlış özetlenir.
+       *
+       * Bu yüzden İngilizce bir karşılık yazıldı ve iki dil arasında
+       * bağlanıyor: her dosya karşısındaki dil versiyonunu hreflang ile
+       * bildiriyor. */
+      {
+        source: "/en/llms.txt",
+        destination: "/llms-en.txt",
+        permanent: true,
+      },
       {
         source: "/hello-world",
         destination: "/",
