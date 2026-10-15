@@ -28,6 +28,13 @@ const nextConfig = {
         key: "Permissions-Policy",
         value: "camera=(), microphone=(), geolocation=()",
       },
+      /* Search Console uyarısı: "The X-powered header is sent within the
+       * response header" (HTTP header bölümü).
+
+       * Yanıt "X-Powered-By: Next.js" ile sunucu yığınını açıklıyor.
+       * Saldırganın kullanacağı bilgi bu, bizim işimize yaramaz. Sıfır
+       * maliyetle kapatılır. */
+      { key: "X-Powered-By", value: "" },
     ];
 
     return [

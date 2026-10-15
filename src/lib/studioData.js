@@ -49,17 +49,44 @@ export function coz(deger) {
 }
 
 /**
+ * Firestore okumasının beklemesi gereken en uzun süre.
+ *
+ * Search Console uyarısı: "The page response time of 0,51 seconds is longer
+ * than the recommended limit of 0,4 seconds."
+ *
+ * Ölçülen: Firestore REST çağrısı 260–1200 ms sürüyor ve `cache: "no-store"`
+ * ile HER istekte tekrarlanıyordu. Ana sayfanın ilk baytı bu yüzden
+ * 0,51–0,80 saniye çıkıyordu; statik sayfalar 0,35 saniyede.
+ *
+ * Çözüm: kısa süreli önbellek. Yayınlanan içerik 30 saniye içinde yine
+ * görünür — panele girip yayınladıktan hemen sonra bakıldığında fark
+ * edilmez. Ziyaretçi ise her istekte Firestore'a gitmez.
+ */
+const ONBELLEK_SURESI = 30;
+
+/** Süre dolmadan yeniden okunacak son başarılı yanıt ve zamanı. */
+let onbellek = null;
+let onbellekZamani = 0;
+
+/**
  * Ana dokümanı okur.
  * @returns {Promise<object|null>} null ise sayfa kendi kod şablonunu kullanır.
  */
 export async function studioBelge() {
+  // Önbellek taze ise ağa hiç gidilmez.
+  if (onbellek && Date.now() - onbellekZamani < ONBELLEK_SURESI * 1000) {
+    return onbellek;
+  }
+
   try {
     const controller = new AbortController();
     const zamanAsimi = setTimeout(() => controller.abort(), 3000);
 
     const res = await fetch(firestoreBelgeUrl(), {
       signal: controller.signal,
-      cache: "no-store",
+      // Next.js veri önbelleği: istek aynı anda birleştirilir, kısa süre
+      // sunucu tarafında saklanır. `no-store` bunu tamamen kapatıyordu.
+      next: { revalidate: ONBELLEK_SURESI },
     });
     clearTimeout(zamanAsimi);
 
@@ -79,6 +106,11 @@ export async function studioBelge() {
     for (const [ad, deger] of Object.entries(yanit.fields || {})) {
       cikti[ad] = coz(deger);
     }
+
+    // Başarılı okuma önbelleğe alınır. Hata durumunda ALINMAZ; yoksa
+    // geçici bir ağ hatası 30 saniye boyunca boş sayfa üretir.
+    onbellek = cikti;
+    onbellekZamani = Date.now();
     return cikti;
   } catch {
     // Ağ hatası / zaman aşımı: sayfa kod şablonuyla devam eder.
