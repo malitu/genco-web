@@ -1947,13 +1947,26 @@ function IndustriesBlock({ block, ctx }) {
             className="text-gray-600" placeholder="Açıklama" />
         </div>
 
+        {/* 7 kart: üstte 4, altta 3 ve alt satır ortalanmış. Kart sayısı 4'e tam
+            bölünmüyorsa ve alt satırda 3 kart kaldıysa, alt satırın ilk kartı
+            `md:col-start-2` ile bir kolon kaydırılır. Bu kural geneldir: 3, 7, 11
+            kartta uygulanır. Mobilde 2 sütun olduğu için md ve üstünde geçerlidir. */}
+              /* Son kart ortalanır: 7 kart / 4 sütun → ilk satır 4, ikinci satır 3.
+                 Kart sayısı 4'e tam bölünmüyorsa ve son satırda tek kart kaldıysa
+                 o kart bir kolon kaydırılır. Kart sayısı 6 olsaydı kural uygulanmazdı
+                 (6 % 4 = 2). */
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {(block.items || []).map((item, i) => (
             <div
               key={item.id}
               className={`bg-[#fafafa] border border-gray-200 rounded-lg hover:border-[#f97316] transition overflow-hidden ${
-                item.image ? "" : "p-6"
-              }`}
+              /* Alt satırda 3 kart varsa (kart sayısı % 4 === 3) ikinci satırın İLK kartı
+                                 bir kolon kaydırılır; böylece üç kart 2-3-4. sütunlara oturur
+                                 ve ortalanmış görünür. */
+              (block.items || []).length % 4 === 3 && i === (block.items || []).length - 3
+                ? "md:col-start-2"
+                : ""
+              } ${item.image ? "" : "p-6"}`}
             >
               {item.image ? (
                 <>
