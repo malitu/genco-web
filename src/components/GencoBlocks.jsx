@@ -174,6 +174,12 @@ export const INDUSTRIES_DEFAULTS = {
     { id: "ind_4", title: bi("Medikal", "Medical"), image: "/img/sector-medical.svg" },
     { id: "ind_5", title: bi("Ambalaj", "Packaging"), image: "/img/sector-packaging.svg" },
     { id: "ind_6", title: bi("Femtech", "Femtech"), image: "/img/sector-healthtech.svg" },
+    /* HORECA (otel, restoran, kafeterya) - profesyonel mutfak ve servis
+       ekipmanlari ithalati. Sektor listesine yedinci kalem olarak eklendi;
+       gorsel /img/sector-horeca.svg (240x160, diger sektor ikonlariyla
+       ayni olcu ve formatta). */
+    { id: "ind_7", title: bi("HORECA", "HORECA"), image: "/img/sector-horeca.svg" },
+
   ],
   note: bi(
     "* Uzmanlık alanlarımız haricinde, talebe göre her sektörde özel pazar araştırması ve operasyon yönetimi sağlanmaktadır.",
@@ -1941,7 +1947,7 @@ function IndustriesBlock({ block, ctx }) {
             className="text-gray-600" placeholder="Açıklama" />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {(block.items || []).map((item, i) => (
             <div
               key={item.id}
