@@ -1104,8 +1104,8 @@ const GENCO_FAQ = {
         "In which sectors does GENCO carry out import and export?"
       ),
       answer: bi(
-        "Altı ana sektörde çalışıyoruz: vasıflı çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal ve cerrahi sarf, ambalaj ile femtech ve sağlık teknolojileri. Her projeyi ürünün teknik özellikleri, hedef ülke, satış kanalı ve ticari koşulları üzerinden değerlendiriyoruz; dışındaki sektörler için de aynı yöntemle çalışabiliyoruz.",
-        "We work across six core sectors: engineering steel, yachting and marine equipment, seed trade, medical and surgical consumables, packaging, and femtech and health technologies. We hold proprietary technical knowledge and established buyer networks in these areas, and we apply the same methodology in sectors outside them."
+        "Yedi ana sektörde çalışıyoruz: vasıflı çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal ve cerrahi sarf, ambalaj, femtech ve sağlık teknolojileri ile HORECA. Her projeyi ürünün teknik özellikleri, hedef ülke, satış kanalı ve ticari koşulları üzerinden değerlendiriyoruz; dışındaki sektörler için de aynı yöntemle çalışabiliyoruz.",
+        "We work across seven core sectors: engineering steel, yachting and marine equipment, seed trade, medical and surgical consumables, packaging, femtech and health technologies, and HORECA. We hold proprietary technical knowledge and established buyer networks in these areas, and we apply the same methodology in sectors outside them."
       ),
     },
     {

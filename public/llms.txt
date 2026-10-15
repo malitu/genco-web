@@ -66,10 +66,10 @@ uyumu masa başında değil sahada doğruluyoruz.
 ## Sıkça sorulan sorular
 
 **GENCO hangi sektörlerde ithalat ve ihracat yapıyor?**
-Altı ana sektörde çalışıyoruz: vasıflı çelik, yatçılık ve marine ekipmanı,
-tohumculuk, medikal ve cerrahi sarf, ambalaj ile femtech ve sağlık
-teknolojileri. Bu alanlarda tescilli teknik bilgiye ve yerleşik alıcı
-ağlarına sahibiz.
+Yedi ana sektörde çalışıyoruz: vasıflı çelik, yatçılık ve marine ekipmanı,
+tohumculuk, medikal ve cerrahi sarf, ambalaj, femtech ve sağlık
+teknolojileri ile HORECA. Bu alanlarda tescilli teknik bilgiye ve yerleşik
+alıcı ağlarına sahibiz.
 
 **Anahtar teslim ithalat neleri kapsıyor?**
 Ön araştırma ve fizibilite, farklı ülkelerden tedarikçi seçimi ve GTİP tespiti,

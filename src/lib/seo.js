@@ -81,12 +81,12 @@ export const PAGES = {
       "Outsourced export department, manufacturer audits, HS code determination, letter of credit and customs clearance. Packaging design, pre-press and printing.",
   },
   industries: {
-    title: "Sektörlerimiz — Çelik, Denizcilik, Medikal, Ambalaj, Tohum, Femtech",
-    titleEn: "Our Sectors — Steel, Marine, Medical, Packaging, Seed, Femtech",
+    title: "Sektörlerimiz — Çelik, Denizcilik, Medikal, Ambalaj, HORECA",
+    titleEn: "Our Sectors — Steel, Marine, Medical, Packaging, HORECA",
     description:
-      "Altı ana sektörde üretici ve alıcı araştırması, teklif karşılaştırma, numune ve sevkiyat takibi: çelik, marine, tohumculuk, medikal, ambalaj ve femtech.",
+      "Yedi ana sektörde üretici ve alıcı araştırması, teklif karşılaştırma, numune ve sevkiyat takibi: çelik, marine, medikal, ambalaj ve HORECA.",
     descriptionEn:
-      "Manufacturer and buyer research, quotation comparison, sample and shipment tracking across six sectors: steel, marine, medical, packaging and femtech.",
+      "Manufacturer and buyer research, quotation comparison and shipment tracking across seven sectors: steel, marine, medical, packaging and HORECA.",
   },
   caseStudies: {
     title: "Vaka Analizleri — Sektör, Pazar ve Kapsam",
@@ -185,14 +185,42 @@ export const PAGES = {
 };
 
 /** Sektör listesi — /industries ve yapısal veri için tek kaynak. */
-export const SECTORS = [
-  { tr: "Vasıflı Çelik", en: "Engineering Steel" },
-  { tr: "Yatçılık & Marine", en: "Yachting & Marine" },
-  { tr: "Tohumculuk", en: "Seed Trade" },
-  { tr: "Medikal & Sağlık", en: "Medical & Health" },
-  { tr: "Ambalaj", en: "Packaging" },
-  { tr: "Femtech & Sağlık Teknolojileri", en: "Femtech & Health Tech" },
-];
+/**
+ * Sektör listesi — TEK doğruluk kaynağı.
+ *
+ * Bu dizi üç yerde tüketilir ve hepsi senkron olmalıdır:
+ *   1. /industries sayfasının ItemList şeması (schemaSectorList)
+ *   2. Sayfanın title / description metni
+ *   3. llms.txt ve llms-en.txt içindeki sektör anlatımı
+ *
+ * Yeni sektör eklendiğinde (ör. HORECA, 2026-10-15) burası güncellenmezse
+ * şema "6", sayfa metni "altı ana sektör" der ve kullanıcı yedi kart görür.
+ * Ölçülen durum buydu.
+ *
+ * Bu yüzden sayıyı elle yazmak yerine aşağıdaki SEKTOR_SAYISI türetilir.
+ */
+export const SECTORS = [
+  { tr: "Vasıflı Çelik", en: "Engineering Steel" },
+  { tr: "Yatçılık & Marine", en: "Yachting & Marine" },
+  { tr: "Tohumculuk", en: "Seed Trade" },
+  { tr: "Medikal & Sağlık", en: "Medical & Health" },
+  { tr: "Ambalaj", en: "Packaging" },
+  { tr: "Femtech & Sağlık Teknolojileri", en: "Femtech & Health Tech" },
+  { tr: "HORECA", en: "HORECA" },
+];
+
+/** Sektör sayısı — SECTORS uzunluğundan türetilir, elle yazılmaz. */
+export const SEKTOR_SAYISI = SECTORS.length;
+
+/** "6" → "altı", "7" → "yedi". Metinlerde "altı ana sektör" biçiminde kullanılır. */
+export const SEKTOR_SAYISI_YAZI = {
+  1: "bir", 2: "iki", 3: "üç", 4: "dört", 5: "beş",
+  6: "altı", 7: "yedi", 8: "sekiz", 9: "dokuz", 10: "on",
+}[SEKTOR_SAYISI] ?? String(SEKTOR_SAYISI);
+
+/** Sektör adlarının virgüllü listesi — meta açıklamalarında kullanılır. */
+export const SEKTOR_LISTESI_TR = SECTORS.map((s) => s.tr).join(", ");
+export const SEKTOR_LISTESI_EN = SECTORS.map((s) => s.en).join(", ");
 
 /** Hizmet listesi — Service şeması ve hizmet sayfası. */
 export const SERVICES = [

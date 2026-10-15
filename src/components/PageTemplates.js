@@ -511,12 +511,12 @@ const caseStudies = [
   header(
     { tr: "Sektör Deneyimi", en: "Sector Experience" },
     {
-      tr: "Altı ana sektörde yürüttüğümüz operasyonların kapsamı",
-      en: "The scope of the operations we run across six sectors",
+      tr: "Yedi ana sektörde yürüttüğümüz operasyonların kapsamı",
+      en: "The scope of the operations we run across seven sectors",
     },
     {
-      tr: "Bu sayfa altı ana sektörde hangi kapsamda çalıştığımızı gösterir; proje anlatımı değildir. Paylaşılabilen proje detayları ayrı vaka sayfalarında yayımlanır.\n\nSektörün kendisiyle ilgili teknik ve düzenleyici tartışmalar için Sektör Analizleri sayfasına bakın.",
-      en: "This page shows the scope we work in across six main sectors; it is not a set of project accounts. Shareable project details are published as separate case pages.\n\nFor technical and regulatory discussion of the sectors themselves, see the Sector Insights page.",
+      tr: "Bu sayfa yedi ana sektörde hangi kapsamda çalıştığımızı gösterir; proje anlatımı değildir. Paylaşılabilen proje detayları ayrı vaka sayfalarında yayımlanır.\n\nSektörün kendisiyle ilgili teknik ve düzenleyici tartışmalar için Sektör Analizleri sayfasına bakın.",
+      en: "This page shows the scope we work in across seven main sectors; it is not a set of project accounts. Shareable project details are published as separate case pages.\n\nFor technical and regulatory discussion of the sectors themselves, see the Sector Insights page.",
     }
   ),
   media(

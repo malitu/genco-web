@@ -175,6 +175,41 @@ console.log("\n5b) robots.txt");
     /Disallow:\s*\/admin/i.test(html));
 }
 
+/* --- 5d) SAYI TUTARLILIĞI --------------------------------------------------
+   Sektör kartı sayısı ile sayfa metinleri birbirinden ayrı kaynaklardan
+   gelir. HORECA eklendiğinde (2026-10-15) kartlar 7 oldu ama /industries
+   şeması, başlığı, açıklaması, SSS ve llms.txt "altı ana sektör" diyordu.
+   Arama motoru yedi kart görüp "altı" yazan açıklamayla karşılaştırıyordu.
+
+   Bu kontrol, metinlerdeki sayının kart sayısıyla aynı olduğunu doğrular.
+   Yeni sektör eklendiğinde buradaki kelimeler de güncellenmelidir. */
+console.log("\n5d) Sektör sayısı tutarlılığı");
+{
+  const { html: indHtml } = await get("/industries");
+  const kartSayisi = (indHtml.match(/\/img\/sector-photo-/g) || []).length;
+
+  // "altı ana sektör" / "yedi ana sektör" gibi ifadeler
+  const YAZIM = {
+    bir: 1, iki: 2, üç: 3, dört: 4, beş: 5,
+    altı: 6, yedi: 7, sekiz: 8, dokuz: 9, on: 10,
+  };
+
+  const sayfalar = ["/industries", "/", "/llms.txt", "/llms-en.txt"];
+  const bulunan = new Set();
+
+  for (const y of sayfalar) {
+    const { html } = await get(y);
+    const m = html.match(/altı ana sektör|yedi ana sektör|six (?:core|main) sectors|seven (?:core|main) sectors/gi) || [];
+    m.forEach((t) => bulunan.add(t.toLowerCase().replace(/ana sektör|main sectors|core sectors/g, "").trim()));
+  }
+
+  const sayilar = [...bulunan].map((w) => YAZIM[w]).filter(Boolean);
+  const hepsiAyni = sayilar.length > 0 && sayilar.every((n) => n === kartSayisi);
+
+  basari(`kart sayısı ${kartSayisi} · metinlerdeki sayı ${[...new Set(sayilar)].join(",") || "yok"}`,
+    hepsiAyni, "metinlerdeki sektör sayısı kart sayısıyla uyuşmuyor");
+}
+
 /* --- 5c) llms.txt -------------------------------------------------------- */
 console.log("\n5c) llms.txt");
 {
