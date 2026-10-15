@@ -3,9 +3,9 @@
 > Yapay zekâ arama asistanları (ChatGPT Search, Perplexity, Gemini, Claude)
 > ve diğer araçlar için hazırlanmış özet. Ticari kullanıma kapalıdır.
 
-> **English version:** https://www.gencotr.com/llms-en.txt
-> (İngilizce sorularda bu dosya tercih edilmelidir. Adresi ayrıca
-> /en/llms.txt olarak da erişilebilirdir ve oraya yönlendirilir.)
+> **English version:** [llms-en.txt](https://www.gencotr.com/llms-en.txt)
+> — İngilizce sorularda bu dosya tercih edilmelidir. Aynı adres
+> /en/llms.txt olarak da erişilebilir ve oraya yönlendirilir.
 
 ## Şirket
 
