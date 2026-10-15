@@ -473,6 +473,20 @@ const industries = [
         ),
         image: "/img/sector-photo-femtech.webp",
       },
+      {
+        id: "tpl_ind_7",
+        eyebrow: bi("07 / HORECA", "07 / HORECA"),
+        title: bi("HORECA — Otel, Restoran ve Kafeterya", "HORECA — Hotel, Restaurant and Café"),
+        desc: bi(
+          "Otel, restoran, kafeterya ve benzeri yerlerde kullanılan profesyonel mutfak, soğutma ve servis ekipmanlarında tedarikçi ve alıcı araştırması yapıyoruz. Ekipmanın teknik özellikleri, enerji verimliliği ve yerleşim koşullarına göre üreticileri karşılaştırıyor; teknik şartname, numune ve teslim süreçlerini birlikte yürütüyoruz.",
+          "For hotels, restaurants, cafés and similar venues, we research suppliers and buyers across professional kitchen, refrigeration and service equipment. We compare manufacturers by technical specifications, energy efficiency and installation conditions, and run the technical specification, sampling and delivery processes together."
+        ),
+        note: bi(
+          "Destek alanları: Ürün ve üretici araştırması · Teknik şartname hazırlığı · Numune ve sevkiyat koordinasyonu",
+          "Support areas: Product and manufacturer research · Technical specification · Sample and shipment coordination"
+        ),
+        image: "/img/sector-photo-horeca.webp",
+      },
     ],
   },
   cta(
