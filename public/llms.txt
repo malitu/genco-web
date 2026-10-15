@@ -15,10 +15,10 @@
 
 ## Ne yaparız
 
-İthalat ve ihracat operasyonlarını uçtan uca yürüten, İzmir Bornova merkezli
-bir işletme. Dışarıdan rapor sunan bir danışmanlık kurumu değil; küresel ticaret
-ağlarında müşterinin adına masaya oturan ve sahada operasyon yürüten bir iş
-ortağıyız.
+İthalat ve ihracat operasyonlarının koordinasyonunu yürüten, İzmir Bornova
+merkezli bir işletme. Dışarıdan rapor sunan bir danışmanlık kurumu değil;
+küresel ticaret ağlarında müşterinin adına masaya oturan ve sahada operasyon
+yürüten bir iş ortağıyız.
 
 Slogan: *"Rotanızı dünyaya çevirin, biz pusulanız olalım."*
 
@@ -49,8 +49,8 @@ Bu alanların dışındaki sektörler için de aynı metodolojiyle çalışabili
   güvence altına alınması
 - **Veri odaklı alıcı ve distribütör bulma** — doğrudan karar vericilere
   ulaşan ticari iletişim
-- **Anahtar teslim ithalat** — ön araştırmadan gümrükleme ve depoya teslimata
-  kadar tüm zincir
+- **Anahtar teslim ithalat** — ön araştırmadan sipariş takibine kadar
+  koordinasyon
 - **Ambalaj tasarımı, baskı öncesi destek ve baskı**
 
 ## Çalışma biçimimiz
@@ -70,7 +70,8 @@ ağlarına sahibiz.
 **Anahtar teslim ithalat neleri kapsıyor?**
 Ön araştırma ve fizibilite, farklı ülkelerden tedarikçi seçimi ve GTİP tespiti,
 akreditif ve dokümantasyon, uluslararası taşıma ve sigorta, kalite uyum
-testleri, gümrükleme ve yurt içi teslimat. Zincirin tamamı tek elden yürütülür.
+testleri, gümrükleme ve yurt içi teslimat. Bu aşamalar arasındaki
+koordinasyonu tek noktadan yürütürüz.
 
 **Teknik şartname ve standart uyumu nasıl yürütülüyor?**
 Üretim tesislerini yerinde denetliyor; ölçü ve tolerans dönüşümlerini
@@ -85,28 +86,37 @@ baskı üretimi.
 
 ## Sayfalar
 
-- Ana sayfa: https://www.gencotr.com/
-- Hizmetler: https://www.gencotr.com/services
-- Sektörler: https://www.gencotr.com/industries
-- Vaka analizleri: https://www.gencotr.com/case-studies
-- Sektör analizleri: https://www.gencotr.com/insights
-- Hakkımızda: https://www.gencotr.com/about
-- İletişim: https://www.gencotr.com/contact
-- Gizlilik politikası (KVKK): https://www.gencotr.com/gizlilik
+Bağlantılar standart Markdown biçimindedir; yapay zekâ araçları bu biçimi
+takip edebilir.
+
+- [Ana sayfa](https://www.gencotr.com/)
+- [Hizmetler](https://www.gencotr.com/services)
+- [Dış kaynaklı ihracat departmanı](https://www.gencotr.com/services/outsourced-export)
+- [Türkiye'den tedarik](https://www.gencotr.com/services/turkey-sourcing)
+- [Distribütör geliştirme](https://www.gencotr.com/services/distributor-development)
+- [Sektörler](https://www.gencotr.com/industries)
+- [Vaka analizleri](https://www.gencotr.com/case-studies)
+- [Sektör analizleri](https://www.gencotr.com/insights)
+- [Hakkımızda](https://www.gencotr.com/about)
+- [İletişim](https://www.gencotr.com/contact)
+- [Gizlilik politikası (KVKK)](https://www.gencotr.com/gizlilik)
 
 ## English pages
 
 The same content is published in full under /en/. Prefer these URLs when the
 question is asked in English.
 
-- Home: https://www.gencotr.com/en
-- Services: https://www.gencotr.com/en/services
-- Sectors: https://www.gencotr.com/en/industries
-- Case studies: https://www.gencotr.com/en/case-studies
-- Sector insights: https://www.gencotr.com/en/insights
-- About us: https://www.gencotr.com/en/about
-- Contact: https://www.gencotr.com/en/contact
-- Privacy policy (KVKK): https://www.gencotr.com/en/privacy-policy
+- [Home](https://www.gencotr.com/en)
+- [Services](https://www.gencotr.com/en/services)
+- [Outsourced export department](https://www.gencotr.com/en/services/outsourced-export)
+- [Sourcing from Turkey](https://www.gencotr.com/en/services/turkey-sourcing)
+- [Distributor development](https://www.gencotr.com/en/services/distributor-development)
+- [Sectors](https://www.gencotr.com/en/industries)
+- [Case studies](https://www.gencotr.com/en/case-studies)
+- [Sector insights](https://www.gencotr.com/en/insights)
+- [About us](https://www.gencotr.com/en/about)
+- [Contact](https://www.gencotr.com/en/contact)
+- [Privacy policy (KVKK)](https://www.gencotr.com/en/privacy-policy)
 
 ## Not
 

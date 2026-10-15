@@ -160,6 +160,40 @@ console.log("\n5b) robots.txt");
     /Disallow:\s*\/admin/i.test(html));
 }
 
+/* --- 5c) llms.txt -------------------------------------------------------- */
+console.log("\n5c) llms.txt");
+{
+  const { html } = await get("/llms.txt");
+
+  /* Ölçülen uyarı (Search Console → Agentic Browsing):
+       "llms.txt does not follow recommendations"
+       "File does not appear to contain any links."
+
+     Dosyada 17 adres vardı ama hepsi düz metin yazılmıştı
+     ("- Ana sayfa: https://..."). Google ve yapay zekâ araçları bağımsız
+     bağlantıları Markdown biçiminde bekler: - [Başlık](https://...) */
+  const md = html.match(/\[[^\]]+\]\(https?:\/\/[^)]+\)/g) || [];
+  basari(`Markdown bağlantı var (${md.length})`, md.length >= 10);
+
+  /* Dosya Markdown olmalı ve en az bir H1 başlığı taşımalı. */
+  basari("H1 başlığı var (/^# )", /^# .+/m.test(html));
+
+  /* Düz metin bırakılmış adres kalmamalı: "Yazı: https://..." */
+  const duz = (html.match(/[^-|\[]https?:\/\/[^\s)>\]]+/g) || []).length;
+  basari(`düz metin adres yok (${duz})`, duz === 0);
+  if (duz) {
+    const ornek = html.match(/[^-|\[]https?:\/\/[^\s)>\]]+/g) || [];
+    console.log(`      örnek: ${ornek[0]}`);
+  }
+
+  /* Abartılı kapsam ifadeleri llms.txt'de de düzeltildi; aynı dil
+     burada da korunmalı (Hakkımızda sayfasıyla aynı ölçü). */
+  const abartili = ["tüm zincir", "tek elden yürütülür", "sorumluluğumuzda", "uçtan uca yürüten"];
+  const kalan = abartili.filter((t) => html.toLowerCase().includes(t));
+  basari(`kapsam dili tutarlı${kalan.length ? " (bulunan: " + kalan.join(", ") + ")" : ""}`,
+    kalan.length === 0);
+}
+
 /* --- 6) Sitemap ---------------------------------------------------------- */
 console.log("\n6) Sitemap");
 {
