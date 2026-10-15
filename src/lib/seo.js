@@ -50,10 +50,10 @@ export const ORG = {
     "https://tr.linkedin.com/company/genco-ithalat-ihracat",
     "https://www.instagram.com/gencoithalat/",
   ],
-  description:
-    "İzmir merkezli ithalat ve ihracat operasyon firması. Vasıflı çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal, ambalaj ve femtech sektörlerinde araştırmadan sipariş ve sevkiyat takibine kadar operasyon koordinasyonu.",
+  description:
+    "İzmir merkezli ithalat ve ihracat operasyon firması. Çelik, denizcilik, medikal, tohumculuk, ambalaj ve femtech sektörlerinde koordinasyon.",
   descriptionEn:
-    "Izmir-based import and export operations company. We provide operation coordination from research through order and shipment tracking across engineering steel, yachting and marine equipment, seed trade, medical, packaging and femtech sectors.",
+    "Izmir-based import and export operations company. Coordination from research through shipment tracking across steel, marine, medical, seed trade, packaging and femtech.",
   slogan: "Rotanızı dünyaya çevirin, biz pusulanız olalım.",
   sloganEn: "Take your business around the world — we'll be your compass.",
   areasServed: ["Türkiye", "Avrupa", "Orta Doğu", "Afrika", "Asya", "Amerika"],
@@ -67,26 +67,26 @@ export const PAGES = {
     // uygulanmıyor ve alt sayfaların aksine burada marka kaybolmuştu.
     title: "Türkiye'deki Uluslararası Ticaret Ekibiniz | GENCO",
     titleEn: "GENCO — Your International Trade Team in Turkey",
-    description:
-      "2008'den beri İzmir'den ithalat ve ihracat operasyonlarını yürütüyoruz. Çelik, denizcilik, medikal, tohumculuk, ambalaj ve femtech sektörlerinde araştırmadan sipariş ve sevkiyat takibine kadar koordinasyon sağlıyoruz.",
+    description:
+      "2008'den beri İzmir'den ithalat ve ihracat operasyonlarını yürütüyoruz. Çelik, denizcilik, medikal, tohumculuk, ambalaj ve femtech sektörlerinde koordinasyon.",
     descriptionEn:
-      "Since 2008 we have run import and export operations from Izmir. Across steel, marine, medical, seed trade, packaging and femtech sectors, we provide coordination from research through order and shipment tracking.",
+      "Since 2008 we have run import and export operations from Izmir. Coordination across steel, marine, medical, seed trade, packaging and femtech sectors.",
   },
   services: {
     title: "İthalat & İhracat Hizmetleri — Anahtar Teslim Operasyon",
     titleEn: "Import & Export Services — Turnkey Operations",
-    description:
-      "Dış kaynaklı ihracat departmanı, üretici denetimi, GTİP tespiti, akreditif ve gümrükleme hizmetleri. Ambalaj tasarımı, baskı öncesi destek ve baskı dâhil uçtan uca çözümler.",
-    descriptionEn:
-      "Outsourced export department, manufacturer audits, HS code determination, letter of credit and customs clearance services, including packaging design, pre-press support and printing.",
+    description:
+      "Dış kaynaklı ihracat departmanı, üretici denetimi, GTİP tespiti, akreditif ve gümrükleme. Ambalaj tasarımı, baskı öncesi destek ve baskı.",
+    descriptionEn:
+      "Outsourced export department, manufacturer audits, HS code determination, letter of credit and customs clearance. Packaging design, pre-press and printing.",
   },
   industries: {
     title: "Sektörlerimiz — Çelik, Denizcilik, Medikal, Ambalaj, Tohum, Femtech",
     titleEn: "Our Sectors — Steel, Marine, Medical, Packaging, Seed, Femtech",
-    description:
-      "Altı ana sektörde üretici ve alıcı adaylarını araştırma, teklifleri aynı teknik kapsam üzerinden karşılaştırma ve numune ile sevkiyat takibi: çelik, yatçılık ve marine ekipmanı, tohumculuk, medikal ve cerrahi sarf, ambalaj ve femtech.",
-    descriptionEn:
-      "Across six sectors we research manufacturer and buyer candidates, compare quotations on the same technical scope, and track samples and shipments: engineering steel, yachting and marine equipment, seed trade, medical and surgical consumables, packaging and femtech.",
+    description:
+      "Altı ana sektörde üretici ve alıcı araştırması, teklif karşılaştırma, numune ve sevkiyat takibi: çelik, marine, tohumculuk, medikal, ambalaj ve femtech.",
+    descriptionEn:
+      "Manufacturer and buyer research, quotation comparison, sample and shipment tracking across six sectors: steel, marine, medical, packaging and femtech.",
   },
   caseStudies: {
     title: "Vaka Analizleri — Sektör, Pazar ve Kapsam",
@@ -99,34 +99,34 @@ export const PAGES = {
   insights: {
     title: "Sektör Analizleri — Çelik, Medikal, Denizcilik, Tohum, Ambalaj",
     titleEn: "Sector Insights — Steel, Medical, Marine, Seed, Packaging",
-    description:
-      "Uluslararası ticarette sahadan çıkardığımız stratejik notlar: çelik toleransları, medikal tedarik zincirleri, denizcilik uyumu, tohum izinleri, baskı öncesi kontrol ve MDR kapsamı.",
-    descriptionEn:
-      "Strategic notes from the field: steel tolerances, medical supply chains, marine compliance, seed permits, pre-press control and MDR scope.",
+    description:
+      "Sahadan stratejik notlar: çelik toleransları, medikal tedarik zincirleri, denizcilik uyumu, tohum izinleri, baskı öncesi kontrol ve MDR kapsamı.",
+    descriptionEn:
+      "Strategic notes from the field: steel tolerances, medical supply chains, marine compliance, seed permits and MDR scope.",
   },
   about: {
     title: "Hakkımızda — 2008'den beri İzmir'de İthalat-İhracat",
     titleEn: "About Us — Import & Export in Izmir Since 2008",
-    description:
-      "Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. 2008'de İzmir Bornova'da kuruldu. Araştırmadan sipariş ve sevkiyat takibine kadar dış ticaret süreçlerinin koordinasyonunu yürütüyoruz.",
+    description:
+      "Genco İthalat İhracat Medikal Ürün San. Tic. Ltd. Şti. 2008'de İzmir Bornova'da kuruldu. Dış ticaret süreçlerinin koordinasyonunu yürütüyoruz.",
     descriptionEn:
-      "Founded in 2008 in Bornova, Izmir, we provide coordination of foreign trade processes from research through order and shipment tracking.",
+      "Founded in 2008 in Bornova, Izmir. We coordinate foreign trade processes from research through shipment tracking.",
   },
   contact: {
     title: "İletişim — Teklif ve Proje Talebi",
     titleEn: "Contact — Request a Quote or Project",
-    description:
-      "İthalat ve ihracat operasyonlarınız için teklif ve proje talebi. +90 505 926 12 51 · info@gencotr.com · İzmir Bornova. Hafta içi 09:00–18:00 arası dönüş yapıyoruz.",
-    descriptionEn:
-      "Request a quote or project for your import and export operations. +90 505 926 12 51 · info@gencotr.com · Bornova, Izmir. We reply on weekdays between 09:00 and 18:00.",
+    description:
+      "İthalat ve ihracat operasyonlarınız için teklif ve proje talebi. +90 505 926 12 51 · info@gencotr.com · Hafta içi 09:00–18:00.",
+    descriptionEn:
+      "Request a quote or project for your import and export operations. +90 505 926 12 51 · info@gencotr.com · Weekdays 09:00–18:00.",
   },
   gizlilik: {
     title: "Gizlilik Politikası — KVKK Aydınlatma Metni",
     titleEn: "Privacy Policy — KVKK Notice",
-    description:
-      "6698 sayılı KVKK kapsamında web sitemiz üzerinden paylaştığınız kişisel verilerin nasıl işlendiğini açıklayan aydınlatma metni. Veri sorumlusu ve haklarınız hakkında bilgilendirme.",
-    descriptionEn:
-      "Our notice explaining how personal data shared through this website is processed under Turkish Personal Data Protection Law no. 6698 (KVKK), including the data controller and your rights.",
+    description:
+      "6698 sayılı KVKK kapsamında kişisel verilerin nasıl işlendiğini açıklayan aydınlatma metni. Veri sorumlusu ve haklarınız hakkında bilgilendirme.",
+    descriptionEn:
+      "Our notice explaining how personal data shared through this website is processed under Turkish Personal Data Protection Law no. 6698 (KVKK).",
   },
 
   /* --- Sektör analizi yazıları (/insights/...) -------------------------- */
@@ -161,19 +161,19 @@ export const PAGES = {
   outsourcedExport: {
     title: "Dış Kaynaklı İhracat Departmanı",
     titleEn: "Outsourced Export Department",
-    description:
-      "İhracata başlamak isteyen üreticiler için hedef pazar araştırması, alıcı teması, ürün sunumu, teklif, numune ve sipariş takibi içeren dış kaynaklı ihracat modeli.",
-    descriptionEn:
-      "An outsourced export model for manufacturers starting out: target market research, buyer contact, product presentation, quotations, samples and order follow-up.",
-  },
-  turkeySourcing: {
-    title: "Türkiye'den Tedarik ve Üretici Araştırması",
-    titleEn: "Sourcing from Turkey and Manufacturer Research",
-    description:
-      "Türkiye'den ürün satın alan uluslararası şirketler için üretici araştırması, karşılaştırmalı teklif değerlendirmesi, numune ve fabrika ziyareti koordinasyonu ile sipariş takibi.",
-    descriptionEn:
-      "Manufacturer research, comparative quotation assessment, sample and factory visit coordination, and order follow-up for international companies buying from Turkey.",
-  },
+    description:
+      "İhracata başlayan üreticiler için hedef pazar araştırması, alıcı teması, ürün sunumu, teklif, numune ve sipariş takibi.",
+    descriptionEn:
+      "An outsourced export model: target market research, buyer contact, product presentation, quotations, samples and order follow-up.",
+  },
+  turkeySourcing: {
+    title: "Türkiye'den Tedarik ve Üretici Araştırması",
+    titleEn: "Sourcing from Turkey and Manufacturer Research",
+    description:
+      "Türkiye'den ürün satın alan şirketler için üretici araştırması, teklif karşılaştırması, numune ve fabrika ziyareti koordinasyonu.",
+    descriptionEn:
+      "Manufacturer research, quotation assessment, and sample and factory visit coordination for companies buying from Turkey.",
+  },
   distributorDevelopment: {
     title: "Alıcı ve Distribütör Araştırması",
     titleEn: "Buyer and Distributor Research",

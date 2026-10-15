@@ -75,6 +75,21 @@ for (const yol of SAYFALAR) {
     status === 200 && bosH2 === 0 && footerVar,
     `kod=${status} bosH2=${bosH2} footer=${footerVar}`
   );
+
+  /* Ölçülen uyarı (Search Console → Sayfa → Meta description):
+       "The meta description is too long: 1326 pixels from max. 1000 pixels."
+
+     Google piksel ölçer, karakter değil; pratik sınır ~160 karakter. Uzun
+     açıklama sonuç sayfasında kesilir ve tıklanma oranını düşürür.
+     Ölçüm, HTML kaçışlarını çözerek yapılır: "&#x27;" beş karakter yerine
+     bir sayılır. */
+  const ham = (html.match(/<meta name="description" content="([^"]*)"/) || [])[1];
+  if (ham) {
+    const gercek = ham
+      .replace(/&#x27;/g, "'").replace(/&quot;/g, '"')
+      .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    basari(`${yol.padEnd(46)} description ≤160 (${gercek.length})`, gercek.length <= 160);
+  }
 }
 
 /* --- 2) Ana sayfa GERÇEK içeriği gösteriyor mu (Firestore) --------------
