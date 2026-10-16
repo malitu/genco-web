@@ -210,6 +210,49 @@ console.log("\n5d) Sektör sayısı tutarlılığı");
     hepsiAyni, "metinlerdeki sektör sayısı kart sayısıyla uyuşmuyor");
 }
 
+/* --- 5e) BASLIK HIYERARSISI ------------------------------------------------
+   Standart SEO denetimi ayrı bir kontrol yapar: h1'den sonra h2'ye, h2'den
+   sonra h3'e geçilmeli, seviye atlanmamalı. Google, ekran okuyucu ve
+   denetim araçları bu sırayı okur.
+
+   Ölçülen iki hata (2026-10-16):
+     - / ve /en      h1 → h3   (CardGrid bloğu h1'in ardından h3 basıyordu)
+     - /industries   h2 → h4   (sektör kartları blok başlığından iki
+                                 seviye aşağıdaydı)
+   İkisi de düzeltildi: CardGrid → h2, sektör kartları → h3.
+
+   DİKKAT: ölçüm <script>, <svg> ve sr-only bloklarını ayıklamak ZORUNLUDUR.
+   Ekran okuyucu için gizli başlıklar (sr-only) DOM'a girer ve sayımı
+   bozar; ilk ölçüm hatalı "1-3" sonucu verdiği için bu not yazıldı. */
+console.log("\n5e) Başık hiyerarşisi");
+{
+  const kontrol = [];
+  for (const yol of SAYFALAR) {
+    const { html } = await get(yol);
+    const ic = html
+      .replace(/<script[\s\S]*?<\/script>/g, "")
+      .replace(/<svg[\s\S]*?<\/svg>/g, "")
+      .replace(/<[^>]*class="[^"]*sr-only[^"]*"[\s\S]*?<\/div>/g, "");
+    const seviyeler = [...ic.matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]));
+    if (!seviyeler.length) continue;
+
+    const atlamalar = [];
+    for (let i = 1; i < seviyeler.length; i++) {
+      if (seviyeler[i] - seviyeler[i - 1] > 1) atlamalar.push(`h${seviyeler[i - 1]}→h${seviyeler[i]}`);
+    }
+    kontrol.push([yol, atlamalar, seviyeler[0]]);
+  }
+
+  const bozuk = kontrol.filter(([, a]) => a.length);
+  basari(`tüm sayfalarda başık sırası kesintisiz (${kontrol.length} sayfa)`,
+    bozuk.length === 0,
+    bozuk.map(([y, a]) => `${y}: ${a.join(",")}`).join(" | "));
+
+  const h1Eksik = kontrol.filter(([, , ilk]) => ilk !== 1);
+  basari("her sayfa h1 ile başlıyor", h1Eksik.length === 0,
+    h1Eksik.map(([y]) => y).join(", "));
+}
+
 /* --- 5c) llms.txt -------------------------------------------------------- */
 console.log("\n5c) llms.txt");
 {

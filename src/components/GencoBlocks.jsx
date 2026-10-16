@@ -1915,7 +1915,7 @@ function HeroBlock({ block, ctx }) {
         <div className="relative bg-[#0f172a] p-8 rounded-lg text-white shadow-xl overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#f97316] opacity-10 rounded-full blur-2xl" />
           {E("boxBadge", "div", "text-[#f97316] font-bold text-sm uppercase tracking-widest mb-2", "Kutu etiketi")}
-            {E("boxTitle", "h3", "text-2xl font-bold mb-4", "Kutu başlığı")}
+            {E("boxTitle", "h2", "text-2xl font-bold mb-4", "Kutu başlığı")}
             {E("boxDesc", "p", "text-gray-300 text-sm leading-relaxed mb-6", "Kutu açıklaması")}
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-800 text-xs text-gray-400">
               {E("check1", "div", "", "Kontrol 1")}
@@ -1979,7 +1979,7 @@ function IndustriesBlock({ block, ctx }) {
                     <div className="text-[#f97316] font-bold text-lg mb-1">
                       {String(i + 1).padStart(2, "0")}
                     </div>
-                    <EditableText as="h4" editable={edit} value={L(item.title, lang)}
+                    <EditableText as="h3" editable={edit} value={L(item.title, lang)}
                       onChange={(v) => set("items", block.items.map((x) => (x.id === item.id ? { ...x, title: mergeLang(x.title, lang, v) } : x)))}
                       className="font-bold text-[#0f172a]" placeholder="Sektör adı" />
                   </div>
@@ -1987,7 +1987,7 @@ function IndustriesBlock({ block, ctx }) {
               ) : (
                 <>
                   <div className="text-[#f97316] font-bold text-lg mb-1">{String(i + 1).padStart(2, "0")}</div>
-                  <EditableText as="h4" editable={edit} value={L(item.title, lang)}
+                  <EditableText as="h3" editable={edit} value={L(item.title, lang)}
                     onChange={(v) => set("items", block.items.map((x) => (x.id === item.id ? { ...x, title: mergeLang(x.title, lang, v) } : x)))}
                     className="font-bold text-[#0f172a]" placeholder="Sektör adı" />
                 </>

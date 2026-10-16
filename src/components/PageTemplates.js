@@ -382,7 +382,7 @@ const industries = [
   {
     ...CARD_GRID_DEFAULTS,
     id: "tpl_ind_grid",
-    heading: bi("", ""),
+    heading: bi("Sektör Deneyimimiz", "Our Sector Experience"),
     sub: bi("", ""),
     columns: 3,
     cards: [
