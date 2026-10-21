@@ -253,6 +253,37 @@ console.log("\n5e) Başık hiyerarşisi");
     h1Eksik.map(([y]) => y).join(", "));
 }
 
+/* --- 5f) YORUM SIZINTISI --------------------------------------------------
+   JSX içinde düz `/* ... *\/` yazılırsa React bunu METN olarak basar ve
+   yorum sayfada görünür. Ölçülen hata: ana sayfanın sektör bloğunda
+   kod yorumu ziyaretçiye gösteriliyordu.
+
+   Bu kontrol, sunucu HTML'inde (script/style çıkarıldıktan sonra) kod
+   kalıntısı arar. */
+console.log("\n5f) Yorum sızıntısı");
+{
+  const KALINTILAR = [
+    ["/*", "yorum açılışı"],
+    ["=>", "arrow function"],
+    ["[object Object]", "nesne dizesi"],
+    ["undefined", "undefined"],
+    ["NaN", "NaN"],
+  ];
+
+  const sizan = [];
+  for (const yol of SAYFALAR) {
+    const { html } = await get(yol);
+    const ic = html
+      .replace(/<script[\s\S]*?<\/script>/g, "")
+      .replace(/<style[\s\S]*?<\/style>/g, "");
+    const bul = KALINTILAR.filter(([d]) => ic.includes(d)).map(([, ad]) => ad);
+    if (bul.length) sizan.push(`${yol}: ${bul.join(", ")}`);
+  }
+
+  basari(`sayfalarda kod kalıntısı yok (${SAYFALAR.length} sayfa)`,
+    sizan.length === 0, sizan.join(" | "));
+}
+
 /* --- 5c) llms.txt -------------------------------------------------------- */
 console.log("\n5c) llms.txt");
 {

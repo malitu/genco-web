@@ -1947,13 +1947,9 @@ function IndustriesBlock({ block, ctx }) {
             className="text-gray-600" placeholder="Açıklama" />
         </div>
 
-        {/* 7 kart: üst satırda 4, alt satırda 3 kart. Alt satır sola yaslanır;
+        {/* 7 kart: üst satırda 4, alt satırda 3 kart. Alt satır sola yaslanır.
             md:col-start-2 ile kaydırma denendi ama kartlar sağa dayalı göründü ve
             geri alındı. Kart sayısı 6'ya dönse bu blok yine 3+3 olur. */}
-              /* Son kart ortalanır: 7 kart / 4 sütun → ilk satır 4, ikinci satır 3.
-                 Kart sayısı 4'e tam bölünmüyorsa ve son satırda tek kart kaldıysa
-                 o kart bir kolon kaydırılır. Kart sayısı 6 olsaydı kural uygulanmazdı
-                 (6 % 4 = 2). */
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {(block.items || []).map((item, i) => (
             <div
